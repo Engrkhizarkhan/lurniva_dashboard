@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Login - Faculty Dashboard</title>
+  <link rel="stylesheet" href="assets/css/app.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/custom.css">
+   <link rel='shortcut icon' type='image/x-icon' href='assets/img/T Logo.png' />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .login-container {
+      display: flex;
+      height: 100vh;
+    }
+
+        .left-section {
+      background: linear-gradient(#1DA1F2, #794BC4, #17C3B2); /* gradient from light blue to dark blue */
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 60px;
+    }
+
+    .right-section {
+      background-color: #ffffff;
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+    }
+
+    .right-section img {
+      width: 200px;
+      height: auto;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .card {
+      border: none;
+    }
+
+    .forgot-password {
+      margin-top: 10px;
+      font-size: 0.875rem;
+    }
+
+    .create-account {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+      }
+      .left-section, .right-section {
+        width: 100%;
+        height: 50%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-container">
+    <!-- Left White Section (Login) -->
+    <div class="left-section">
+      <div class="login-box">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h4>Login</h4>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="#" class="needs-validation" novalidate="">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="email" class="form-control" name="email" required autofocus>
+                <div class="invalid-feedback">
+                  Please fill in your email
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="password" class="control-label">Password</label>
+                <input id="password" type="password" class="form-control" name="password" required>
+                <div class="invalid-feedback">
+                  Please fill in your password
+                </div>
+                <div class="forgot-password">
+                  <a href="auth-forgot-password.html" class="text-small">Forgot Password?</a>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" name="remember" class="custom-control-input" id="remember-me">
+                  <label class="custom-control-label" for="remember-me">Remember Me</label>
+                </div>
+              </div>
+
+                    <div class="form-group">
+        <button type="submit" class="btn btn-lg btn-block" style="background: linear-gradient(#1DA1F2, #794BC4, #17C3B2); border: none; color: white;">
+          Login
+        </button>
+      </div>
+
+                        <div class="create-account">
+            Don't have an account? <a href="auth-register.html">Sign Up!</a>
+          </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Blue Section (Logo) -->
+    <div class="right-section">
+      <img src="assets/img/Final Logo.jpg" alt="Logo" style="width: 400px; max-width: 100%; height: auto;">
+    </div>
+    
+  </div>
+
+  <script src="assets/js/app.min.js"></script>
+  <script src="assets/js/scripts.js"></script>
+  <script src="assets/js/custom.js"></script>
+</body>
+</html>

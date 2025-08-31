@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subject Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel='shortcut icon' type='image/x-icon' href='assets/img/T Logo.png' />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .circle-progress {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(#4caf50 var(--percentage), #ddd 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+  <h2 class="mb-4" id="subjectName"></h2>
+
+  <!-- Table -->
+  <div class="card shadow mb-4">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Serial No.</th>
+              <th>Topic</th>
+              <th>Score</th>
+              <th>Percentage</th>
+              <th>Test Date</th>
+            </tr>
+          </thead>
+          <tbody id="testTable">
+            <!-- Data will be inserted here by JS -->
+          </tbody>
+        </table>
+      </div>
+    
+  </div>
+
+  <!-- Graph -->
+  <div class="card shadow mb-4">
+    <div class="card-header bg-success text-white">Test Results Over Time</div>
+    <div class="card-body">
+      <canvas id="testChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Circle Progress -->
+  <div class="card shadow">
+    <div class="card-header bg-info text-white">Overall Percentage</div>
+    <div class="card-body text-center">
+      <div class="circle-progress" id="circleProgress" style="--percentage: 0deg;">
+        0%
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sample subject data
+  const subjectsData = {
+    English: [
+      { topic: "Grammar Basics", score: 18, total: 20, date: "2025-07-05" },
+      { topic: "Essay Writing", score: 15, total: 20, date: "2025-07-15" },
+      { topic: "Comprehension", score: 17, total: 20, date: "2025-07-25" }
+    ],
+    Math: [
+      { topic: "Algebra", score: 20, total: 20, date: "2025-07-05" },
+      { topic: "Geometry", score: 19, total: 20, date: "2025-07-15" },
+      { topic: "Trigonometry", score: 18, total: 20, date: "2025-07-25" }
+    ],
+    Science: [
+      { topic: "Physics", score: 14, total: 20, date: "2025-07-05" },
+      { topic: "Chemistry", score: 16, total: 20, date: "2025-07-15" },
+      { topic: "Biology", score: 13, total: 20, date: "2025-07-25" }
+    ],
+    Computer: [
+      { topic: "Basics", score: 18, total: 20, date: "2025-07-05" },
+      { topic: "Programming", score: 19, total: 20, date: "2025-07-15" },
+      { topic: "Networking", score: 17, total: 20, date: "2025-07-25" }
+    ],
+    Urdu: [
+      { topic: "Nazm", score: 16, total: 20, date: "2025-07-05" },
+      { topic: "Ghazal", score: 15, total: 20, date: "2025-07-15" },
+      { topic: "Essay", score: 14, total: 20, date: "2025-07-25" }
+    ]
+  };
+
+  // Get subject name from URL
+  const params = new URLSearchParams(window.location.search);
+  const subject = params.get("subject");
+
+  if (subject && subjectsData[subject]) {
+    document.getElementById("subjectName").textContent = subject + " - Test Records";
+
+    const tableBody = document.getElementById("testTable");
+    let totalScore = 0, totalMarks = 0;
+    const labels = [], percentages = [];
+
+    subjectsData[subject].forEach((test, index) => {
+      const percentage = ((test.score / test.total) * 100).toFixed(2);
+      totalScore += test.score;
+      totalMarks += test.total;
+
+      labels.push(test.date);
+      percentages.push(percentage);
+
+      tableBody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${test.topic}</td>
+          <td>${test.score}/${test.total}</td>
+          <td>${percentage}%</td>
+          <td>${test.date}</td>
+        </tr>
+      `;
+    });
+
+    // Draw chart
+    new Chart(document.getElementById("testChart"), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Test Percentage",
+          data: percentages,
+          borderColor: "#4caf50",
+          fill: false,
+          tension: 0.2
+        }]
+      }
+    });
+
+    // Circle Progress
+    const overallPercentage = ((totalScore / totalMarks) * 100).toFixed(2);
+    document.getElementById("circleProgress").style.setProperty("--percentage", `${(overallPercentage / 100) * 360}deg`);
+    document.getElementById("circleProgress").textContent = overallPercentage + "%";
+  } else {
+    document.getElementById("subjectName").textContent = "Invalid subject or no data available.";
+  }
+</script>
+
+</body>
+</html>

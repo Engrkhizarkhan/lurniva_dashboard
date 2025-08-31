@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bar Chart Example</title>
+    <style>
+      #chartdiv {
+        width: 100%;
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3 style="text-align: center">Bar CHart</h3>
+    <div id="chartdiv"></div>
+
+    <script>
+      am4core.ready(function () {
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        // Create chart
+        var chart = am4core.create("chartdiv", am4charts.XYChart);
+
+        // Data
+        chart.data = [
+          { country: "USA", visits: 3025 },
+          { country: "China", visits: 1882 },
+          { country: "Japan", visits: 1809 },
+          { country: "Germany", visits: 1322 },
+          { country: "UK", visits: 1122 },
+          { country: "France", visits: 1114 },
+          { country: "India", visits: 984 },
+          { country: "Spain", visits: 711 },
+          { country: "Netherlands", visits: 665 },
+          { country: "Russia", visits: 580 },
+          { country: "South Korea", visits: 443 },
+          { country: "Canada", visits: 441 },
+        ];
+
+        // Create X-axis (categories)
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "country";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 30;
+
+        // Create Y-axis (values)
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.min = 0;
+
+        // Create series
+        var series = chart.series.push(new am4charts.ColumnSeries());
+        series.dataFields.valueY = "visits";
+        series.dataFields.categoryX = "country";
+        series.name = "Visits";
+        series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+
+        // Add scrollbar
+        chart.scrollbarX = new am4core.Scrollbar();
+      }); // end am4core.ready()
+    </script>
+  </body>
+</html>
