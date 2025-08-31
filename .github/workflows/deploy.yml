@@ -1,11 +1,9 @@
-name: Deploy to Lurniva VM
+name: Deploy to VPS
 
 on:
   push:
-    branches: [ "main" ]  # change if you deploy from another branch
-
-permissions:
-  contents: read  # needed for actions/checkout on private repos
+    branches:
+      - main   # change if your branch is different
 
 jobs:
   deploy:
@@ -13,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -21,66 +19,9 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "."
-          target: "${{ secrets.TARGET_DIR }}"
-          rm: true
-          strip_components: 0
-          overwrite: true
-          exclude: |
-            .git/*
-            .github/*
-            node_modules/*
+        run: |
+          rsync -avz --delete ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/luniva_dashboard
 
-      - name: Run remote tasks (permissions, DB import if changed, reload)
-        uses: appleboy/ssh-action@v1.2.0
-        env:
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          TARGET_DIR: ${{ secrets.TARGET_DIR }}
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          script_stop: true
-          script: |
-            set -e
-
-            # permissions
-            sudo chown -R www-data:www-data "$TARGET_DIR"
-            sudo find "$TARGET_DIR" -type d -exec chmod 755 {} \;
-            sudo find "$TARGET_DIR" -type f -exec chmod 644 {} \;
-
-            # create checksum dir if missing
-            sudo mkdir -p /var/lib/lurniva_dashboard
-            sudo chown root:root /var/lib/lurniva_dashboard
-
-            # DB import only when SQL changed
-            SQL_PATH="$TARGET_DIR/sql/lurnivaDB.sql"
-            if [ -f "$SQL_PATH" ]; then
-              NEWSUM=$(md5sum "$SQL_PATH" | awk '{print $1}')
-              HASHFILE="/var/lib/lurniva_dashboard/schema.md5"
-              OLDSUM=""
-              if [ -f "$HASHFILE" ]; then OLDSUM=$(cat "$HASHFILE"); fi
-
-              if [ "$NEWSUM" != "$OLDSUM" ]; then
-                echo "Schema changed; importing SQL..."
-                mysql -u "$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-                mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$SQL_PATH"
-                echo "$NEWSUM" | sudo tee "$HASHFILE" >/dev/null
-                sudo chown root:root "$HASHFILE"
-              else
-                echo "Schema unchanged; skipping import."
-              fi
-            else
-              echo "No SQL file at $SQL_PATH; skipping DB import."
-            fi
-
-            # reload services
-            sudo systemctl reload php-fpm || sudo systemctl reload php8.2-fpm || true
-            sudo systemctl reload nginx || sudo systemctl restart nginx
+      - name: Restart Apache
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "sudo systemctl restart apache2"
