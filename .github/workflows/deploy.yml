@@ -1,4 +1,4 @@
-name: Deploy to VM
+name: Deploy PHP App
 
 on:
   push:
@@ -8,20 +8,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup SSH key
-      uses: webfactory/ssh-agent@v0.9.1
-      with:
-        ssh-private-key: ${{ secrets.VM_SSH_KEY }}
-
-    - name: Copy known hosts (optional, prevents prompt)
-      run: |
-        ssh-keyscan -H 4.236.161.214 >> ~/.ssh/known_hosts
-
-    - name: Deploy via SSH
-      run: |
-        ssh -o StrictHostKeyChecking=no LurnivaVM@4.236.161.214 'sudo bash /var/www/deploy.sh'
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            export GIT_SSH_COMMAND='ssh -i /home/LurnivaVM/.ssh/id_ed25519 -o StrictHostKeyChecking=no'
+            bash /var/www/deploy.sh
