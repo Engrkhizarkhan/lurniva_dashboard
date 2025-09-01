@@ -1,4 +1,4 @@
-name: Deploy to LurnivaVM
+name: Deploy to VM
 
 on:
   push:
@@ -10,14 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.VM_SSH_KEY }}
+    - name: Setup SSH key
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.VM_SSH_KEY }}
 
-      - name: Deploy to VM
-        run: |
-          ssh -o StrictHostKeyChecking=no LurnivaVM@4.236.161.214 'sudo bash /var/www/deploy.sh'
+    - name: Copy known hosts (optional, prevents prompt)
+      run: |
+        ssh-keyscan -H 4.236.161.214 >> ~/.ssh/known_hosts
+
+    - name: Deploy via SSH
+      run: |
+        ssh -o StrictHostKeyChecking=no LurnivaVM@4.236.161.214 'sudo bash /var/www/deploy.sh'
