@@ -2,22 +2,23 @@ name: Deploy to VM
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Deploy to VM
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          script: |
-            bash /var/www/deploy.sh
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 48.216.245.180 >> ~/.ssh/known_hosts
+
+      - name: Run deploy script on VM
+        run: |
+          ssh -i ~/.ssh/id_ed25519 LurnivaVM@48.216.245.180 "bash /var/www/deploy.sh"
