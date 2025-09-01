@@ -2,30 +2,21 @@ name: Deploy to VM
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          script: |
-            cd /var/www
-            if [ -d "lurniva_dashboard" ]; then
-              rm -rf lurniva_dashboard
-            fi
-            git clone git@github.com:Engrkhizarkhan/lurniva_dashboard.git
-            cd lurniva_dashboard/sql
-            mysql -u root lurnivaDB < lurnivaDB.sql
-            systemctl reload php7.4-fpm
-            systemctl reload nginx
+    - name: Deploy to VM via SSH
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: 4.236.161.214
+        username: LurnivaVM
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          bash /var/www/deploy.sh
