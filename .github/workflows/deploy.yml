@@ -26,6 +26,6 @@ jobs:
             fi
             git clone git@github.com:Engrkhizarkhan/lurniva_dashboard.git
             cd lurniva_dashboard/sql
-            mysql -u root -p${{ secrets.DB_PASSWORD }} lurnivaDB < lurnivaDB.sql
+            mysql -u root lurnivaDB < lurnivaDB.sql
             systemctl reload php7.4-fpm
             systemctl reload nginx
