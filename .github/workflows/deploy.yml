@@ -20,4 +20,4 @@ jobs:
 
       - name: Deploy to VM
         run: |
-          ssh -o StrictHostKeyChecking=no LurnivaVM@48.216.245.180 'bash /var/www/deploy.sh'
+          ssh -o StrictHostKeyChecking=no LurnivaVM@4.236.161.214 'bash /var/www/deploy.sh'
