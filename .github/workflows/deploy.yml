@@ -12,10 +12,13 @@ jobs:
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
+          username: LurnivaVM
           key: ${{ secrets.VM_KEY }}
           script: |
-            cd /var/www/dashboard
+            cd /var/www/lurniva_dashboard
             git pull origin main
+            sudo chown -R www-data:www-data /var/www/lurniva_dashboard
+            ./deploy_migrations.sh
             sudo systemctl reload php8.1-fpm
             sudo systemctl reload nginx
+            echo "Deployment to Lurniva VM completed."
