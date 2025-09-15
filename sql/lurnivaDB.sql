@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2025 at 08:00 PM
+-- Generation Time: Sep 10, 2025 at 10:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,6 +36,39 @@ CREATE TABLE `activity_logs` (
   `details` text DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `app_admin`
+--
+
+CREATE TABLE `app_admin` (
+  `id` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(150) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `message_email` varchar(150) DEFAULT NULL,
+  `merchant_id` varchar(150) DEFAULT NULL,
+  `store_id` varchar(150) DEFAULT NULL,
+  `secret_key` varchar(255) DEFAULT NULL,
+  `role` enum('super_admin') DEFAULT 'super_admin',
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `verification_code` varchar(10) DEFAULT NULL,
+  `code_expires_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `app_admin`
+--
+
+INSERT INTO `app_admin` (`id`, `username`, `email`, `password`, `full_name`, `phone`, `profile_image`, `message_email`, `merchant_id`, `store_id`, `secret_key`, `role`, `status`, `created_at`, `updated_at`, `verification_code`, `code_expires_at`) VALUES
+(1, 'usman', 'admin@lurniva.com', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, NULL, NULL, 'shayans1215225@gmail.com', NULL, NULL, NULL, 'super_admin', 'active', '2025-09-09 14:08:19', '2025-09-09 14:57:56', '845371', '2025-09-09 17:02:56');
 
 -- --------------------------------------------------------
 
@@ -327,19 +360,35 @@ CREATE TABLE `faculty` (
   `verification_code` varchar(10) DEFAULT NULL,
   `is_verified` tinyint(1) NOT NULL DEFAULT 0,
   `code_expires_at` datetime DEFAULT NULL,
-  `verification_attempts` int(11) NOT NULL DEFAULT 0
+  `verification_attempts` int(11) NOT NULL DEFAULT 0,
+  `subscription_start` date DEFAULT NULL,
+  `subscription_end` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `faculty`
 --
 
-INSERT INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualification`, `subjects`, `email`, `password`, `phone`, `address`, `joining_date`, `employment_type`, `schedule_preference`, `photo`, `created_at`, `status`, `rating`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`) VALUES
-(9, 4, 'Shayan Khan', '3740587639645', 'BS SE', 'CSIT', 'shayanm1215225@gmail.com', '$2y$10$x4e587EPTl3QXIRpr8KHW.B/7JJXK6QMDdzSX5JjBDCfB1hD6pDsG', '03091991002', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872433_Untitled.jpg', '2025-08-22 14:20:33', 'pending', NULL, NULL, 1, '2025-08-23 16:52:19', 0),
-(10, 4, 'Sana Khan', '3740587946212', 'FSc', 'Math, physic', 'shayans1215225@gmai.com', '$2y$10$f4tVQ2Y3ekH6p3GvXg0vZeMwjpQEhbAEuBvFz0adbm3lMmtCf0lce', '03491916168', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872508_dme.jpg', '2025-08-22 14:21:48', 'pending', NULL, NULL, 0, NULL, 0),
-(11, 5, 'Ikhtisham wahabi', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$XGVmzjJQLumJxbMhkO827Oe2/hwkMtcGRpmC3h1d529slA1zyZ6pi', '03414738901', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '1755880919_IMG_3698.jpeg', '2025-08-22 16:41:59', 'pending', NULL, NULL, 0, NULL, 0),
-(12, 5, 'Munir ahmad', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$v3oiUE1zMSD8HM0sf2PFwuLZiwywI03EWQ1yRXW7uCe1GcxGya3IG', '0355627189', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '', '2025-08-22 16:49:24', 'pending', NULL, NULL, 0, NULL, 0),
-(13, 5, 'Junaid ahmed', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$0jPhKvUMmeAoFbqsjezkVe7Eqyt7W0zP/G4Z/yvAGKmCIMKo0yuN.', '0355627189', 'Jahengira swabi', '2025-08-15', 'Part-time', 'Evening', '', '2025-08-22 16:49:46', 'pending', NULL, NULL, 0, NULL, 0);
+INSERT INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualification`, `subjects`, `email`, `password`, `phone`, `address`, `joining_date`, `employment_type`, `schedule_preference`, `photo`, `created_at`, `status`, `rating`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `subscription_start`, `subscription_end`) VALUES
+(9, 4, 'Shayan Khan', '3740587639645', 'BS SE', 'CSIT', 'shayanm1215225@gmail.com', '$2y$10$x4e587EPTl3QXIRpr8KHW.B/7JJXK6QMDdzSX5JjBDCfB1hD6pDsG', '03091991002', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872433_Untitled.jpg', '2025-08-22 14:20:33', 'Approved', NULL, NULL, 1, NULL, 0, '2025-09-10', '2025-10-10'),
+(10, 4, 'Sana Khan', '3740587946212', 'FSc', 'Math, physic', 'shayans1215225@gmai.com', '$2y$10$f4tVQ2Y3ekH6p3GvXg0vZeMwjpQEhbAEuBvFz0adbm3lMmtCf0lce', '03491916168', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872508_dme.jpg', '2025-08-22 14:21:48', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-10', '2025-10-10'),
+(11, 5, 'Ikhtisham wahabi', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$XGVmzjJQLumJxbMhkO827Oe2/hwkMtcGRpmC3h1d529slA1zyZ6pi', '03414738901', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '1755880919_IMG_3698.jpeg', '2025-08-22 16:41:59', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-09', '2025-10-09'),
+(12, 5, 'Munir ahmad', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$v3oiUE1zMSD8HM0sf2PFwuLZiwywI03EWQ1yRXW7uCe1GcxGya3IG', '0355627189', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '', '2025-08-22 16:49:24', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-09', '2025-10-09'),
+(13, 5, 'Junaid ahmed', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$0jPhKvUMmeAoFbqsjezkVe7Eqyt7W0zP/G4Z/yvAGKmCIMKo0yuN.', '0355627189', 'Jahengira swabi', '2025-08-15', 'Part-time', 'Evening', '', '2025-08-22 16:49:46', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-09', '2025-10-09');
+
+--
+-- Triggers `faculty`
+--
+DELIMITER $$
+CREATE TRIGGER `prevent_invalid_faculty_approval` BEFORE UPDATE ON `faculty` FOR EACH ROW BEGIN
+    -- If someone tries to approve an expired subscription
+    IF NEW.status = 'Approved' AND NEW.subscription_end <= CURDATE() THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Cannot approve student: subscription expired!';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -378,6 +427,32 @@ CREATE TABLE `faculty_leaves` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fee_installments`
+--
+
+CREATE TABLE `fee_installments` (
+  `id` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `fee_period_id` int(11) NOT NULL,
+  `installment_number` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `due_date` date NOT NULL,
+  `status` enum('Pending','Paid') DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `fee_installments`
+--
+
+INSERT INTO `fee_installments` (`id`, `school_id`, `student_id`, `fee_period_id`, `installment_number`, `amount`, `due_date`, `status`, `created_at`) VALUES
+(1, 4, 4, 5, 1, 2000.00, '2025-09-15', 'Pending', '2025-09-01 16:52:44'),
+(2, 4, 4, 5, 2, 2000.00, '2025-09-30', 'Pending', '2025-09-01 16:52:44');
 
 -- --------------------------------------------------------
 
@@ -434,6 +509,29 @@ INSERT INTO `fee_periods` (`id`, `school_id`, `period_name`, `period_type`, `sta
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `fee_refunds`
+--
+
+CREATE TABLE `fee_refunds` (
+  `id` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `slip_id` int(11) NOT NULL,
+  `refund_amount` decimal(10,2) NOT NULL,
+  `refund_reason` text DEFAULT NULL,
+  `refund_date` date NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `fee_refunds`
+--
+
+INSERT INTO `fee_refunds` (`id`, `school_id`, `slip_id`, `refund_amount`, `refund_reason`, `refund_date`, `created_at`) VALUES
+(1, 4, 3, 700.00, 'abcd', '2025-09-01', '2025-09-01 18:30:20');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `fee_slip_details`
 --
 
@@ -457,7 +555,7 @@ CREATE TABLE `fee_slip_details` (
 --
 
 INSERT INTO `fee_slip_details` (`id`, `school_id`, `student_id`, `fee_period_id`, `total_amount`, `scholarship_amount`, `net_payable`, `balance_due`, `payment_status`, `amount_paid`, `payment_date`, `created_at`) VALUES
-(3, 4, 3, 5, 3700.00, 0.00, 3700.00, 0.00, 'PAID', 3700.00, '2025-08-23', '2025-08-23 05:09:09'),
+(3, 4, 3, 5, 3700.00, 0.00, 3700.00, 0.00, 'PAID', 3000.00, '2025-08-23', '2025-08-23 05:09:09'),
 (4, 4, 3, 6, 3700.00, 0.00, 3700.00, 700.00, 'PARTIALLY_PAID', 3000.00, '2025-08-30', '2025-08-30 16:07:18');
 
 -- --------------------------------------------------------
@@ -527,6 +625,13 @@ CREATE TABLE `meeting_announcements` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+--
+-- Dumping data for table `meeting_announcements`
+--
+
+INSERT INTO `meeting_announcements` (`id`, `school_id`, `title`, `meeting_agenda`, `meeting_date`, `meeting_time`, `meeting_person`, `person_id_one`, `meeting_person2`, `person_id_two`, `status`, `created_at`) VALUES
+(2, 4, 'meeting', 'sfsfsffsfas', '2025-09-03', '08:00:00', 'admin', 9, 'admin', 3, 'scheduled', '2025-09-02 10:20:03');
+
 -- --------------------------------------------------------
 
 --
@@ -545,6 +650,13 @@ CREATE TABLE `meeting_requests` (
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `meeting_requests`
+--
+
+INSERT INTO `meeting_requests` (`id`, `school_id`, `requested_by`, `requester_id`, `with_meeting`, `id_meeter`, `title`, `agenda`, `status`, `created_at`) VALUES
+(3, 4, 'teacher', 9, 'parent', 3, 'meeting', 'sfsfsffsfas', 'approved', '2025-09-02 10:06:34');
 
 -- --------------------------------------------------------
 
@@ -565,6 +677,16 @@ CREATE TABLE `messages` (
   `sent_at` datetime DEFAULT current_timestamp(),
   `status` enum('unread','read') DEFAULT 'unread'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`id`, `school_id`, `sender_designation`, `sender_id`, `receiver_designation`, `receiver_id`, `message`, `file_attachment`, `voice_note`, `sent_at`, `status`) VALUES
+(26, 4, 'admin', 4, 'teacher', 9, 'hello', NULL, NULL, '2025-09-02 10:09:18', 'unread'),
+(27, 4, 'admin', 4, 'student', 3, 'hello it is a test', NULL, NULL, '2025-09-02 10:52:37', 'unread'),
+(28, 4, 'admin', 4, 'student', 3, 'hi', NULL, NULL, '2025-09-02 11:49:37', 'unread'),
+(29, 4, 'student', 3, 'teacher', 9, 'how abut the test', NULL, NULL, '2025-09-05 14:42:28', 'unread');
 
 -- --------------------------------------------------------
 
@@ -626,18 +748,36 @@ CREATE TABLE `schools` (
   `password` varchar(255) NOT NULL,
   `verification_code` varchar(10) DEFAULT NULL,
   `is_verified` tinyint(1) NOT NULL DEFAULT 0,
+  `status` enum('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
   `code_expires_at` datetime DEFAULT NULL,
   `verification_attempts` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `subscription_start` date DEFAULT NULL,
+  `subscription_end` date DEFAULT NULL,
+  `num_students` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `schools`
 --
 
-INSERT INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`, `affiliation_board`, `school_email`, `school_phone`, `school_website`, `country`, `state`, `city`, `address`, `logo`, `admin_contact_person`, `admin_email`, `admin_phone`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `created_at`) VALUES
-(4, 'Kurtlar Developer', 'Private', '1215225', 'mardan', 'kurtlar1215225@gmail.com', '03091991002', 'https://kurtlardeveloper.com', 'Pakistan', 'KPK', 'Jehangira', 'jehangira moh awan Swabi', '1755841590_apple-touch-icon.png', 'Shayan Khan', 'school12@gmail.com', '03491916168', '$2y$10$2uqBC9ly54skkEagFhNLh.9RSnOgnNVz/GP1IkuFu8hkWhjtL8R7O', NULL, 1, '2025-08-22 18:31:33', 0, '2025-08-22 05:46:30'),
-(5, 'Raffey school jahengira', 'Private', '003345671889', 'Mardan board', 'abdullahparkour17@gmail.com', '03466294461', 'http://www.epop.pk/portal/oxford-public-school-swabi/5510', 'Pakustan', 'Peshawar', 'Kpk', 'Jahengira swabi', '1755876579_IMG_3192.png', 'Abdullah Raffey', 'abdullahparkour17@gmail.com', '03499545143', '$2y$10$6r/NkrW5AsXTPqTRcqiL4Od2ZMs2PxbuegavxuBTCCAejp9L9UoIa', NULL, 1, '2025-08-22 17:34:39', 0, '2025-08-22 15:29:39');
+INSERT INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`, `affiliation_board`, `school_email`, `school_phone`, `school_website`, `country`, `state`, `city`, `address`, `logo`, `admin_contact_person`, `admin_email`, `admin_phone`, `password`, `verification_code`, `is_verified`, `status`, `code_expires_at`, `verification_attempts`, `created_at`, `subscription_start`, `subscription_end`, `num_students`) VALUES
+(4, 'Kurtlar Developer', 'Private', '1215225', 'mardan', 'kurtlar1215225@gmail.com', '03091991002', 'https://kurtlardeveloper.com', 'Pakistan', 'KPK', 'Jehangira', 'jehangira moh awan Swabi', '1755841590_apple-touch-icon.png', 'Shayan Khan', 'school12@gmail.com', '03491916168', '$2y$10$2uqBC9ly54skkEagFhNLh.9RSnOgnNVz/GP1IkuFu8hkWhjtL8R7O', NULL, 1, 'Approved', '2025-08-22 18:31:33', 0, '2025-08-22 05:46:30', '2025-09-10', '2025-10-10', 0),
+(5, 'Raffey school jahengira', 'Private', '003345671889', 'Mardan board', 'abdullahparkour17@gmail.com', '03466294461', 'http://www.epop.pk/portal/oxford-public-school-swabi/5510', 'Pakustan', 'Peshawar', 'Kpk', 'Jahengira swabi', '1755876579_IMG_3192.png', 'Abdullah Raffey', 'abdullahparkour17@gmail.com', '03499545143', '$2y$10$6r/NkrW5AsXTPqTRcqiL4Od2ZMs2PxbuegavxuBTCCAejp9L9UoIa', NULL, 1, 'Approved', '2025-08-22 17:34:39', 0, '2025-08-22 15:29:39', '2025-09-09', '2025-10-09', 0);
+
+--
+-- Triggers `schools`
+--
+DELIMITER $$
+CREATE TRIGGER `prevent_invalid_approval` BEFORE UPDATE ON `schools` FOR EACH ROW BEGIN
+    -- If someone tries to set status to Approved but subscription_end is expired
+    IF NEW.status = 'Approved' AND NEW.subscription_end <= CURDATE() THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Cannot approve school: subscription expired!';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -647,7 +787,7 @@ INSERT INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`
 
 CREATE TABLE `school_settings` (
   `id` int(11) NOT NULL,
-  `person` enum('admin','facility','student') NOT NULL,
+  `person` enum('app_admin','admin','facility','student') NOT NULL,
   `person_id` int(11) NOT NULL,
   `layout` tinyint(1) NOT NULL COMMENT '1=Light, 2=Dark',
   `sidebar_color` tinyint(1) NOT NULL COMMENT '1=Light Sidebar, 2=Dark Sidebar',
@@ -663,12 +803,13 @@ CREATE TABLE `school_settings` (
 --
 
 INSERT INTO `school_settings` (`id`, `person`, `person_id`, `layout`, `sidebar_color`, `color_theme`, `mini_sidebar`, `sticky_header`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 4, 1, 1, 'white', 0, 0, '2025-08-22 11:17:09', '2025-08-22 16:38:46'),
-(2, 'student', 3, 1, 1, 'white', 0, 0, '2025-08-22 17:13:32', '2025-08-22 17:17:14'),
+(1, 'admin', 4, 1, 1, 'white', 0, 0, '2025-08-22 11:17:09', '2025-09-05 12:34:44'),
+(2, 'student', 3, 1, 1, 'white', 0, 0, '2025-08-22 17:13:32', '2025-09-08 09:30:34'),
 (3, 'admin', 5, 1, 1, 'white', 0, 0, '2025-08-22 17:16:18', '2025-08-22 17:17:17'),
 (6, 'facility', 9, 1, 1, 'white', 0, 0, '2025-08-23 12:08:32', '2025-08-23 15:08:34'),
 (7, 'student', 4, 1, 1, 'white', 0, 0, '2025-08-27 16:38:54', '2025-08-27 16:38:54'),
-(8, 'student', 5, 1, 1, 'white', 0, 0, '2025-08-28 19:08:40', '2025-08-28 19:08:40');
+(8, 'student', 5, 1, 1, 'white', 0, 0, '2025-08-28 19:08:40', '2025-08-28 19:08:40'),
+(9, 'app_admin', 1, 1, 1, 'white', 0, 0, '2025-09-09 11:54:56', '2025-09-09 14:55:10');
 
 -- --------------------------------------------------------
 
@@ -756,18 +897,34 @@ CREATE TABLE `students` (
   `is_verified` tinyint(1) NOT NULL DEFAULT 0,
   `code_expires_at` datetime DEFAULT NULL,
   `verification_attempts` int(11) NOT NULL DEFAULT 0,
-  `status` enum('Active','Inactive','Pending Verification') DEFAULT 'Pending Verification',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `status` enum('Approved','Inactive','Pending') DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `subscription_start` date DEFAULT NULL,
+  `subscription_end` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`id`, `school_id`, `parent_name`, `full_name`, `gender`, `dob`, `cnic_formb`, `class_grade`, `section`, `roll_number`, `address`, `email`, `parent_email`, `phone`, `profile_photo`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `status`, `created_at`) VALUES
-(3, 4, 'Feheem', 'Ferdeen', 'Male', '2020-02-02', '1023343345553', '1', 'A', '1', 'it is a address', 'ferdeen@gmail.com', 'faheem@gmail.com', '03030204102', '1755882812_user-8.png', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, 1, '2025-08-22 19:18:32', 0, '', '2025-08-22 17:13:32'),
-(4, 4, 'Khan', 'sun', 'Male', '2017-09-27', '232423423423423', '1', 'A', '12', 'kjdgkdfhgksd', 'awasjanzab1919@gmail.com', 'abc123@gmil.com', '02813823801', NULL, '$2y$10$iP.kySkNejvxSx7r5rFq8edF21Gg71Vc/hlguQmhcCDoQRCW5Imxi', '748976', 1, '2025-08-27 18:44:49', 0, '', '2025-08-27 16:38:54'),
-(5, 4, 'Farman Ullah', 'khan khan', 'Male', '2005-12-01', '7837493284923', '1', 'A', '19985', 'Peshware', 'jfksdjf@gmail.com', 'jdkflsdasd123@gmail.com', '03023434233', NULL, '$2y$10$bXk2yqpPTdi4XJFtOp6JK.WvY3d4iBT90IW.p4.75TeF1fV/kZ4k6', '962419', 0, '2025-08-28 21:13:40', 0, '', '2025-08-28 19:08:40');
+INSERT INTO `students` (`id`, `school_id`, `parent_name`, `full_name`, `gender`, `dob`, `cnic_formb`, `class_grade`, `section`, `roll_number`, `address`, `email`, `parent_email`, `phone`, `profile_photo`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `status`, `created_at`, `subscription_start`, `subscription_end`) VALUES
+(3, 4, 'Feheem', 'Ferdeen', 'Male', '2020-02-02', '1023343345553', '1', 'A', '1', 'it is a address', 'ferdeen@gmail.com', 'faheem@gmail.com', '03030204102', '1755882812_user-8.png', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, 1, '2025-08-22 19:18:32', 0, 'Pending', '2025-08-22 17:13:32', '2025-09-10', '2025-10-10'),
+(4, 4, 'Khan', 'sun', 'Male', '2017-09-27', '232423423423423', '2', 'A', '12', 'kjdgkdfhgksd', 'awasjanzab1919@gmail.com', 'abc123@gmil.com', '02813823801', NULL, '$2y$10$iP.kySkNejvxSx7r5rFq8edF21Gg71Vc/hlguQmhcCDoQRCW5Imxi', '748976', 1, '2025-08-27 18:44:49', 0, 'Approved', '2025-08-27 16:38:54', '2025-09-10', '2025-10-10'),
+(5, 4, 'Farman Ullah', 'khan khan', 'Male', '2005-12-01', '7837493284923', '1', 'A', '19985', 'Peshware', 'jfksdjf@gmail.com', 'jdkflsdasd123@gmail.com', '03023434233', NULL, '$2y$10$bXk2yqpPTdi4XJFtOp6JK.WvY3d4iBT90IW.p4.75TeF1fV/kZ4k6', '962419', 0, '2025-08-28 21:13:40', 0, 'Pending', '2025-08-28 19:08:40', '2025-09-10', '2025-10-10');
+
+--
+-- Triggers `students`
+--
+DELIMITER $$
+CREATE TRIGGER `prevent_invalid_student_approval` BEFORE UPDATE ON `students` FOR EACH ROW BEGIN
+    -- If someone tries to approve an expired subscription
+    IF NEW.status = 'Approved' AND NEW.subscription_end <= CURDATE() THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Cannot approve student: subscription expired!';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -795,7 +952,9 @@ INSERT INTO `student_attendance` (`id`, `school_id`, `teacher_id`, `class_meta_i
 (4, 4, 9, 6, 3, 'Present', '2025-08-23', '2025-08-24 19:20:30'),
 (5, 4, 9, 6, 3, 'Present', '2025-08-21', '2025-08-24 19:21:50'),
 (6, 4, 9, 6, 3, 'Absent', '2025-07-21', '2025-08-24 19:22:45'),
-(7, 4, 9, 6, 3, 'Absent', '2025-01-21', '2025-08-24 19:23:11');
+(7, 4, 9, 6, 3, 'Absent', '2025-01-21', '2025-08-24 19:23:11'),
+(8, 4, 9, 6, 3, 'Present', '2025-09-05', '2025-09-05 17:41:25'),
+(9, 4, 9, 6, 5, 'Present', '2025-09-05', '2025-09-05 17:41:25');
 
 -- --------------------------------------------------------
 
@@ -833,6 +992,58 @@ CREATE TABLE `student_leaves` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_payment_plans`
+--
+
+CREATE TABLE `student_payment_plans` (
+  `id` int(11) NOT NULL,
+  `plan_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `duration_days` int(11) NOT NULL,
+  `status` enum('Active','Inactive') DEFAULT 'Active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `student_payment_plans`
+--
+
+INSERT INTO `student_payment_plans` (`id`, `plan_name`, `description`, `price`, `duration_days`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Gold', 'Access to basic features\nStandard support\nLimited usage', 10.00, 30, 'Active', '2025-09-04 15:48:55', '2025-09-04 15:48:55'),
+(2, 'Premium', 'Everything in Free\nFaster support\nAdvanced tools\nMonthly reports', 19.00, 90, 'Active', '2025-09-04 15:48:55', '2025-09-04 15:48:55'),
+(3, 'Ultimate', 'Everything in Premium\nDedicated support\nUnlimited access\nAdvanced analytics\nCustom reports', 200.00, 360, 'Active', '2025-09-04 15:48:55', '2025-09-04 15:48:55');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_plan_orders`
+--
+
+CREATE TABLE `student_plan_orders` (
+  `id` int(11) NOT NULL,
+  `plan_id` int(11) NOT NULL,
+  `school_id` int(11) NOT NULL,
+  `num_students` int(11) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `status` varchar(20) DEFAULT 'Pending',
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `student_plan_orders`
+--
+
+INSERT INTO `student_plan_orders` (`id`, `plan_id`, `school_id`, `num_students`, `total_price`, `status`, `transaction_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 5, 20, 200.00, 'Paid', NULL, '2025-09-10 01:15:03', '2025-09-10 01:15:03'),
+(2, 1, 4, 20, 200.00, 'Paid', NULL, '2025-09-10 01:30:49', '2025-09-10 01:30:49');
 
 -- --------------------------------------------------------
 
@@ -890,7 +1101,8 @@ CREATE TABLE `teacher_assignments` (
 INSERT INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `class_meta_id`, `subject`, `type`, `title`, `description`, `due_date`, `total_marks`, `attachment`, `created_at`, `updated_at`) VALUES
 (2, 4, 9, 6, 'english', 'Assignment', 'abc', 'it is description', '2025-08-26', 100, 'assignment_1755970254.', '2025-08-23 22:30:54', '2025-08-24 10:24:58'),
 (3, 4, 9, 6, 'math', 'Test', 'titel', 'abc (../uploads/assignment/assignment_1755970254.', '2025-08-25', 100, 'assignment_1755970490.jpg', '2025-08-23 22:34:50', NULL),
-(4, 4, 9, 6, 'english', 'Test', 'titel', 'ksdfjsdkf', '2025-08-29', 80, 'assignment_1756012434.png', '2025-08-24 10:13:54', NULL);
+(4, 4, 9, 6, 'english', 'Test', 'titel', 'ksdfjsdkf', '2025-08-29', 80, 'assignment_1756012434.png', '2025-08-24 10:13:54', NULL),
+(5, 4, 9, 6, 'english', 'Test', 'titel', 'sdfsdfanj djsjf', '2025-09-09', 100, NULL, '2025-09-08 21:47:08', NULL);
 
 --
 -- Indexes for dumped tables
@@ -901,6 +1113,13 @@ INSERT INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `class_meta_
 --
 ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `app_admin`
+--
+ALTER TABLE `app_admin`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indexes for table `class_fee_types`
@@ -993,6 +1212,12 @@ ALTER TABLE `faculty_leaves`
   ADD KEY `school_id` (`school_id`);
 
 --
+-- Indexes for table `fee_installments`
+--
+ALTER TABLE `fee_installments`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `fee_payments`
 --
 ALTER TABLE `fee_payments`
@@ -1006,6 +1231,13 @@ ALTER TABLE `fee_payments`
 ALTER TABLE `fee_periods`
   ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`);
+
+--
+-- Indexes for table `fee_refunds`
+--
+ALTER TABLE `fee_refunds`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `slip_id` (`slip_id`);
 
 --
 -- Indexes for table `fee_slip_details`
@@ -1130,6 +1362,18 @@ ALTER TABLE `student_leaves`
   ADD KEY `fk_teacher` (`teacher_id`);
 
 --
+-- Indexes for table `student_payment_plans`
+--
+ALTER TABLE `student_payment_plans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `student_plan_orders`
+--
+ALTER TABLE `student_plan_orders`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `student_results`
 --
 ALTER TABLE `student_results`
@@ -1151,6 +1395,12 @@ ALTER TABLE `teacher_assignments`
 --
 ALTER TABLE `activity_logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `app_admin`
+--
+ALTER TABLE `app_admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `class_fee_types`
@@ -1231,6 +1481,12 @@ ALTER TABLE `faculty_leaves`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `fee_installments`
+--
+ALTER TABLE `fee_installments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `fee_payments`
 --
 ALTER TABLE `fee_payments`
@@ -1241,6 +1497,12 @@ ALTER TABLE `fee_payments`
 --
 ALTER TABLE `fee_periods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `fee_refunds`
+--
+ALTER TABLE `fee_refunds`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `fee_slip_details`
@@ -1264,19 +1526,19 @@ ALTER TABLE `fee_types`
 -- AUTO_INCREMENT for table `meeting_announcements`
 --
 ALTER TABLE `meeting_announcements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `meeting_requests`
 --
 ALTER TABLE `meeting_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -1300,7 +1562,7 @@ ALTER TABLE `schools`
 -- AUTO_INCREMENT for table `school_settings`
 --
 ALTER TABLE `school_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `school_tasks`
@@ -1330,7 +1592,7 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `student_attendance`
 --
 ALTER TABLE `student_attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `student_fee_plans`
@@ -1345,6 +1607,18 @@ ALTER TABLE `student_leaves`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `student_payment_plans`
+--
+ALTER TABLE `student_payment_plans`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `student_plan_orders`
+--
+ALTER TABLE `student_plan_orders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `student_results`
 --
 ALTER TABLE `student_results`
@@ -1354,7 +1628,7 @@ ALTER TABLE `student_results`
 -- AUTO_INCREMENT for table `teacher_assignments`
 --
 ALTER TABLE `teacher_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
@@ -1419,6 +1693,12 @@ ALTER TABLE `fee_payments`
 --
 ALTER TABLE `fee_periods`
   ADD CONSTRAINT `fee_periods_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `fee_refunds`
+--
+ALTER TABLE `fee_refunds`
+  ADD CONSTRAINT `fee_refunds_ibfk_1` FOREIGN KEY (`slip_id`) REFERENCES `fee_slip_details` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `fee_slip_details`
@@ -1491,6 +1771,27 @@ ALTER TABLE `student_leaves`
   ADD CONSTRAINT `fk_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE;
+
+DELIMITER $$
+--
+-- Events
+--
+CREATE DEFINER=`root`@`localhost` EVENT `update_school_status` ON SCHEDULE EVERY 1 DAY STARTS '2025-09-10 00:55:50' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE schools
+    SET status = 'Pending'
+    WHERE subscription_end IS NOT NULL
+      AND subscription_end < CURDATE()$$
+
+CREATE DEFINER=`root`@`localhost` EVENT `update_student_status` ON SCHEDULE EVERY 1 DAY STARTS '2025-09-10 01:03:19' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE students
+    SET status = 'Pending'
+    WHERE subscription_end IS NOT NULL
+      AND subscription_end < CURDATE()$$
+
+CREATE DEFINER=`root`@`localhost` EVENT `update_faculty_status` ON SCHEDULE EVERY 1 DAY STARTS '2025-09-10 01:07:13' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE faculty
+    SET status = 'Pending'
+    WHERE subscription_end IS NOT NULL
+      AND subscription_end < CURDATE()$$
+
+DELIMITER ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
