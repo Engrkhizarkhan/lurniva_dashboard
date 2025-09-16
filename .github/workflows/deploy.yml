@@ -14,9 +14,10 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: LurnivaVM
           key: ${{ secrets.VM_KEY }}
-          script: | # mysql -u lurnivauser -p lurnivaDB < /var/www/lurniva_dashboard/sql/new_tables.sql >> This is the script to add database table using Ci/CD 
+          script: | # mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql >> This is the script to add database table using Ci/CD
             script: |
             cd /var/www/lurniva_dashboard
+            sudo chown -R LurnivaVM:LurnivaVM /var/www/lurniva_dashboard
             git fetch origin main
             git reset --hard origin/main
             sudo chown -R www-data:www-data /var/www/lurniva_dashboard
