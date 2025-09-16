@@ -1,4 +1,10 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', 'php_errors.log');
+
 session_start();
 require_once 'admin/sass/db_config.php';
 
@@ -16,34 +22,56 @@ function createDefaultSettings($conn, $person, $person_id) {
 
 /**
  * Validate username: must be exactly 8 alphabetic characters
+ * Currently not used since username is not in database schema
  */
 function validateUsername($username) {
     return preg_match("/^[A-Za-z]{8}$/", $username);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // Validate CSRF token (if implemented)
+        // Validate required fields exist
+        if (!isset($_POST['form_type'])) {
+            throw new Exception("Form type not specified");
+        }
 
     // ===== SCHOOL FORM =====
     if (isset($_POST['form_type']) && $_POST['form_type'] === 'school') {
-        $username = trim($_POST['username']);
-        if (!validateUsername($username)) {
-            die("❌ Username must be exactly 8 alphabetic characters (A-Z only).");
+        // Validate and sanitize inputs
+        $required_fields = ['school_name', 'school_type', 'registration_number', 
+                           'affiliation_board', 'school_email', 'school_phone', 'country', 
+                           'state', 'city', 'address', 'admin_contact_person', 'admin_email', 
+                           'admin_phone', 'password'];
+        
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                throw new Exception("Required field missing: $field");
+            }
         }
 
-        $school_name = $_POST['school_name'];
-        $school_type = $_POST['school_type'];
-        $registration_number = $_POST['registration_number'];
-        $affiliation_board = $_POST['affiliation_board'];
-        $school_email = $_POST['school_email'];
-        $school_phone = $_POST['school_phone'];
-        $school_website = $_POST['school_website'];
-        $country = $_POST['country'];
-        $state = $_POST['state'];
-        $city = $_POST['city'];
-        $address = $_POST['address'];
-        $admin_contact_person = $_POST['admin_contact_person'];
-        $admin_email = $_POST['admin_email'];
-        $admin_phone = $_POST['admin_phone'];
+        $school_name = trim($_POST['school_name']);
+        $school_type = trim($_POST['school_type']);
+        $registration_number = trim($_POST['registration_number']);
+        $affiliation_board = trim($_POST['affiliation_board']);
+        $school_email = trim($_POST['school_email']);
+        $school_phone = trim($_POST['school_phone']);
+        $school_website = trim($_POST['school_website']);
+        $country = trim($_POST['country']);
+        $state = trim($_POST['state']);
+        $city = trim($_POST['city']);
+        $address = trim($_POST['address']);
+        $admin_contact_person = trim($_POST['admin_contact_person']);
+        $admin_email = trim($_POST['admin_email']);
+        $admin_phone = trim($_POST['admin_phone']);
+        
+        // Validate email formats
+        if (!filter_var($school_email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Invalid school email format");
+        }
+        if (!filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Invalid admin email format");
+        }
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         // Verification
@@ -52,25 +80,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
         $verification_attempts = 0;
 
-        // Logo upload
+        // Logo upload with validation
         $logo_name = null;
         if (!empty($_FILES['logo']['name'])) {
+            // Validate file type
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $file_type = $_FILES['logo']['type'];
+            $file_size = $_FILES['logo']['size'];
+            $max_size = 5 * 1024 * 1024; // 5MB
+            
+            if (!in_array($file_type, $allowed_types)) {
+                throw new Exception("Invalid logo file type. Only JPG, PNG, and GIF are allowed.");
+            }
+            
+            if ($file_size > $max_size) {
+                throw new Exception("Logo file size too large. Maximum 5MB allowed.");
+            }
+            
+            if ($_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception("Logo upload failed with error code: " . $_FILES['logo']['error']);
+            }
+            
             $logo_name = time() . "_" . basename($_FILES['logo']['name']);
             $logo_path = "admin/uploads/logos/";
             if (!is_dir($logo_path)) mkdir($logo_path, 0777, true);
-            move_uploaded_file($_FILES['logo']['tmp_name'], $logo_path . $logo_name);
+            
+            if (!move_uploaded_file($_FILES['logo']['tmp_name'], $logo_path . $logo_name)) {
+                throw new Exception("Failed to save logo file");
+            }
         }
 
         $stmt = $conn->prepare("INSERT INTO schools 
             (school_name, school_type, registration_number, affiliation_board,
              school_email, school_phone, school_website, country, state, city, address,
-             logo, admin_contact_person, username, admin_email, admin_phone, password,
+             logo, admin_contact_person, admin_email, admin_phone, password,
              verification_code, is_verified, code_expires_at, verification_attempts)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) die("Prepare failed: " . $conn->error);
 
         $stmt->bind_param(
-            "sssssssssssssssssiisi",
+            "ssssssssssssssssisi",
             $school_name,
             $school_type,
             $registration_number,
@@ -84,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $address,
             $logo_name,
             $admin_contact_person,
-            $username,
             $admin_email,
             $admin_phone,
             $password,
@@ -121,24 +169,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ===== STUDENT FORM =====
     if (isset($_POST['form_type']) && $_POST['form_type'] === 'student') {
-        $username = trim($_POST['username']);
-        if (!validateUsername($username)) {
-            die("❌ Username must be exactly 8 alphabetic characters (A-Z only).");
+        // Validate required fields
+        $required_fields = ['school_id', 'parent_name', 'full_name', 
+                           'gender', 'dob', 'cnic_formb', 'class_grade', 'section', 'roll_number', 
+                           'address', 'email', 'phone', 'password'];
+        
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                throw new Exception("Required field missing: $field");
+            }
         }
 
         $school_id = intval($_POST['school_id']);
-        $parent_name = $_POST['parent_name'];
-        $parent_cnic = $_POST['parent_cnic'];
-        $full_name = $_POST['full_name'];
-        $gender = $_POST['gender'];
-        $dob = $_POST['dob'];
-        $cnic_formb = $_POST['cnic_formb'];
-        $class_grade = $_POST['class_grade'];
-        $section = $_POST['section'];
-        $roll_number = $_POST['roll_number'];
-        $address = $_POST['address'];
-        $email = $_POST['email'];
-        $phone = $_POST['phone'];
+        $parent_name = trim($_POST['parent_name']);
+        $full_name = trim($_POST['full_name']);
+        $gender = trim($_POST['gender']);
+        $dob = trim($_POST['dob']);
+        $cnic_formb = trim($_POST['cnic_formb']);
+        $class_grade = trim($_POST['class_grade']);
+        $section = trim($_POST['section']);
+        $roll_number = trim($_POST['roll_number']);
+        $address = trim($_POST['address']);
+        $email = trim($_POST['email']);
+        $phone = trim($_POST['phone']);
+        
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Invalid email format");
+        }
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         // Verification
@@ -148,32 +206,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verification_attempts = 0;
         $status = "pending";
 
-        // Profile upload
+        // Profile upload with validation
         $profile_name = null;
         if (!empty($_FILES['profile_photo']['name'])) {
+            // Validate file type
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $file_type = $_FILES['profile_photo']['type'];
+            $file_size = $_FILES['profile_photo']['size'];
+            $max_size = 5 * 1024 * 1024; // 5MB
+            
+            if (!in_array($file_type, $allowed_types)) {
+                throw new Exception("Invalid profile photo file type. Only JPG, PNG, and GIF are allowed.");
+            }
+            
+            if ($file_size > $max_size) {
+                throw new Exception("Profile photo file size too large. Maximum 5MB allowed.");
+            }
+            
+            if ($_FILES['profile_photo']['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception("Profile photo upload failed with error code: " . $_FILES['profile_photo']['error']);
+            }
+            
             $profile_name = time() . "_" . basename($_FILES['profile_photo']['name']);
             $adminPath = "admin/uploads/profile/";
             if (!is_dir($adminPath)) mkdir($adminPath, 0777, true);
-            move_uploaded_file($_FILES['profile_photo']['tmp_name'], $adminPath . $profile_name);
+            
+            if (!move_uploaded_file($_FILES['profile_photo']['tmp_name'], $adminPath . $profile_name)) {
+                throw new Exception("Failed to save profile photo");
+            }
+            
+            // Copy to student directory
             $schoolPath = "student/uploads/profile/";
             if (!is_dir($schoolPath)) mkdir($schoolPath, 0777, true);
             copy($adminPath . $profile_name, $schoolPath . $profile_name);
         }
 
         $stmt = $conn->prepare("INSERT INTO students 
-            (school_id, parent_name, parent_cnic, full_name, username, gender, dob, cnic_formb,
+            (school_id, parent_name, full_name, gender, dob, cnic_formb,
              class_grade, section, roll_number, address, email, phone, profile_photo,
              password, status, verification_code, is_verified, code_expires_at, verification_attempts)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) die("Prepare failed: " . $conn->error);
 
         $stmt->bind_param(
-            "issssssssssssssssisi",
+            "issssssssssssssissi",
             $school_id,
             $parent_name,
-            $parent_cnic,
             $full_name,
-            $username,
             $gender,
             $dob,
             $cnic_formb,
@@ -219,71 +298,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ===== PARENT FORM =====
     if (isset($_POST['form_type']) && $_POST['form_type'] === 'parent') {
-        $full_name = $_POST['full_name'];
-        $parent_cnic = $_POST['parent_cnic'];
-        $email = $_POST['email'];
-        $phone = $_POST['phone'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-        // Verification
-        $verification_code = rand(100000, 999999);
-        $is_verified = 0;
-        $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-        $verification_attempts = 0;
-        $status = "pending";
-
-        // Profile upload
-        $profile_name = null;
-        if (!empty($_FILES['profile_photo']['name'])) {
-            $profile_name = time() . "_" . basename($_FILES['profile_photo']['name']);
-            $parentPath = "uploads/profile/";
-            $adminPath = "admin/uploads/profile/";
-            if (!is_dir($parentPath)) mkdir($parentPath, 0777, true);
-            move_uploaded_file($_FILES['profile_photo']['tmp_name'], $parentPath . $profile_name);
-            move_uploaded_file($_FILES['profile_photo']['tmp_name'], $adminPath . $profile_name);
-        }
-
-        $stmt = $conn->prepare("INSERT INTO parents 
-            (full_name, parent_cnic, email, phone, profile_photo,
-             password, status, verification_code, is_verified, code_expires_at, verification_attempts)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        if (!$stmt) die("Prepare failed: " . $conn->error);
-
-        $stmt->bind_param(
-            "sssssssissi",
-            $full_name,
-            $parent_cnic,
-            $email,
-            $phone,
-            $profile_name,
-            $password,
-            $status,
-            $verification_code,
-            $is_verified,
-            $code_expires_at,
-            $verification_attempts
-        );
-
-        if ($stmt->execute()) {
-            // 🚫 Do NOT insert settings for parents
-
-            // Send verification email
-            $to = $email;
-            $subject = "Parent Account Verification";
-            $message = "Hello $full_name,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-            $headers = "From: noreply@yourdomain.com";
-
-            if (mail($to, $subject, $message, $headers)) {
-                $_SESSION['pending_email'] = $email;
-                $_SESSION['user_type'] = 'parent';
-                header("Location: verify.php");
-                exit;
-            } else {
-                echo "❌ Email sending failed!";
-            }
-        } else {
-            die("Execute failed: " . $stmt->error);
-        }
+        // Parents table doesn't exist in current database schema
+        throw new Exception("Parent registration is currently not available. Please contact administrator.");
+    }
+    
+    } catch (Exception $e) {
+        error_log("Registration error: " . $e->getMessage());
+        echo "❌ Registration failed: " . $e->getMessage();
+        exit;
     }
 }
 ?>
@@ -319,9 +341,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link" id="parent-tab" data-bs-toggle="pill" data-bs-target="#parent"
-            type="button" role="tab" aria-controls="parent" aria-selected="false">
-            Parent Registration
+        <button class="nav-link disabled" id="parent-tab" data-bs-toggle="pill" data-bs-target="#parent"
+            type="button" role="tab" aria-controls="parent" aria-selected="false" disabled>
+            Parent Registration (Coming Soon)
         </button>
     </li>
 </ul>
@@ -337,13 +359,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label class="form-label">School Name</label>
                         <input type="text" class="form-control" name="school_name" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Username (8 alphabets only)</label>
-                        <input type="text" class="form-control" name="username"
-                            pattern="[A-Za-z]{8}" maxlength="8" minlength="8" required>
-                        <small class="text-muted">Exactly 8 letters, no numbers/symbols.</small>
                     </div>
 
                     <div class="mb-3">
@@ -466,13 +481,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Username (8 alphabets only)</label>
-                        <input type="text" class="form-control" name="username"
-                            pattern="[A-Za-z]{8}" maxlength="8" minlength="8" required>
-                        <small class="text-muted">Exactly 8 letters, no numbers/symbols.</small>
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label">Gender</label>
                         <select class="form-select" name="gender" required>
                             <option value="">-- Select --</option>
@@ -547,47 +555,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- ================== Parent Form ================== -->
     <div class="tab-pane fade" id="parent" role="tabpanel" aria-labelledby="parent-tab">
         <div class="card shadow-sm rounded-4 mb-4">
-            <div class="card-body">
-                <form id="parentForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="form_type" value="parent">
-
-                    <div class="mb-3">
-                        <label class="form-label">Parent Full Name</label>
-                        <input type="text" class="form-control" name="full_name" required>
-                    </div>
-
-                    <div class="mb-3">
-    <label class="form-label">Parent CNIC</label>
-    <input type="text" class="form-control" name="parent_cnic"
-        pattern="[0-9]{12,15}" minlength="12" maxlength="15" required>
-    <small class="text-muted">Enter CNIC between 12 and 15 digits without dashes.</small>
-</div>
-
-
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="phone" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Profile Photo (Optional)</label>
-                        <input type="file" class="form-control" name="profile_photo" accept="image/*">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" required>
-                    </div>
-
-                    <div class="text-center mt-3">
-                        <button type="submit" class="btn btn-primary w-50">Register Parent</button>
-                    </div>
-                </form>
+            <div class="card-body text-center">
+                <div class="alert alert-info">
+                    <h4>Parent Registration Coming Soon</h4>
+                    <p>Parent registration functionality is currently under development. Please contact the administrator for assistance.</p>
+                    <p><strong>For now, please use School or Student registration.</strong></p>
+                </div>
             </div>
         </div>
     </div>

@@ -1,3 +1,6 @@
+
+                    # ./deploy_migrations.sh
+                    # mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql >> This is the script to add database table using Ci/CD
 name: Deploy to Lurniva VM
 
 on:
@@ -14,10 +17,36 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: LurnivaVM
           key: ${{ secrets.VM_KEY }}
-          forward_agent: true
-                    # ./deploy_migrations.sh
-                    # mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql >> This is the script to add database table using Ci/CD
           script: |
+            cd /var/www/lurniva_dashboard
+
+            # 1. Make sure LurnivaVM owns the repo so Git can run
+            sudo chown -R LurnivaVM:LurnivaVM /var/www/lurniva_dashboard
+
+            # 2. Allow Git in this directory
+            git config --global --add safe.directory /var/www/lurniva_dashboard
+
+            # 3. Start SSH agent and add GitHub deploy key
+            eval $(ssh-agent -s)
+            echo "${{ secrets.VM_PRIVATE_KEY }}" > ~/.ssh/id_ed25519_github
+            chmod 600 ~/.ssh/id_ed25519_github
+            ssh-add ~/.ssh/id_ed25519_github
+
+            # 4. Pull latest code from GitHub
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+
+            # 5. Set ownership for the web server
+            sudo chown -R www-data:www-data /var/www/lurniva_dashboard
+
+            # 6. Reload PHP and Nginx services
+            sudo systemctl restart php8.3-fpm
+            sudo systemctl reload nginx
+
+            # 7. Confirm deployment
+            echo "Deployment to Lurniva VM completed successfully."
+
                 cd /var/www/lurniva_dashboard
 
                 # 1. Make sure LurnivaVM owns the repo so Git can run
@@ -25,6 +54,18 @@ jobs:
 
                 # 2. Allow Git in this directory
                 git config --global --add safe.directory /var/www/lurniva_dashboard
+
+                # Start SSH agent and add the deploy key
+                eval $(ssh-agent -s)
+                echo "${{ secrets.VM_PRIVATE_KEY }}" > ~/.ssh/id_ed25519_github
+                chmod 600 ~/.ssh/id_ed25519_github
+                ssh-add ~/.ssh/id_ed25519_github
+
+                # Now Git can fetch from GitHub
+                git fetch origin main
+                git reset --hard origin/main
+                git clean -fd
+
 
                 # 3. Force update the code from GitHub
                 git fetch origin main
