@@ -14,6 +14,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: LurnivaVM
           key: ${{ secrets.VM_KEY }}
+          forward_agent: true
                     # ./deploy_migrations.sh
                     # mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql >> This is the script to add database table using Ci/CD
           script: |
