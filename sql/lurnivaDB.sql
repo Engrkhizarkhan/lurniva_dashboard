@@ -1,3 +1,71 @@
+-- The db should be update as 
+-- -- ===========================
+-- -- Tables: Existing + New
+-- -- ===========================
+
+-- -- Users table
+-- CREATE TABLE IF NOT EXISTS users (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     name VARCHAR(50),
+--     email VARCHAR(100) UNIQUE
+-- );
+
+-- -- Activity Logs table
+-- CREATE TABLE IF NOT EXISTS activity_logs (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT,
+--     action VARCHAR(100),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Orders table (new)
+-- CREATE TABLE IF NOT EXISTS orders (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT,
+--     product VARCHAR(100),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Payments table (new)
+-- CREATE TABLE IF NOT EXISTS payments (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     order_id INT,
+--     amount DECIMAL(10,2),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- ===========================
+-- -- Add new columns if needed
+-- -- ===========================
+
+-- -- Add phone to users if not exists (MySQL 8+)
+-- ALTER TABLE users 
+-- ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+
+-- -- Add status to orders if not exists
+-- ALTER TABLE orders 
+-- ADD COLUMN IF NOT EXISTS status VARCHAR(50);
+
+-- CREATE TABLE IF NOT EXISTS
+
+-- Prevents errors if the table already exists.
+
+-- Only new tables are created.
+
+-- ALTER TABLE ... ADD COLUMN IF NOT EXISTS
+
+-- Adds new columns safely without touching old columns or data.
+
+-- No DROP TABLE statements
+
+-- Your existing data is fully preserved.
+
+-- You can run this file multiple times
+
+-- Existing tables and columns are untouched.
+
+-- Only missing tables/columns are added.
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -5,7 +73,7 @@
 -- Host: 127.0.0.1
 -- Generation Time: Sep 10, 2025 at 10:08 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.2.12 
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
