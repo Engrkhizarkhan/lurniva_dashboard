@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `app_admin` (
 -- Dumping data for table `app_admin`
 --
 
-INSERT INTO `app_admin` (`id`, `username`, `email`, `password`, `full_name`, `phone`, `profile_image`, `message_email`, `merchant_id`, `store_id`, `secret_key`, `role`, `status`, `created_at`, `updated_at`, `verification_code`, `code_expires_at`) VALUES
+INSERT IGNORE INTO `app_admin` (`id`, `username`, `email`, `password`, `full_name`, `phone`, `profile_image`, `message_email`, `merchant_id`, `store_id`, `secret_key`, `role`, `status`, `created_at`, `updated_at`, `verification_code`, `code_expires_at`) VALUES
 (1, 'usman', 'admin@lurniva.com', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, NULL, NULL, 'shayans1215225@gmail.com', NULL, NULL, NULL, 'super_admin', 'active', '2025-09-09 14:08:19', '2025-09-09 14:57:56', '845371', '2025-09-09 17:02:56');
 
 -- --------------------------------------------------------
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `class_fee_types` (
 -- Dumping data for table `class_fee_types`
 --
 
-INSERT INTO `class_fee_types` (`id`, `fee_structure_id`, `school_id`, `class_grade`, `fee_type_id`, `rate`) VALUES
+INSERT IGNORE INTO `class_fee_types` (`id`, `fee_structure_id`, `school_id`, `class_grade`, `fee_type_id`, `rate`) VALUES
 (13, 5, 4, '1', 11, 2000.00),
 (14, 5, 4, '1', 12, 200.00),
 (15, 5, 4, '1', 13, 1500.00);
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_details` (
 -- Dumping data for table `class_timetable_details`
 --
 
-INSERT INTO `class_timetable_details` (`id`, `timing_meta_id`, `period_number`, `period_name`, `start_time`, `end_time`, `created_at`, `teacher_id`, `is_break`, `period_type`, `created_by`) VALUES
+INSERT IGNORE INTO `class_timetable_details` (`id`, `timing_meta_id`, `period_number`, `period_name`, `start_time`, `end_time`, `created_at`, `teacher_id`, `is_break`, `period_type`, `created_by`) VALUES
 (3, 6, 1, 'islamyat', '08:00:00', '08:30:00', '0000-00-00 00:00:00', 9, 0, 'Normal', 4),
 (4, 6, 2, 'urdu', '08:30:00', '09:00:00', '0000-00-00 00:00:00', 9, 0, 'Normal', 4),
 (5, 6, 3, 'english', '09:00:00', '09:30:00', '0000-00-00 00:00:00', 9, 0, 'Normal', 4),
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
 -- Dumping data for table `class_timetable_meta`
 --
 
-INSERT INTO `class_timetable_meta` (`id`, `school_id`, `timing_table_id`, `class_name`, `section`, `total_periods`, `created_at`, `is_finalized`, `created_by`) VALUES
+INSERT IGNORE INTO `class_timetable_meta` (`id`, `school_id`, `timing_table_id`, `class_name`, `section`, `total_periods`, `created_at`, `is_finalized`, `created_by`) VALUES
 (6, 4, 1, '1', 'A', 8, '2025-08-22 12:10:09', 1, 4),
 (7, 4, 1, '2', 'A', 8, '2025-08-22 12:10:09', 1, 4),
 (8, 5, 3, '5', 'B', 5, '2025-08-22 16:27:03', 1, 5),
@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_weekdays` (
 -- Dumping data for table `class_timetable_weekdays`
 --
 
-INSERT INTO `class_timetable_weekdays` (`id`, `school_id`, `weekday`, `assembly_time`, `leave_time`, `total_periods`, `is_half_day`, `created_at`) VALUES
+INSERT IGNORE INTO `class_timetable_weekdays` (`id`, `school_id`, `weekday`, `assembly_time`, `leave_time`, `total_periods`, `is_half_day`, `created_at`) VALUES
 (2, 4, 'Friday', '08:00:00', '11:00:00', 5, 1, '2025-08-22 12:10:09'),
 (3, 4, 'Friday', '08:00:00', '11:00:00', 5, 1, '2025-08-22 12:10:09'),
 (4, 5, 'Saturday', '07:10:00', '10:22:00', 4, 1, '2025-08-22 16:27:03');
@@ -344,7 +344,7 @@ CREATE TABLE IF NOT EXISTS `exams` (
 -- Dumping data for table `exams`
 --
 
-INSERT INTO `exams` (`id`, `school_id`, `exam_name`, `total_marks`, `created_at`) VALUES
+INSERT IGNORE INTO `exams` (`id`, `school_id`, `exam_name`, `total_marks`, `created_at`) VALUES
 (1, 4, 'Unit test 1', 600, '2025-08-25 15:53:19');
 
 -- --------------------------------------------------------
@@ -370,7 +370,7 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
 -- Dumping data for table `exam_results`
 --
 
-INSERT INTO `exam_results` (`id`, `school_id`, `exam_schedule_id`, `student_id`, `subject_id`, `total_marks`, `marks_obtained`, `remarks`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `exam_results` (`id`, `school_id`, `exam_schedule_id`, `student_id`, `subject_id`, `total_marks`, `marks_obtained`, `remarks`, `created_at`, `updated_at`) VALUES
 (1, 4, 1, 3, 3, 0, 67, 'abc', '2025-08-26 16:11:02', '2025-08-26 16:11:02'),
 (2, 4, 2, 3, 4, 0, 98, 'abc', '2025-08-26 16:11:02', '2025-08-26 16:11:02'),
 (3, 4, 3, 3, 5, 0, 76, 'bsdf', '2025-08-26 16:11:02', '2025-08-26 16:11:02'),
@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `exam_schedule` (
 -- Dumping data for table `exam_schedule`
 --
 
-INSERT INTO `exam_schedule` (`id`, `school_id`, `exam_name`, `class_name`, `subject_id`, `total_marks`, `exam_date`, `exam_time`, `day`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `exam_schedule` (`id`, `school_id`, `exam_name`, `class_name`, `subject_id`, `total_marks`, `exam_date`, `exam_time`, `day`, `created_at`, `updated_at`) VALUES
 (1, 4, '1', '1', 3, 100, '2025-08-25', '10:00:00', 'Monday', '2025-08-25 18:53:38', '2025-08-25 18:53:38'),
 (2, 4, '1', '1', 4, 100, '2025-08-26', '10:00:00', 'Tuesday', '2025-08-25 18:53:38', '2025-08-25 18:53:38'),
 (3, 4, '1', '1', 5, 100, '2025-08-27', '10:00:00', 'Wednesday', '2025-08-25 18:53:38', '2025-08-25 18:53:38'),
@@ -446,7 +446,7 @@ CREATE TABLE IF NOT EXISTS `faculty` (
 -- Dumping data for table `faculty`
 --
 
-INSERT INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualification`, `subjects`, `email`, `password`, `phone`, `address`, `joining_date`, `employment_type`, `schedule_preference`, `photo`, `created_at`, `status`, `rating`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `subscription_start`, `subscription_end`) VALUES
+INSERT IGNORE INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualification`, `subjects`, `email`, `password`, `phone`, `address`, `joining_date`, `employment_type`, `schedule_preference`, `photo`, `created_at`, `status`, `rating`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `subscription_start`, `subscription_end`) VALUES
 (9, 4, 'Shayan Khan', '3740587639645', 'BS SE', 'CSIT', 'shayanm1215225@gmail.com', '$2y$10$x4e587EPTl3QXIRpr8KHW.B/7JJXK6QMDdzSX5JjBDCfB1hD6pDsG', '03091991002', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872433_Untitled.jpg', '2025-08-22 14:20:33', 'Approved', NULL, NULL, 1, NULL, 0, '2025-09-10', '2025-10-10'),
 (10, 4, 'Sana Khan', '3740587946212', 'FSc', 'Math, physic', 'shayans1215225@gmai.com', '$2y$10$f4tVQ2Y3ekH6p3GvXg0vZeMwjpQEhbAEuBvFz0adbm3lMmtCf0lce', '03491916168', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872508_dme.jpg', '2025-08-22 14:21:48', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-10', '2025-10-10'),
 (11, 5, 'Ikhtisham wahabi', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$XGVmzjJQLumJxbMhkO827Oe2/hwkMtcGRpmC3h1d529slA1zyZ6pi', '03414738901', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '1755880919_IMG_3698.jpeg', '2025-08-22 16:41:59', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-09', '2025-10-09'),
@@ -527,7 +527,7 @@ CREATE TABLE IF NOT EXISTS `fee_installments` (
 -- Dumping data for table `fee_installments`
 --
 
-INSERT INTO `fee_installments` (`id`, `school_id`, `student_id`, `fee_period_id`, `installment_number`, `amount`, `due_date`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_installments` (`id`, `school_id`, `student_id`, `fee_period_id`, `installment_number`, `amount`, `due_date`, `status`, `created_at`) VALUES
 (1, 4, 4, 5, 1, 2000.00, '2025-09-15', 'Pending', '2025-09-01 16:52:44'),
 (2, 4, 4, 5, 2, 2000.00, '2025-09-30', 'Pending', '2025-09-01 16:52:44');
 
@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `fee_payments` (
 -- Dumping data for table `fee_payments`
 --
 
-INSERT INTO `fee_payments` (`id`, `school_id`, `fee_slip_id`, `student_id`, `amount`, `payment_method`, `payment_date`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_payments` (`id`, `school_id`, `fee_slip_id`, `student_id`, `amount`, `payment_method`, `payment_date`, `status`, `created_at`) VALUES
 (1, 4, 3, 3, 3000.00, 'Cash', '2025-08-28', 'CLEARED', '2025-08-28 18:29:48'),
 (2, 4, 3, 3, 700.00, 'Cash', '2025-08-28', 'CLEARED', '2025-08-28 18:29:57'),
 (3, 4, 4, 3, 3000.00, 'Cash', '2025-08-30', 'CLEARED', '2025-08-30 16:07:19');
@@ -579,7 +579,7 @@ CREATE TABLE IF NOT EXISTS `fee_periods` (
 -- Dumping data for table `fee_periods`
 --
 
-INSERT INTO `fee_periods` (`id`, `school_id`, `period_name`, `period_type`, `start_date`, `end_date`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_periods` (`id`, `school_id`, `period_name`, `period_type`, `start_date`, `end_date`, `status`, `created_at`) VALUES
 (5, 4, 'Aug 2025', 'monthly', '2025-08-01', '2025-08-31', 0, '2025-08-22 19:17:50'),
 (6, 4, 'jan 2025', 'monthly', '2025-01-01', '2025-01-31', 0, '2025-08-22 19:19:01');
 
@@ -603,7 +603,7 @@ CREATE TABLE IF NOT EXISTS `fee_refunds` (
 -- Dumping data for table `fee_refunds`
 --
 
-INSERT INTO `fee_refunds` (`id`, `school_id`, `slip_id`, `refund_amount`, `refund_reason`, `refund_date`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_refunds` (`id`, `school_id`, `slip_id`, `refund_amount`, `refund_reason`, `refund_date`, `created_at`) VALUES
 (1, 4, 3, 700.00, 'abcd', '2025-09-01', '2025-09-01 18:30:20');
 
 -- --------------------------------------------------------
@@ -631,7 +631,7 @@ CREATE TABLE IF NOT EXISTS `fee_slip_details` (
 -- Dumping data for table `fee_slip_details`
 --
 
-INSERT INTO `fee_slip_details` (`id`, `school_id`, `student_id`, `fee_period_id`, `total_amount`, `scholarship_amount`, `net_payable`, `balance_due`, `payment_status`, `amount_paid`, `payment_date`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_slip_details` (`id`, `school_id`, `student_id`, `fee_period_id`, `total_amount`, `scholarship_amount`, `net_payable`, `balance_due`, `payment_status`, `amount_paid`, `payment_date`, `created_at`) VALUES
 (3, 4, 3, 5, 3700.00, 0.00, 3700.00, 0.00, 'PAID', 3000.00, '2025-08-23', '2025-08-23 05:09:09'),
 (4, 4, 3, 6, 3700.00, 0.00, 3700.00, 700.00, 'PARTIALLY_PAID', 3000.00, '2025-08-30', '2025-08-30 16:07:18');
 
@@ -655,7 +655,7 @@ CREATE TABLE IF NOT EXISTS `fee_structures` (
 -- Dumping data for table `fee_structures`
 --
 
-INSERT INTO `fee_structures` (`id`, `school_id`, `class_grade`, `amount`, `frequency`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_structures` (`id`, `school_id`, `class_grade`, `amount`, `frequency`, `status`, `created_at`) VALUES
 (5, 4, '1', 3700.00, 'monthly', 'active', '2025-08-23 05:05:10');
 
 -- --------------------------------------------------------
@@ -676,7 +676,7 @@ CREATE TABLE IF NOT EXISTS `fee_types` (
 -- Dumping data for table `fee_types`
 --
 
-INSERT INTO `fee_types` (`id`, `school_id`, `fee_name`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `fee_types` (`id`, `school_id`, `fee_name`, `status`, `created_at`) VALUES
 (11, 4, 'Tuition fee', 'active', '2025-08-23 09:55:56'),
 (12, 4, 'App charges', 'active', '2025-08-23 10:02:49'),
 (13, 4, 'Stationary', 'active', '2025-08-23 10:02:58');
@@ -706,7 +706,7 @@ CREATE TABLE IF NOT EXISTS `meeting_announcements` (
 -- Dumping data for table `meeting_announcements`
 --
 
-INSERT INTO `meeting_announcements` (`id`, `school_id`, `title`, `meeting_agenda`, `meeting_date`, `meeting_time`, `meeting_person`, `person_id_one`, `meeting_person2`, `person_id_two`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `meeting_announcements` (`id`, `school_id`, `title`, `meeting_agenda`, `meeting_date`, `meeting_time`, `meeting_person`, `person_id_one`, `meeting_person2`, `person_id_two`, `status`, `created_at`) VALUES
 (2, 4, 'meeting', 'sfsfsffsfas', '2025-09-03', '08:00:00', 'admin', 9, 'admin', 3, 'scheduled', '2025-09-02 10:20:03');
 
 -- --------------------------------------------------------
@@ -732,7 +732,7 @@ CREATE TABLE IF NOT EXISTS `meeting_requests` (
 -- Dumping data for table `meeting_requests`
 --
 
-INSERT INTO `meeting_requests` (`id`, `school_id`, `requested_by`, `requester_id`, `with_meeting`, `id_meeter`, `title`, `agenda`, `status`, `created_at`) VALUES
+INSERT IGNORE INTO `meeting_requests` (`id`, `school_id`, `requested_by`, `requester_id`, `with_meeting`, `id_meeter`, `title`, `agenda`, `status`, `created_at`) VALUES
 (3, 4, 'teacher', 9, 'parent', 3, 'meeting', 'sfsfsffsfas', 'approved', '2025-09-02 10:06:34');
 
 -- --------------------------------------------------------
@@ -759,7 +759,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
 -- Dumping data for table `messages`
 --
 
-INSERT INTO `messages` (`id`, `school_id`, `sender_designation`, `sender_id`, `receiver_designation`, `receiver_id`, `message`, `file_attachment`, `voice_note`, `sent_at`, `status`) VALUES
+INSERT IGNORE INTO `messages` (`id`, `school_id`, `sender_designation`, `sender_id`, `receiver_designation`, `receiver_id`, `message`, `file_attachment`, `voice_note`, `sent_at`, `status`) VALUES
 (26, 4, 'admin', 4, 'teacher', 9, 'hello', NULL, NULL, '2025-09-02 10:09:18', 'unread'),
 (27, 4, 'admin', 4, 'student', 3, 'hello it is a test', NULL, NULL, '2025-09-02 10:52:37', 'unread'),
 (28, 4, 'admin', 4, 'student', 3, 'hi', NULL, NULL, '2025-09-02 11:49:37', 'unread'),
@@ -838,7 +838,7 @@ CREATE TABLE IF NOT EXISTS `schools` (
 -- Dumping data for table `schools`
 --
 
-INSERT INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`, `affiliation_board`, `school_email`, `school_phone`, `school_website`, `country`, `state`, `city`, `address`, `logo`, `admin_contact_person`, `admin_email`, `admin_phone`, `password`, `verification_code`, `is_verified`, `status`, `code_expires_at`, `verification_attempts`, `created_at`, `subscription_start`, `subscription_end`, `num_students`) VALUES
+INSERT IGNORE INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`, `affiliation_board`, `school_email`, `school_phone`, `school_website`, `country`, `state`, `city`, `address`, `logo`, `admin_contact_person`, `admin_email`, `admin_phone`, `password`, `verification_code`, `is_verified`, `status`, `code_expires_at`, `verification_attempts`, `created_at`, `subscription_start`, `subscription_end`, `num_students`) VALUES
 (4, 'Kurtlar Developer', 'Private', '1215225', 'mardan', 'kurtlar1215225@gmail.com', '03091991002', 'https://kurtlardeveloper.com', 'Pakistan', 'KPK', 'Jehangira', 'jehangira moh awan Swabi', '1755841590_apple-touch-icon.png', 'Shayan Khan', 'school12@gmail.com', '03491916168', '$2y$10$2uqBC9ly54skkEagFhNLh.9RSnOgnNVz/GP1IkuFu8hkWhjtL8R7O', NULL, 1, 'Approved', '2025-08-22 18:31:33', 0, '2025-08-22 05:46:30', '2025-09-10', '2025-10-10', 0),
 (5, 'Raffey school jahengira', 'Private', '003345671889', 'Mardan board', 'abdullahparkour17@gmail.com', '03466294461', 'http://www.epop.pk/portal/oxford-public-school-swabi/5510', 'Pakustan', 'Peshawar', 'Kpk', 'Jahengira swabi', '1755876579_IMG_3192.png', 'Abdullah Raffey', 'abdullahparkour17@gmail.com', '03499545143', '$2y$10$6r/NkrW5AsXTPqTRcqiL4Od2ZMs2PxbuegavxuBTCCAejp9L9UoIa', NULL, 1, 'Approved', '2025-08-22 17:34:39', 0, '2025-08-22 15:29:39', '2025-09-09', '2025-10-09', 0);
 
@@ -879,7 +879,7 @@ CREATE TABLE IF NOT EXISTS `school_settings` (
 -- Dumping data for table `school_settings`
 --
 
-INSERT INTO `school_settings` (`id`, `person`, `person_id`, `layout`, `sidebar_color`, `color_theme`, `mini_sidebar`, `sticky_header`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `school_settings` (`id`, `person`, `person_id`, `layout`, `sidebar_color`, `color_theme`, `mini_sidebar`, `sticky_header`, `created_at`, `updated_at`) VALUES
 (1, 'admin', 4, 1, 1, 'white', 0, 0, '2025-08-22 11:17:09', '2025-09-05 12:34:44'),
 (2, 'student', 3, 1, 1, 'white', 0, 0, '2025-08-22 17:13:32', '2025-09-08 09:30:34'),
 (3, 'admin', 5, 1, 1, 'white', 0, 0, '2025-08-22 17:16:18', '2025-08-22 17:17:17'),
@@ -943,7 +943,7 @@ CREATE TABLE IF NOT EXISTS `school_timings` (
 -- Dumping data for table `school_timings`
 --
 
-INSERT INTO `school_timings` (`id`, `school_id`, `assembly_time`, `leave_time`, `created_at`, `half_day_config`, `is_finalized`, `is_preview`, `created_by`) VALUES
+INSERT IGNORE INTO `school_timings` (`id`, `school_id`, `assembly_time`, `leave_time`, `created_at`, `half_day_config`, `is_finalized`, `is_preview`, `created_by`) VALUES
 (1, 4, '08:00:00', '12:00:00', '2025-08-22 12:10:09', NULL, 1, 0, 4),
 (3, 5, '07:00:00', '13:30:00', '2025-08-22 16:30:00', NULL, 0, 0, 5);
 
@@ -984,7 +984,7 @@ CREATE TABLE IF NOT EXISTS `students` (
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`id`, `school_id`, `parent_name`, `full_name`, `gender`, `dob`, `cnic_formb`, `class_grade`, `section`, `roll_number`, `address`, `email`, `parent_email`, `phone`, `profile_photo`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `status`, `created_at`, `subscription_start`, `subscription_end`) VALUES
+INSERT IGNORE INTO `students` (`id`, `school_id`, `parent_name`, `full_name`, `gender`, `dob`, `cnic_formb`, `class_grade`, `section`, `roll_number`, `address`, `email`, `parent_email`, `phone`, `profile_photo`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `status`, `created_at`, `subscription_start`, `subscription_end`) VALUES
 (3, 4, 'Feheem', 'Ferdeen', 'Male', '2020-02-02', '1023343345553', '1', 'A', '1', 'it is a address', 'ferdeen@gmail.com', 'faheem@gmail.com', '03030204102', '1755882812_user-8.png', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, 1, '2025-08-22 19:18:32', 0, 'Pending', '2025-08-22 17:13:32', '2025-09-10', '2025-10-10'),
 (4, 4, 'Khan', 'sun', 'Male', '2017-09-27', '232423423423423', '2', 'A', '12', 'kjdgkdfhgksd', 'awasjanzab1919@gmail.com', 'abc123@gmil.com', '02813823801', NULL, '$2y$10$iP.kySkNejvxSx7r5rFq8edF21Gg71Vc/hlguQmhcCDoQRCW5Imxi', '748976', 1, '2025-08-27 18:44:49', 0, 'Approved', '2025-08-27 16:38:54', '2025-09-10', '2025-10-10'),
 (5, 4, 'Farman Ullah', 'khan khan', 'Male', '2005-12-01', '7837493284923', '1', 'A', '19985', 'Peshware', 'jfksdjf@gmail.com', 'jdkflsdasd123@gmail.com', '03023434233', NULL, '$2y$10$bXk2yqpPTdi4XJFtOp6JK.WvY3d4iBT90IW.p4.75TeF1fV/kZ4k6', '962419', 0, '2025-08-28 21:13:40', 0, 'Pending', '2025-08-28 19:08:40', '2025-09-10', '2025-10-10');
@@ -1024,7 +1024,7 @@ CREATE TABLE IF NOT EXISTS `student_attendance` (
 -- Dumping data for table `student_attendance`
 --
 
-INSERT INTO `student_attendance` (`id`, `school_id`, `teacher_id`, `class_meta_id`, `student_id`, `status`, `date`, `created_at`) VALUES
+INSERT IGNORE INTO `student_attendance` (`id`, `school_id`, `teacher_id`, `class_meta_id`, `student_id`, `status`, `date`, `created_at`) VALUES
 (3, 4, 9, 6, 3, 'Absent', '2025-08-24', '2025-08-24 19:17:24'),
 (4, 4, 9, 6, 3, 'Present', '2025-08-23', '2025-08-24 19:20:30'),
 (5, 4, 9, 6, 3, 'Present', '2025-08-21', '2025-08-24 19:21:50'),
@@ -1091,7 +1091,7 @@ CREATE TABLE IF NOT EXISTS `student_payment_plans` (
 -- Dumping data for table `student_payment_plans`
 --
 
-INSERT INTO `student_payment_plans` (`id`, `plan_name`, `description`, `price`, `duration_days`, `status`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `student_payment_plans` (`id`, `plan_name`, `description`, `price`, `duration_days`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'Gold', 'Access to basic features\nStandard support\nLimited usage', 10.00, 30, 'Active', '2025-09-04 15:48:55', '2025-09-04 15:48:55'),
 (2, 'Premium', 'Everything in Free\nFaster support\nAdvanced tools\nMonthly reports', 19.00, 90, 'Active', '2025-09-04 15:48:55', '2025-09-04 15:48:55'),
 (3, 'Ultimate', 'Everything in Premium\nDedicated support\nUnlimited access\nAdvanced analytics\nCustom reports', 200.00, 360, 'Active', '2025-09-04 15:48:55', '2025-09-04 15:48:55');
@@ -1118,7 +1118,7 @@ CREATE TABLE IF NOT EXISTS `student_plan_orders` (
 -- Dumping data for table `student_plan_orders`
 --
 
-INSERT INTO `student_plan_orders` (`id`, `plan_id`, `school_id`, `num_students`, `total_price`, `status`, `transaction_id`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `student_plan_orders` (`id`, `plan_id`, `school_id`, `num_students`, `total_price`, `status`, `transaction_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 5, 20, 200.00, 'Paid', NULL, '2025-09-10 01:15:03', '2025-09-10 01:15:03'),
 (2, 1, 4, 20, 200.00, 'Paid', NULL, '2025-09-10 01:30:49', '2025-09-10 01:30:49');
 
@@ -1144,7 +1144,7 @@ CREATE TABLE IF NOT EXISTS `student_results` (
 -- Dumping data for table `student_results`
 --
 
-INSERT INTO `student_results` (`id`, `school_id`, `assignment_id`, `student_id`, `marks_obtained`, `remarks`, `attachment`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `student_results` (`id`, `school_id`, `assignment_id`, `student_id`, `marks_obtained`, `remarks`, `attachment`, `created_at`, `updated_at`) VALUES
 (3, 4, 3, 3, 50.00, 'kdifdnfi', '', '2025-08-23 22:35:27', NULL),
 (4, 4, 2, 3, 90.00, 'sdfsdf', '', '2025-08-23 22:43:27', NULL),
 (5, 4, 4, 3, 60.00, 'jfksdjf', '', '2025-08-24 10:14:38', NULL);
@@ -1175,7 +1175,7 @@ CREATE TABLE IF NOT EXISTS `teacher_assignments` (
 -- Dumping data for table `teacher_assignments`
 --
 
-INSERT INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `class_meta_id`, `subject`, `type`, `title`, `description`, `due_date`, `total_marks`, `attachment`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `class_meta_id`, `subject`, `type`, `title`, `description`, `due_date`, `total_marks`, `attachment`, `created_at`, `updated_at`) VALUES
 (2, 4, 9, 6, 'english', 'Assignment', 'abc', 'it is description', '2025-08-26', 100, 'assignment_1755970254.', '2025-08-23 22:30:54', '2025-08-24 10:24:58'),
 (3, 4, 9, 6, 'math', 'Test', 'titel', 'abc (../uploads/assignment/assignment_1755970254.', '2025-08-25', 100, 'assignment_1755970490.jpg', '2025-08-23 22:34:50', NULL),
 (4, 4, 9, 6, 'english', 'Test', 'titel', 'ksdfjsdkf', '2025-08-29', 80, 'assignment_1756012434.png', '2025-08-24 10:13:54', NULL),
