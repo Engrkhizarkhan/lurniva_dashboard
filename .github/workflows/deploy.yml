@@ -40,11 +40,16 @@ jobs:
             # 5. Set ownership for the web server
             sudo chown -R www-data:www-data /var/www/lurniva_dashboard
 
-            # 6. Reload PHP and Nginx services
+            # 6. Database Migration - Import/Update Database Schema
+            echo "Running database migration..."
+            mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB_production_ready.sql
+            echo "Database migration completed."
+
+            # 7. Reload PHP and Nginx services
             sudo systemctl restart php8.3-fpm
             sudo systemctl reload nginx
 
-            # 7. Confirm deployment
+            # 8. Confirm deployment
             echo "Deployment to Lurniva VM completed successfully."
 
                 cd /var/www/lurniva_dashboard
