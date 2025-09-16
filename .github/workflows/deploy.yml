@@ -14,15 +14,25 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: LurnivaVM
           key: ${{ secrets.VM_KEY }}
+                    # ./deploy_migrations.sh
           script: | # mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql >> This is the script to add database table using Ci/CD
             script: |
-            cd /var/www/lurniva_dashboard
-            sudo chown -R LurnivaVM:LurnivaVM /var/www/lurniva_dashboard
-            git fetch origin main
-            git reset --hard origin/main
-            sudo chown -R www-data:www-data /var/www/lurniva_dashboard
-            ./deploy_migrations.sh
-            sudo systemctl restart php8.1-fpm
-            sudo systemctl reload nginx
-            echo "Deployment to Lurniva VM completed." 
- 
+                cd /var/www/lurniva_dashboard
+
+                # Mark repo safe
+                git config --global --add safe.directory /var/www/lurniva_dashboard
+
+                # Remove local changes and untracked files
+                git fetch origin main
+                git reset --hard origin/main
+                git clean -fd 
+
+
+                # Set web server ownership
+                sudo chown -R www-data:www-data /var/www/lurniva_dashboard
+
+                # Reload services
+                sudo systemctl restart php8.1-fpm
+                sudo systemctl reload nginx
+
+                echo "Deployment completed successfully."
