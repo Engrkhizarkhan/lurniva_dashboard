@@ -21,4 +21,4 @@ jobs:
             ./deploy_migrations.sh
             sudo systemctl reload php8.1-fpm
             sudo systemctl reload nginx
-            echo "Deployment to Lurniva VM completed."
+            echo "Deployment to Lurniva VM completed." 
