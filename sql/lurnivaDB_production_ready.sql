@@ -105,13 +105,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `activity_logs` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `action` varchar(255) DEFAULT NULL,
   `entity_type` varchar(100) DEFAULT NULL,
   `entity_id` int(11) DEFAULT NULL,
   `details` text DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -121,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `activity_logs` (
 --
 
 CREATE TABLE IF NOT EXISTS `app_admin` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -137,7 +138,9 @@ CREATE TABLE IF NOT EXISTS `app_admin` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `verification_code` varchar(10) DEFAULT NULL,
-  `code_expires_at` datetime DEFAULT NULL
+  `code_expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1189,19 +1192,6 @@ INSERT IGNORE INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `clas
 --
 
 --
--- Indexes for table `activity_logs`
---
-ALTER TABLE `activity_logs`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `app_admin`
---
-ALTER TABLE `app_admin`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
 -- Indexes for table `class_fee_types`
 --
 ALTER TABLE `class_fee_types`
@@ -1471,17 +1461,8 @@ ALTER TABLE `teacher_assignments`
 --
 
 --
--- AUTO_INCREMENT for table `activity_logs`
---
-ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `app_admin`
 --
-ALTER TABLE `app_admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
 --
 -- AUTO_INCREMENT for table `class_fee_types`
 --
