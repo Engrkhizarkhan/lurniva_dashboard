@@ -456,6 +456,7 @@ INSERT IGNORE INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualifica
 --
 -- Triggers `faculty`
 --
+DROP TRIGGER IF EXISTS `prevent_invalid_faculty_approval`;
 DELIMITER $$
 CREATE TRIGGER `prevent_invalid_faculty_approval` BEFORE UPDATE ON `faculty` FOR EACH ROW BEGIN
     -- If someone tries to approve an expired subscription
@@ -845,6 +846,7 @@ INSERT IGNORE INTO `schools` (`id`, `school_name`, `school_type`, `registration_
 --
 -- Triggers `schools`
 --
+DROP TRIGGER IF EXISTS `prevent_invalid_approval`;
 DELIMITER $$
 CREATE TRIGGER `prevent_invalid_approval` BEFORE UPDATE ON `schools` FOR EACH ROW BEGIN
     -- If someone tries to set status to Approved but subscription_end is expired
@@ -992,6 +994,7 @@ INSERT IGNORE INTO `students` (`id`, `school_id`, `parent_name`, `full_name`, `g
 --
 -- Triggers `students`
 --
+DROP TRIGGER IF EXISTS `prevent_invalid_student_approval`;
 DELIMITER $$
 CREATE TRIGGER `prevent_invalid_student_approval` BEFORE UPDATE ON `students` FOR EACH ROW BEGIN
     -- If someone tries to approve an expired subscription
