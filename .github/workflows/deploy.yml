@@ -42,7 +42,7 @@ jobs:
 
             # 6. Database Migration - Import/Update Database Schema
             echo "Running database migration..."
-            mysql -u lurnivauser -p'lurnivaDBPassword' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB_production_ready.sql
+            mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB_production_ready.sql
             echo "Database migration completed."
 
             # 7. Reload PHP and Nginx services
@@ -51,38 +51,3 @@ jobs:
 
             # 8. Confirm deployment
             echo "Deployment to Lurniva VM completed successfully."
-
-                cd /var/www/lurniva_dashboard
-
-                # 1. Make sure LurnivaVM owns the repo so Git can run
-                sudo chown -R LurnivaVM:LurnivaVM /var/www/lurniva_dashboard
-
-                # 2. Allow Git in this directory
-                git config --global --add safe.directory /var/www/lurniva_dashboard
-
-                # Start SSH agent and add the deploy key
-                eval $(ssh-agent -s)
-                echo "${{ secrets.VM_PRIVATE_KEY }}" > ~/.ssh/id_ed25519_github
-                chmod 600 ~/.ssh/id_ed25519_github
-                ssh-add ~/.ssh/id_ed25519_github
-
-                # Now Git can fetch from GitHub
-                git fetch origin main
-                git reset --hard origin/main
-                git clean -fd
-
-
-                # 3. Force update the code from GitHub
-                git fetch origin main
-                git reset --hard origin/main
-                git clean -fd
-
-                # 4. Set ownership for the web server
-                sudo chown -R www-data:www-data /var/www/lurniva_dashboard
-
-                # 5. Reload PHP and Nginx services
-                sudo systemctl restart php8.3-fpm
-                sudo systemctl reload nginx
-
-                # 6. Confirm deployment
-                echo "Deployment to Lurniva VM completed successfully."
