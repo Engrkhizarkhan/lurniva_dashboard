@@ -1,33 +1,11 @@
--- ==========================================
--- LURNIVA DASHBOARD - PRODUCTION DATABASE  
--- OPTIMIZED VERSION FOR CI/CD DEPLOYMENTS
--- ==========================================
--- Changes made:
--- 1. Removed all ADD PRIMARY KEY statements (prevents multiple PK errors)
--- 2. Added PRIMARY KEY constraints to CREATE TABLE statements where missing
--- 3. Added DROP TRIGGER IF EXISTS for safe trigger recreation
--- 4. Uses INSERT IGNORE for safe data insertion
--- 5. Optimized for repeated deployments without conflicts
--- ==========================================
+-- Safe Import Script for lurnivaDB
+-- This version uses CREATE TABLE IF NOT EXISTS to prevent duplicate errors
+-- Usage: mysql -u username -p database_name < lurnivaDB_safe_import.sql
 
+-- Enable error handling
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET FOREIGN_KEY_CHECKS = 0;
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
-SET time_zone = "+00:00";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
--- ==========================================
--- DROP EXISTING TRIGGERS (SAFE)
--- ==========================================
-
-DROP TRIGGER IF EXISTS `prevent_invalid_faculty_approval`;
-DROP TRIGGER IF EXISTS `prevent_invalid_approval`;
-DROP TRIGGER IF EXISTS `prevent_invalid_student_approval`;
 
 -- The db should be update as 
 -- -- ===========================
@@ -254,7 +232,7 @@ INSERT IGNORE INTO `class_timetable_details` (`id`, `timing_meta_id`, `period_nu
 --
 
 CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `timing_table_id` int(255) NOT NULL,
   `class_name` varchar(50) NOT NULL,
@@ -262,8 +240,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
   `total_periods` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_finalized` tinyint(1) DEFAULT 0,
-  `created_by` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `created_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1222,55 +1199,69 @@ INSERT IGNORE INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `clas
 --
 -- Indexes for table `class_timetable_details`
 --
---
 -- Indexes for table `class_timetable_meta`
 --
+ALTER TABLE `class_timetable_meta`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `class_timetable_weekdays`
 --
 ALTER TABLE `class_timetable_weekdays`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_weekdays_school` (`school_id`);
 
 --
 -- Indexes for table `diary_entries`
 --
+ALTER TABLE `diary_entries`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `diary_students`
 --
 ALTER TABLE `diary_students`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `diary_id` (`diary_id`),
   ADD KEY `student_id` (`student_id`);
 
 --
 -- Indexes for table `digital_notices`
 --
+ALTER TABLE `digital_notices`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `exams`
 --
 ALTER TABLE `exams`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_exams_school` (`school_id`);
 
 --
 -- Indexes for table `exam_results`
 --
+ALTER TABLE `exam_results`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `exam_schedule`
 --
 ALTER TABLE `exam_schedule`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `subject_id` (`subject_id`);
 
 --
 -- Indexes for table `faculty`
 --
+ALTER TABLE `faculty`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `faculty_attendance`
 --
 ALTER TABLE `faculty_attendance`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `faculty_id` (`faculty_id`),
   ADD KEY `school_id` (`school_id`);
 
@@ -1278,17 +1269,21 @@ ALTER TABLE `faculty_attendance`
 -- Indexes for table `faculty_leaves`
 --
 ALTER TABLE `faculty_leaves`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `faculty_id` (`faculty_id`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `fee_installments`
 --
+ALTER TABLE `fee_installments`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `fee_payments`
 --
 ALTER TABLE `fee_payments`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fee_slip_id` (`fee_slip_id`),
   ADD KEY `student_id` (`student_id`);
 
@@ -1296,18 +1291,21 @@ ALTER TABLE `fee_payments`
 -- Indexes for table `fee_periods`
 --
 ALTER TABLE `fee_periods`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `fee_refunds`
 --
 ALTER TABLE `fee_refunds`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `slip_id` (`slip_id`);
 
 --
 -- Indexes for table `fee_slip_details`
 --
 ALTER TABLE `fee_slip_details`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`),
   ADD KEY `student_id` (`student_id`),
   ADD KEY `fee_period_id` (`fee_period_id`);
@@ -1315,83 +1313,103 @@ ALTER TABLE `fee_slip_details`
 --
 -- Indexes for table `fee_structures`
 --
+ALTER TABLE `fee_structures`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `fee_types`
 --
 ALTER TABLE `fee_types`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `meeting_announcements`
 --
 ALTER TABLE `meeting_announcements`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `meeting_requests`
 --
 ALTER TABLE `meeting_requests`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `messages`
 --
 ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `payments`
 --
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `scholarships`
 --
 ALTER TABLE `scholarships`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_scholarships_school` (`school_id`);
 
 --
 -- Indexes for table `schools`
 --
 ALTER TABLE `schools`
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `registration_number` (`registration_number`),
   ADD UNIQUE KEY `school_email` (`school_email`);
 
 --
 -- Indexes for table `school_settings`
 --
+ALTER TABLE `school_settings`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `school_tasks`
 --
 ALTER TABLE `school_tasks`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_school_tasks_school` (`school_id`);
 
 --
 -- Indexes for table `school_task_assignees`
 --
 ALTER TABLE `school_task_assignees`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `task_id` (`task_id`);
 
 --
 -- Indexes for table `school_timings`
 --
+ALTER TABLE `school_timings`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `students`
 --
 ALTER TABLE `students`
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
   ADD KEY `school_id` (`school_id`);
 
 --
 -- Indexes for table `student_attendance`
 --
+ALTER TABLE `student_attendance`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `student_fee_plans`
 --
 ALTER TABLE `student_fee_plans`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `school_id` (`school_id`),
   ADD KEY `student_id` (`student_id`),
   ADD KEY `fk_fee_component` (`fee_component`);
@@ -1400,6 +1418,7 @@ ALTER TABLE `student_fee_plans`
 -- Indexes for table `student_leaves`
 --
 ALTER TABLE `student_leaves`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_student` (`student_id`),
   ADD KEY `fk_school` (`school_id`),
   ADD KEY `fk_teacher` (`teacher_id`);
@@ -1407,20 +1426,27 @@ ALTER TABLE `student_leaves`
 --
 -- Indexes for table `student_payment_plans`
 --
+ALTER TABLE `student_payment_plans`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `student_plan_orders`
 --
+ALTER TABLE `student_plan_orders`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `student_results`
 --
 ALTER TABLE `student_results`
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_submission` (`assignment_id`,`student_id`);
 
 --
 -- Indexes for table `teacher_assignments`
 --
+ALTER TABLE `teacher_assignments`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1819,15 +1845,5 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
--- ==========================================
--- DEPLOYMENT OPTIMIZATION SUMMARY
--- ==========================================
--- ✅ Removed ALL ADD PRIMARY KEY statements to prevent duplicate primary key errors
--- ✅ Added DROP TRIGGER IF EXISTS for safe trigger recreation 
--- ✅ Added PRIMARY KEY to CREATE TABLE statements where missing
--- ✅ Uses INSERT IGNORE for safe data insertion on repeated runs
--- ✅ Optimized for GitHub Actions CI/CD repeated deployments
--- ✅ Database file can now be run multiple times without errors
--- ==========================================
-
-SELECT 'lurnivaDB OPTIMIZED import completed successfully! Database ready for repeated CI/CD deployments.' as Status;
+-- Success message
+SELECT 'lurnivaDB import completed successfully! All 39 tables should now be created.' as Status;
