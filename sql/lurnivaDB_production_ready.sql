@@ -7,7 +7,8 @@
 -- 2. Added PRIMARY KEY constraints to CREATE TABLE statements where missing
 -- 3. Added DROP TRIGGER IF EXISTS for safe trigger recreation
 -- 4. Uses INSERT IGNORE for safe data insertion
--- 5. Optimized for repeated deployments without conflicts
+-- 5. Fixed duplicate key name conflicts (renamed index keys to use idx_ prefix)
+-- 6. Optimized for repeated deployments without conflicts
 -- ==========================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -1230,7 +1231,7 @@ INSERT IGNORE INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `clas
 -- Indexes for table `class_timetable_weekdays`
 --
 ALTER TABLE `class_timetable_weekdays`
-  ADD KEY `fk_weekdays_school` (`school_id`);
+  ADD KEY `idx_weekdays_school` (`school_id`);
 
 --
 -- Indexes for table `diary_entries`
@@ -1251,7 +1252,7 @@ ALTER TABLE `diary_students`
 -- Indexes for table `exams`
 --
 ALTER TABLE `exams`
-  ADD KEY `fk_exams_school` (`school_id`);
+  ADD KEY `idx_exams_school` (`school_id`);
 
 --
 -- Indexes for table `exam_results`
@@ -1348,7 +1349,7 @@ ALTER TABLE `messages`
 -- Indexes for table `scholarships`
 --
 ALTER TABLE `scholarships`
-  ADD KEY `fk_scholarships_school` (`school_id`);
+  ADD KEY `idx_scholarships_school` (`school_id`);
 
 --
 -- Indexes for table `schools`
@@ -1365,7 +1366,7 @@ ALTER TABLE `schools`
 -- Indexes for table `school_tasks`
 --
 ALTER TABLE `school_tasks`
-  ADD KEY `fk_school_tasks_school` (`school_id`);
+  ADD KEY `idx_school_tasks_school` (`school_id`);
 
 --
 -- Indexes for table `school_task_assignees`
@@ -1394,15 +1395,15 @@ ALTER TABLE `students`
 ALTER TABLE `student_fee_plans`
   ADD KEY `school_id` (`school_id`),
   ADD KEY `student_id` (`student_id`),
-  ADD KEY `fk_fee_component` (`fee_component`);
+  ADD KEY `idx_fee_component` (`fee_component`);
 
 --
 -- Indexes for table `student_leaves`
 --
 ALTER TABLE `student_leaves`
-  ADD KEY `fk_student` (`student_id`),
-  ADD KEY `fk_school` (`school_id`),
-  ADD KEY `fk_teacher` (`teacher_id`);
+  ADD KEY `idx_student` (`student_id`),
+  ADD KEY `idx_school` (`school_id`),
+  ADD KEY `idx_teacher` (`teacher_id`);
 
 --
 -- Indexes for table `student_payment_plans`
