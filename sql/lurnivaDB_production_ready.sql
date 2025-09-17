@@ -157,12 +157,16 @@ INSERT IGNORE INTO `app_admin` (`id`, `username`, `email`, `password`, `full_nam
 --
 
 CREATE TABLE IF NOT EXISTS `class_fee_types` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `fee_structure_id` int(11) DEFAULT NULL,
   `school_id` int(11) NOT NULL,
   `class_grade` varchar(50) NOT NULL,
   `fee_type_id` int(11) NOT NULL,
-  `rate` decimal(10,2) NOT NULL
+  `rate` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `school_id` (`school_id`),
+  KEY `fee_type_id` (`fee_type_id`),
+  KEY `fk_fee_structure` (`fee_structure_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1192,15 +1196,6 @@ INSERT IGNORE INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `clas
 --
 
 --
--- Indexes for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`),
-  ADD KEY `fee_type_id` (`fee_type_id`),
-  ADD KEY `fk_fee_structure` (`fee_structure_id`);
-
---
 -- Indexes for table `class_timetable_details`
 --
 ALTER TABLE `class_timetable_details`
@@ -1463,12 +1458,6 @@ ALTER TABLE `teacher_assignments`
 --
 -- AUTO_INCREMENT for table `app_admin`
 --
---
--- AUTO_INCREMENT for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
-
 --
 -- AUTO_INCREMENT for table `class_timetable_details`
 --

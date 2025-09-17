@@ -42,6 +42,8 @@ jobs:
 
             # 6. Database Migration - Import/Update Database Schema
             echo "Running database migration..."
+            # Drop and recreate database (removes existing data conflicts)
+            mysql -u lurnivauser -p'lurniva@testVM' -e "DROP DATABASE lurnivaDB; CREATE DATABASE lurnivaDB;"
             mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB_production_ready.sql
             echo "Database migration completed."
 
