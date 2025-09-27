@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `app_admin` 
 --
 
-CREATE TABLE `app_admin` (
+CREATE TABLE IF NOT EXISTS `app_admin` (
   `id` int(11) NOT NULL,
   `username` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
@@ -60,7 +60,7 @@ INSERT INTO `app_admin` (`id`, `username`, `email`, `password`, `full_name`, `ph
 -- Table structure for table `books`
 --
 
-CREATE TABLE `books` (
+CREATE TABLE IF NOT EXISTS `books` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -87,7 +87,7 @@ INSERT INTO `books` (`id`, `school_id`, `title`, `author`, `publisher`, `isbn`, 
 -- Table structure for table `buses`
 --
 
-CREATE TABLE `buses` (
+CREATE TABLE IF NOT EXISTS `buses` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `bus_number` varchar(50) NOT NULL,
@@ -110,7 +110,7 @@ INSERT INTO `buses` (`id`, `school_id`, `bus_number`, `capacity`, `status`, `cre
 -- Table structure for table `bus_problems`
 --
 
-CREATE TABLE `bus_problems` (
+CREATE TABLE IF NOT EXISTS `bus_problems` (
   `id` int(11) NOT NULL,
   `bus_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
@@ -137,7 +137,7 @@ INSERT INTO `bus_problems` (`id`, `bus_id`, `school_id`, `problem`, `created_at`
 -- Table structure for table `class_fee_types`
 --
 
-CREATE TABLE `class_fee_types` (
+CREATE TABLE IF NOT EXISTS `class_fee_types` (
   `id` int(11) NOT NULL,
   `fee_structure_id` int(11) DEFAULT NULL,
   `school_id` int(11) NOT NULL,
@@ -161,7 +161,7 @@ INSERT INTO `class_fee_types` (`id`, `fee_structure_id`, `school_id`, `class_gra
 -- Table structure for table `class_timetable_details`
 --
 
-CREATE TABLE `class_timetable_details` (
+CREATE TABLE IF NOT EXISTS `class_timetable_details` (
   `id` int(11) NOT NULL,
   `timing_meta_id` int(11) NOT NULL,
   `period_number` int(11) NOT NULL,
@@ -207,7 +207,7 @@ INSERT INTO `class_timetable_details` (`id`, `timing_meta_id`, `period_number`, 
 -- Table structure for table `class_timetable_meta`
 --
 
-CREATE TABLE `class_timetable_meta` (
+CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `timing_table_id` int(255) NOT NULL,
@@ -235,7 +235,7 @@ INSERT INTO `class_timetable_meta` (`id`, `school_id`, `timing_table_id`, `class
 -- Table structure for table `class_timetable_weekdays`
 --
 
-CREATE TABLE `class_timetable_weekdays` (
+CREATE TABLE IF NOT EXISTS `class_timetable_weekdays` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `weekday` enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday') NOT NULL,
@@ -261,7 +261,7 @@ INSERT INTO `class_timetable_weekdays` (`id`, `school_id`, `weekday`, `assembly_
 -- Table structure for table `diary_entries`
 --
 
-CREATE TABLE `diary_entries` (
+CREATE TABLE IF NOT EXISTS `diary_entries` (
   `id` int(11) NOT NULL,
   `school_id` varchar(255) NOT NULL,
   `class_meta_id` int(11) NOT NULL,
@@ -290,7 +290,7 @@ INSERT INTO `diary_entries` (`id`, `school_id`, `class_meta_id`, `subject`, `tea
 -- Table structure for table `diary_students`
 --
 
-CREATE TABLE `diary_students` (
+CREATE TABLE IF NOT EXISTS `diary_students` (
   `id` int(11) NOT NULL,
   `approve_parent` varchar(255) NOT NULL,
   `diary_id` int(11) NOT NULL,
@@ -311,7 +311,7 @@ INSERT INTO `diary_students` (`id`, `approve_parent`, `diary_id`, `student_id`) 
 -- Table structure for table `digital_notices`
 --
 
-CREATE TABLE `digital_notices` (
+CREATE TABLE IF NOT EXISTS `digital_notices` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
@@ -339,7 +339,7 @@ INSERT INTO `digital_notices` (`id`, `school_id`, `title`, `notice_date`, `expir
 -- Table structure for table `drivers`
 --
 
-CREATE TABLE `drivers` (
+CREATE TABLE IF NOT EXISTS `drivers` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `bus_id` int(11) DEFAULT NULL,
@@ -365,7 +365,7 @@ INSERT INTO `drivers` (`id`, `school_id`, `bus_id`, `name`, `phone`, `license_no
 -- Table structure for table `exams`
 --
 
-CREATE TABLE `exams` (
+CREATE TABLE IF NOT EXISTS `exams` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `exam_name` varchar(255) NOT NULL,
@@ -386,7 +386,7 @@ INSERT INTO `exams` (`id`, `school_id`, `exam_name`, `total_marks`, `created_at`
 -- Table structure for table `exam_results`
 --
 
-CREATE TABLE `exam_results` (
+CREATE TABLE IF NOT EXISTS `exam_results` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `exam_schedule_id` int(11) NOT NULL,
@@ -417,7 +417,7 @@ INSERT INTO `exam_results` (`id`, `school_id`, `exam_schedule_id`, `student_id`,
 -- Table structure for table `exam_schedule`
 --
 
-CREATE TABLE `exam_schedule` (
+CREATE TABLE IF NOT EXISTS `exam_schedule` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `exam_name` varchar(255) NOT NULL,
@@ -449,7 +449,7 @@ INSERT INTO `exam_schedule` (`id`, `school_id`, `exam_name`, `class_name`, `subj
 -- Table structure for table `faculty`
 --
 
-CREATE TABLE `faculty` (
+CREATE TABLE IF NOT EXISTS `faculty` (
   `id` int(11) NOT NULL,
   `campus_id` int(11) NOT NULL,
   `full_name` varchar(100) NOT NULL,
@@ -506,7 +506,7 @@ DELIMITER ;
 -- Table structure for table `faculty_attendance`
 --
 
-CREATE TABLE `faculty_attendance` (
+CREATE TABLE IF NOT EXISTS `faculty_attendance` (
   `id` int(11) NOT NULL,
   `faculty_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
@@ -522,7 +522,7 @@ CREATE TABLE `faculty_attendance` (
 -- Table structure for table `faculty_leaves`
 --
 
-CREATE TABLE `faculty_leaves` (
+CREATE TABLE IF NOT EXISTS `faculty_leaves` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `faculty_id` int(11) NOT NULL,
@@ -551,7 +551,7 @@ INSERT INTO `faculty_leaves` (`id`, `school_id`, `faculty_id`, `leave_type`, `st
 -- Table structure for table `fee_installments`
 --
 
-CREATE TABLE `fee_installments` (
+CREATE TABLE IF NOT EXISTS `fee_installments` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -577,7 +577,7 @@ INSERT INTO `fee_installments` (`id`, `school_id`, `student_id`, `fee_period_id`
 -- Table structure for table `fee_payments`
 --
 
-CREATE TABLE `fee_payments` (
+CREATE TABLE IF NOT EXISTS `fee_payments` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `fee_slip_id` int(11) NOT NULL,
@@ -604,7 +604,7 @@ INSERT INTO `fee_payments` (`id`, `school_id`, `fee_slip_id`, `student_id`, `amo
 -- Table structure for table `fee_periods`
 --
 
-CREATE TABLE `fee_periods` (
+CREATE TABLE IF NOT EXISTS `fee_periods` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `period_name` varchar(100) NOT NULL,
@@ -629,7 +629,7 @@ INSERT INTO `fee_periods` (`id`, `school_id`, `period_name`, `period_type`, `sta
 -- Table structure for table `fee_refunds`
 --
 
-CREATE TABLE `fee_refunds` (
+CREATE TABLE IF NOT EXISTS `fee_refunds` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `slip_id` int(11) NOT NULL,
@@ -652,7 +652,7 @@ INSERT INTO `fee_refunds` (`id`, `school_id`, `slip_id`, `refund_amount`, `refun
 -- Table structure for table `fee_slip_details`
 --
 
-CREATE TABLE `fee_slip_details` (
+CREATE TABLE IF NOT EXISTS `fee_slip_details` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -681,7 +681,7 @@ INSERT INTO `fee_slip_details` (`id`, `school_id`, `student_id`, `fee_period_id`
 -- Table structure for table `fee_structures`
 --
 
-CREATE TABLE `fee_structures` (
+CREATE TABLE IF NOT EXISTS `fee_structures` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `class_grade` varchar(50) NOT NULL,
@@ -704,7 +704,7 @@ INSERT INTO `fee_structures` (`id`, `school_id`, `class_grade`, `amount`, `frequ
 -- Table structure for table `fee_types`
 --
 
-CREATE TABLE `fee_types` (
+CREATE TABLE IF NOT EXISTS `fee_types` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `fee_name` varchar(100) NOT NULL,
@@ -727,7 +727,7 @@ INSERT INTO `fee_types` (`id`, `school_id`, `fee_name`, `status`, `created_at`) 
 -- Table structure for table `library_fines`
 --
 
-CREATE TABLE `library_fines` (
+CREATE TABLE IF NOT EXISTS `library_fines` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `transaction_id` int(11) NOT NULL,
@@ -754,7 +754,7 @@ INSERT INTO `library_fines` (`id`, `school_id`, `transaction_id`, `fine_amount`,
 -- Table structure for table `library_transactions`
 --
 
-CREATE TABLE `library_transactions` (
+CREATE TABLE IF NOT EXISTS `library_transactions` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `book_id` int(11) NOT NULL,
@@ -799,7 +799,7 @@ INSERT INTO `library_transactions` (`id`, `school_id`, `book_id`, `student_id`, 
 -- Table structure for table `meeting_announcements`
 --
 
-CREATE TABLE `meeting_announcements` (
+CREATE TABLE IF NOT EXISTS `meeting_announcements` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -828,7 +828,7 @@ INSERT INTO `meeting_announcements` (`id`, `school_id`, `title`, `meeting_agenda
 -- Table structure for table `meeting_requests`
 --
 
-CREATE TABLE `meeting_requests` (
+CREATE TABLE IF NOT EXISTS `meeting_requests` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `requested_by` enum('admin','teacher','parent') NOT NULL,
@@ -856,7 +856,7 @@ INSERT INTO `meeting_requests` (`id`, `school_id`, `requested_by`, `requester_id
 -- Table structure for table `messages`
 --
 
-CREATE TABLE `messages` (
+CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `sender_designation` enum('admin','teacher','student') NOT NULL,
@@ -893,7 +893,7 @@ INSERT INTO `messages` (`id`, `school_id`, `sender_designation`, `sender_id`, `r
 -- Table structure for table `notifications`
 --
 
-CREATE TABLE `notifications` (
+CREATE TABLE IF NOT EXISTS `notifications` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `type` varchar(255) NOT NULL,
@@ -932,7 +932,7 @@ INSERT INTO `notifications` (`id`, `user_id`, `type`, `school_id`, `module`, `ti
 -- Table structure for table `parents`
 --
 
-CREATE TABLE `parents` (
+CREATE TABLE IF NOT EXISTS `parents` (
   `id` int(11) NOT NULL,
   `full_name` varchar(100) NOT NULL,
   `parent_cnic` varchar(20) NOT NULL,
@@ -963,7 +963,7 @@ INSERT INTO `parents` (`id`, `full_name`, `parent_cnic`, `email`, `phone`, `prof
 -- Table structure for table `payments`
 --
 
-CREATE TABLE `payments` (
+CREATE TABLE IF NOT EXISTS `payments` (
   `id` int(11) NOT NULL,
   `slip_id` int(11) NOT NULL,
   `payment_date` date NOT NULL,
@@ -979,7 +979,7 @@ CREATE TABLE `payments` (
 -- Table structure for table `routes`
 --
 
-CREATE TABLE `routes` (
+CREATE TABLE IF NOT EXISTS `routes` (
   `id` int(11) NOT NULL,
   `route_name` varchar(100) NOT NULL,
   `start_point` varchar(150) NOT NULL,
@@ -994,7 +994,7 @@ CREATE TABLE `routes` (
 -- Table structure for table `scholarships`
 --
 
-CREATE TABLE `scholarships` (
+CREATE TABLE IF NOT EXISTS `scholarships` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -1012,7 +1012,7 @@ CREATE TABLE `scholarships` (
 -- Table structure for table `schools`
 --
 
-CREATE TABLE `schools` (
+CREATE TABLE IF NOT EXISTS `schools` (
   `id` int(11) NOT NULL,
   `school_name` varchar(255) DEFAULT NULL,
   `school_type` enum('Public','Private','Charter') DEFAULT NULL,
@@ -1070,7 +1070,7 @@ DELIMITER ;
 -- Table structure for table `school_settings`
 --
 
-CREATE TABLE `school_settings` (
+CREATE TABLE IF NOT EXISTS `school_settings` (
   `id` int(11) NOT NULL,
   `person` enum('app_admin','admin','facility','student') NOT NULL,
   `person_id` int(11) NOT NULL,
@@ -1115,7 +1115,7 @@ INSERT INTO `school_settings` (`id`, `person`, `person_id`, `layout`, `sidebar_c
 -- Table structure for table `school_tasks`
 --
 
-CREATE TABLE `school_tasks` (
+CREATE TABLE IF NOT EXISTS `school_tasks` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `task_title` varchar(255) NOT NULL,
@@ -1139,7 +1139,7 @@ INSERT INTO `school_tasks` (`id`, `school_id`, `task_title`, `task_description`,
 -- Table structure for table `school_task_assignees`
 --
 
-CREATE TABLE `school_task_assignees` (
+CREATE TABLE IF NOT EXISTS `school_task_assignees` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `task_id` int(11) NOT NULL,
@@ -1163,7 +1163,7 @@ INSERT INTO `school_task_assignees` (`id`, `school_id`, `task_id`, `assigned_to_
 -- Table structure for table `school_timings`
 --
 
-CREATE TABLE `school_timings` (
+CREATE TABLE IF NOT EXISTS `school_timings` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `assembly_time` time NOT NULL,
@@ -1189,7 +1189,7 @@ INSERT INTO `school_timings` (`id`, `school_id`, `assembly_time`, `leave_time`, 
 -- Table structure for table `students`
 --
 
-CREATE TABLE `students` (
+CREATE TABLE IF NOT EXISTS `students` (
   `id` int(11) NOT NULL,
   `school_id` int(11) DEFAULT NULL,
   `parent_name` varchar(100) DEFAULT NULL,
@@ -1247,7 +1247,7 @@ DELIMITER ;
 -- Table structure for table `student_attendance`
 --
 
-CREATE TABLE `student_attendance` (
+CREATE TABLE IF NOT EXISTS `student_attendance` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
@@ -1279,7 +1279,7 @@ INSERT INTO `student_attendance` (`id`, `school_id`, `teacher_id`, `class_meta_i
 -- Table structure for table `student_behavior`
 --
 
-CREATE TABLE `student_behavior` (
+CREATE TABLE IF NOT EXISTS `student_behavior` (
   `id` int(11) NOT NULL,
   `class_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
@@ -1307,7 +1307,7 @@ INSERT INTO `student_behavior` (`id`, `class_id`, `teacher_id`, `student_id`, `t
 -- Table structure for table `student_fee_plans`
 --
 
-CREATE TABLE `student_fee_plans` (
+CREATE TABLE IF NOT EXISTS `student_fee_plans` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -1324,7 +1324,7 @@ CREATE TABLE `student_fee_plans` (
 -- Table structure for table `student_leaves`
 --
 
-CREATE TABLE `student_leaves` (
+CREATE TABLE IF NOT EXISTS `student_leaves` (
   `id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
@@ -1344,7 +1344,7 @@ CREATE TABLE `student_leaves` (
 -- Table structure for table `student_payment_plans`
 --
 
-CREATE TABLE `student_payment_plans` (
+CREATE TABLE IF NOT EXISTS `student_payment_plans` (
   `id` int(11) NOT NULL,
   `plan_name` varchar(100) NOT NULL,
   `description` text DEFAULT NULL,
@@ -1370,7 +1370,7 @@ INSERT INTO `student_payment_plans` (`id`, `plan_name`, `description`, `price`, 
 -- Table structure for table `student_plan_orders`
 --
 
-CREATE TABLE `student_plan_orders` (
+CREATE TABLE IF NOT EXISTS `student_plan_orders` (
   `id` int(11) NOT NULL,
   `plan_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
@@ -1396,7 +1396,7 @@ INSERT INTO `student_plan_orders` (`id`, `plan_id`, `school_id`, `num_students`,
 -- Table structure for table `student_results`
 --
 
-CREATE TABLE `student_results` (
+CREATE TABLE IF NOT EXISTS `student_results` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `assignment_id` int(11) NOT NULL,
@@ -1427,7 +1427,7 @@ INSERT INTO `student_results` (`id`, `school_id`, `assignment_id`, `student_id`,
 -- Table structure for table `teacher_assignments`
 --
 
-CREATE TABLE `teacher_assignments` (
+CREATE TABLE IF NOT EXISTS `teacher_assignments` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
@@ -1461,7 +1461,7 @@ INSERT INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `class_meta_
 -- Table structure for table `transport_routes`
 --
 
-CREATE TABLE `transport_routes` (
+CREATE TABLE IF NOT EXISTS `transport_routes` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `route_name` varchar(100) NOT NULL,
@@ -1485,7 +1485,7 @@ INSERT INTO `transport_routes` (`id`, `school_id`, `route_name`, `stops`, `statu
 -- Table structure for table `transport_student_routes`
 --
 
-CREATE TABLE `transport_student_routes` (
+CREATE TABLE IF NOT EXISTS `transport_student_routes` (
   `id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
