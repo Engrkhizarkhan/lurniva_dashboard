@@ -1,144 +1,160 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type");
-
 require_once '../admin/sass/db_config.php';
 
-/**
- * Insert default settings for a student
- */
-function createDefaultSettings($conn, $person, $person_id) {
-    $stmt = $conn->prepare("INSERT INTO school_settings 
-        (person, person_id, layout, sidebar_color, color_theme, mini_sidebar, sticky_header) 
-        VALUES (?, ?, '1', '1', 'white', '0', '0')");
-    $stmt->bind_param("si", $person, $person_id);
-    $stmt->execute();
-    $stmt->close();
-}
+// --- CORS CONFIGURATION ---
+$allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')
+    ? ['https://lurniva.com', 'https://www.lurniva.com']
+    : [
+        'http://localhost:8080',
+        'http://localhost:8081',
+        'http://localhost:3000',
+        'http://localhost:5173'
+    ];
 
-// ✅ Accept only POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(["status" => "error", "message" => "Invalid request method"]);
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Credentials: true");
+}
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Content-Type: application/json");
+
+// ✅ Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit;
 }
 
-// ✅ Get JSON body
+// ✅ Read JSON
 $data = json_decode(file_get_contents("php://input"), true);
+if (!$data) {
+    echo json_encode(["status" => "error", "message" => "Invalid JSON"]);
+    exit;
+}
 
-$school_id     = intval($data['school_id'] ?? 0);
-$parent_name   = trim($data['parent_name'] ?? '');
-$full_name     = trim($data['full_name'] ?? '');
-$gender        = trim($data['gender'] ?? '');
-$dob           = trim($data['dob'] ?? '');
-$cnic_formb    = trim($data['cnic_formb'] ?? '');
-$class_grade   = trim($data['class_grade'] ?? '');
-$section       = trim($data['section'] ?? '');
-$roll_number   = trim($data['roll_number'] ?? '');
-$address       = trim($data['address'] ?? '');
-$email         = trim($data['email'] ?? '');
-$parent_email  = trim($data['parent_email'] ?? '');
-$phone         = trim($data['phone'] ?? '');
-$password      = $data['password'] ?? '';
-$profile_base64= $data['profile_photo'] ?? null; // optional, base64
+// ✅ Type check (student | parent)
+$type = strtolower(trim($data["type"] ?? ""));
+if (!in_array($type, ["student", "parent"])) {
+    echo json_encode(["status" => "error", "message" => "Invalid signup type"]);
+    exit;
+}
 
-// ✅ Validation
-if (empty($full_name) || empty($email) || empty($password) || empty($school_id)) {
+// ✅ Common fields
+$email    = trim($data["email"] ?? "");
+$password = $data["password"] ?? "";
+$fullName = trim($data["full_name"] ?? "");
+if (empty($email) || empty($password) || empty($fullName)) {
     echo json_encode(["status" => "error", "message" => "Missing required fields"]);
     exit;
 }
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// ✅ Hash password
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+// ✅ Profile photo
+$profile_name = null;
+if (!empty($data["profile_photo"])) {
+    $profile_name = time() . "_$type.png";
+    $imageData = base64_decode($data["profile_photo"]);
+    $path = "../$type/uploads/profile/";
+    if (!is_dir($path)) mkdir($path, 0777, true);
+    file_put_contents($path . $profile_name, $imageData);
+}
 
-// ✅ Generate verification code
+// ✅ Verification fields
 $verification_code = rand(100000, 999999);
 $is_verified = 0;
 $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 $verification_attempts = 0;
 $status = "pending";
 
-// ✅ Handle profile photo (if base64 provided)
-$profile_name = null;
-if ($profile_base64) {
-    $profile_name = time() . "_profile.png";
-    $adminPath = "admin/uploads/profile/";
-    if (!is_dir($adminPath)) mkdir($adminPath, 0777, true);
+if ($type === "parent") {
+    // ================== PARENT SIGNUP ==================
+    $parentCnic = trim($data["parent_cnic"] ?? "");
+    $phone      = trim($data["phone"] ?? "");
 
-    file_put_contents($adminPath . $profile_name, base64_decode($profile_base64));
+    if (empty($parentCnic) || empty($phone)) {
+        echo json_encode(["status" => "error", "message" => "Missing CNIC or phone"]);
+        exit;
+    }
 
-    // also copy to student folder
-    $schoolPath = "student/uploads/profile/";
-    if (!is_dir($schoolPath)) mkdir($schoolPath, 0777, true);
-    copy($adminPath . $profile_name, $schoolPath . $profile_name);
+    $stmt = $conn->prepare("INSERT INTO parents 
+        (full_name, parent_cnic, email, phone, profile_photo,
+         password, status, verification_code, is_verified, code_expires_at, verification_attempts)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param(
+        "sssssssissi",
+        $fullName, $parentCnic, $email, $phone, $profile_name,
+        $hashedPassword, $status, $verification_code, $is_verified, $code_expires_at, $verification_attempts
+    );
+
+    if ($stmt->execute()) {
+        $id = $conn->insert_id;
+        $subject = "Parent Account Verification - Lurniva";
+        $message = "Hello $fullName,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.\n\nRegards,\nLurniva Support";
+        $headers = "From: Support@lurniva.com";
+
+        @mail($email, $subject, $message, $headers);
+
+        echo json_encode([
+            "status" => "success",
+            "type"   => "parent",
+            "message"=> "Parent registered. OTP sent to $email.",
+            "parent_id" => $id
+        ]);
+    } else {
+        echo json_encode(["status" => "error", "message" => $stmt->error]);
+    }
+    $stmt->close();
+
+} elseif ($type === "student") {
+    // ================== STUDENT SIGNUP ==================
+    $schoolId   = intval($data["school_id"] ?? 0);
+    $parentName = trim($data["parent_name"] ?? "");
+    $parentCnic = trim($data["parent_cnic"] ?? "");
+    $gender     = trim($data["gender"] ?? "");
+    $dob        = trim($data["dob"] ?? "");
+    $classGrade = trim($data["class_grade"] ?? "");
+    $section    = trim($data["section"] ?? "");
+    $rollNo     = trim($data["roll_number"] ?? "");
+    $address    = trim($data["address"] ?? "");
+    $phone      = trim($data["phone"] ?? "");
+
+    if (empty($schoolId) || empty($parentCnic) || empty($classGrade) || empty($section)) {
+        echo json_encode(["status" => "error", "message" => "Missing required student fields"]);
+        exit;
+    }
+
+    $stmt = $conn->prepare("INSERT INTO students 
+        (school_id, parent_name, parent_cnic, full_name, gender, dob,
+         class_grade, section, roll_number, address, email, phone, profile_photo,
+         password, status, verification_code, is_verified, code_expires_at, verification_attempts)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param(
+        "issssssssssssssissi",
+        $schoolId, $parentName, $parentCnic, $fullName, $gender, $dob,
+        $classGrade, $section, $rollNo, $address, $email, $phone, $profile_name,
+        $hashedPassword, $status, $verification_code, $is_verified, $code_expires_at, $verification_attempts
+    );
+
+    if ($stmt->execute()) {
+        $id = $conn->insert_id;
+        $subject = "Student Account Verification - Lurniva";
+        $message = "Hello $fullName,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.\n\nRegards,\nLurniva Support";
+        $headers = "From: Support@lurniva.com";
+
+        @mail($email, $subject, $message, $headers);
+
+        echo json_encode([
+            "status" => "success",
+            "type"   => "student",
+            "message"=> "Student registered. OTP sent to $email.",
+            "student_id" => $id
+        ]);
+    } else {
+        echo json_encode(["status" => "error", "message" => $stmt->error]);
+    }
+    $stmt->close();
 }
 
-// ✅ Insert student
-$stmt = $conn->prepare("INSERT INTO students 
-    (school_id, parent_name, full_name, gender, dob, cnic_formb,
-     class_grade, section, roll_number, address,
-     email, parent_email, phone, profile_photo,
-     password, status, verification_code, is_verified, code_expires_at, verification_attempts)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-if (!$stmt) {
-    echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);
-    exit;
-}
-
-$stmt->bind_param(
-    "issssssssssssssssisi",
-    $school_id,
-    $parent_name,
-    $full_name,
-    $gender,
-    $dob,
-    $cnic_formb,
-    $class_grade,
-    $section,
-    $roll_number,
-    $address,
-    $email,
-    $parent_email,
-    $phone,
-    $profile_name,
-    $hashed_password,
-    $status,
-    $verification_code,
-    $is_verified,
-    $code_expires_at,
-    $verification_attempts
-);
-
-if ($stmt->execute()) {
-    $student_id = $conn->insert_id;
-
-    // ✅ Create default settings
-    createDefaultSettings($conn, "student", $student_id);
-
-    // ✅ Send verification email
-    $to = $email;
-    $subject = "Student Account Verification";
-    $message = "Hello $full_name,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-    $headers = "From: shayans1215225@gmail.com";
-
-    @mail($to, $subject, $message, $headers);
-
-    echo json_encode([
-        "status" => "success",
-        "message" => "Student registered successfully. Verification code sent.",
-        "student" => [
-            "id" => $student_id,
-            "full_name" => $full_name,
-            "email" => $email,
-            "school_id" => $school_id,
-            "photo" => $profile_name ? "student/uploads/profile/$profile_name" : null
-        ]
-    ]);
-} else {
-    echo json_encode(["status" => "error", "message" => "Execute failed: " . $stmt->error]);
-}
-
-$stmt->close();
 $conn->close();
 ?>

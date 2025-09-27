@@ -1,40 +1,63 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *"); // Allow mobile app requests
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type");
-
 require_once '../admin/sass/db_config.php';
 
+// --- CORS CONFIGURATION ---
+$allowedOrigins = ($_SERVER['HTTP_HOST'] === 'dashboard.lurniva.com')
+    ? ['https://lurniva.com', 'https://www.lurniva.com']
+    : [
+        'http://localhost:8080',
+        'http://localhost:8081',
+        'http://localhost:3000',
+        'http://localhost:5173'
+    ];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Credentials: true");
+}
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Content-Type: application/json");
+
+// Handle preflight request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// --- Send Email Function (using PHP mail, domain lurniva) ---
 function sendMail($to, $subject, $message) {
-    $from = "shayans1215225@gmail.com"; 
+    $from = "noreply@dashboard.lurniva.com"; // use Lurniva domain email
     $headers  = "From: $from\r\n";
     $headers .= "Reply-To: $from\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion();
     return mail($to, $subject, $message, $headers);
 }
 
-// --- Only handle POST requests ---
+// --- Only allow POST ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(["status" => "error", "message" => "Invalid request method"]);
     exit;
 }
 
+// --- Get JSON input ---
 $data = json_decode(file_get_contents("php://input"), true);
 $email = trim($data['email'] ?? '');
 $password = $data['password'] ?? '';
+$current_date = date("Y-m-d");
 
 if (empty($email) || empty($password)) {
     echo json_encode(["status" => "error", "message" => "Email and password are required"]);
     exit;
 }
 
-// =================================
-//   FACULTY LOGIN
-// =================================
+// ========================
+// FACULTY LOGIN
+// ========================
 $stmt = $conn->prepare("
-    SELECT id, campus_id, full_name, email, password, photo, is_verified, verification_code
-    FROM faculty 
+    SELECT id, campus_id, full_name, email, password, photo, is_verified, status, subscription_end
+    FROM faculty
     WHERE email = ?
 ");
 $stmt->bind_param("s", $email);
@@ -44,6 +67,13 @@ $result = $stmt->get_result();
 if ($result && $result->num_rows === 1) {
     $faculty = $result->fetch_assoc();
 
+    // Subscription check
+    if (!empty($faculty['subscription_end']) && $faculty['subscription_end'] < $current_date) {
+        $conn->query("UPDATE faculty SET status='Pending' WHERE id=" . $faculty['id']);
+        echo json_encode(["status" => "error", "message" => "Faculty subscription expired. Please renew."]);
+        exit;
+    }
+
     if (!password_verify($password, $faculty['password'])) {
         echo json_encode(["status" => "error", "message" => "Invalid password"]);
         exit;
@@ -52,8 +82,8 @@ if ($result && $result->num_rows === 1) {
     if ($faculty['is_verified'] == 1) {
         echo json_encode([
             "status" => "success",
-            "type" => "faculty",
-            "data" => [
+            "type"   => "faculty",
+            "data"   => [
                 "id" => $faculty['id'],
                 "full_name" => $faculty['full_name'],
                 "email" => $faculty['email'],
@@ -63,29 +93,27 @@ if ($result && $result->num_rows === 1) {
         ]);
         exit;
     } else {
-        // resend verification code
-        $verification_code = rand(100000, 999999);
+        $otp = rand(100000, 999999);
         $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-        $conn->query("UPDATE faculty SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$faculty['id']);
+        $conn->query("UPDATE faculty SET verification_code='$otp', code_expires_at='$expiry' WHERE id=" . $faculty['id']);
 
-        $subject = "Faculty Account Verification";
-        $msg = "Hello {$faculty['full_name']},\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-        sendMail($email, $subject, $msg);
+        sendMail($faculty['email'], "Faculty Account Verification", 
+            "Hello {$faculty['full_name']},\n\nYour OTP is: $otp\n\nThis code expires in 5 minutes.");
 
         echo json_encode([
             "status" => "verify_required",
             "type" => "faculty",
-            "message" => "Verification required. Code sent to email."
+            "message" => "Verification required. OTP sent to email."
         ]);
         exit;
     }
 }
 
-// =================================
-//   STUDENT LOGIN
-// =================================
+// ========================
+// STUDENT LOGIN
+// ========================
 $stmt = $conn->prepare("
-    SELECT id, school_id, full_name, email, password, profile_photo, is_verified, verification_code
+    SELECT id, school_id, full_name, email, password, profile_photo, is_verified, status, subscription_end
     FROM students
     WHERE email = ?
 ");
@@ -96,6 +124,12 @@ $result = $stmt->get_result();
 if ($result && $result->num_rows === 1) {
     $student = $result->fetch_assoc();
 
+    if (!empty($student['subscription_end']) && $student['subscription_end'] < $current_date) {
+        $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
+        echo json_encode(["status" => "error", "message" => "Student subscription expired. Please renew."]);
+        exit;
+    }
+
     if (!password_verify($password, $student['password'])) {
         echo json_encode(["status" => "error", "message" => "Invalid password"]);
         exit;
@@ -104,8 +138,8 @@ if ($result && $result->num_rows === 1) {
     if ($student['is_verified'] == 1) {
         echo json_encode([
             "status" => "success",
-            "type" => "student",
-            "data" => [
+            "type"   => "student",
+            "data"   => [
                 "id" => $student['id'],
                 "full_name" => $student['full_name'],
                 "email" => $student['email'],
@@ -115,31 +149,85 @@ if ($result && $result->num_rows === 1) {
         ]);
         exit;
     } else {
-        // resend verification code
-        $verification_code = rand(100000, 999999);
+        $otp = rand(100000, 999999);
         $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-        $conn->query("UPDATE students SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$student['id']);
+        $conn->query("UPDATE students SET verification_code='$otp', code_expires_at='$expiry' WHERE id=" . $student['id']);
 
-        $subject = "Student Account Verification";
-        $msg = "Hello {$student['full_name']},\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-        sendMail($email, $subject, $msg);
+        sendMail($student['email'], "Student Account Verification", 
+            "Hello {$student['full_name']},\n\nYour OTP is: $otp\n\nThis code expires in 5 minutes.");
 
         echo json_encode([
             "status" => "verify_required",
             "type" => "student",
-            "message" => "Verification required. Code sent to email."
+            "message" => "Verification required. OTP sent to email."
         ]);
         exit;
     }
 }
 
-// =================================
-//   NO ACCOUNT FOUND
-// =================================
+// ========================
+// PARENT LOGIN
+// ========================
+$stmt = $conn->prepare("
+    SELECT id, full_name, parent_cnic, email, phone, profile_photo, password, status, is_verified, subscription_end
+    FROM parents
+    WHERE email = ?
+");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result && $result->num_rows === 1) {
+    $parent = $result->fetch_assoc();
+
+    if (!empty($parent['subscription_end']) && $parent['subscription_end'] < $current_date) {
+        $conn->query("UPDATE parents SET status='Pending' WHERE id=" . $parent['id']);
+        echo json_encode(["status" => "error", "message" => "Parent subscription expired. Please renew."]);
+        exit;
+    }
+
+    if (!password_verify($password, $parent['password'])) {
+        echo json_encode(["status" => "error", "message" => "Invalid password"]);
+        exit;
+    }
+
+    if ($parent['is_verified'] == 1) {
+        echo json_encode([
+            "status" => "success",
+            "type"   => "parent",
+            "data"   => [
+                "id" => $parent['id'],
+                "full_name" => $parent['full_name'],
+                "email" => $parent['email'],
+                "phone" => $parent['phone'],
+                "cnic" => $parent['parent_cnic'],
+                "photo" => $parent['profile_photo']
+            ]
+        ]);
+        exit;
+    } else {
+        $otp = rand(100000, 999999);
+        $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
+        $conn->query("UPDATE parents SET verification_code='$otp', code_expires_at='$expiry' WHERE id=" . $parent['id']);
+
+        sendMail($parent['email'], "Parent Account Verification", 
+            "Hello {$parent['full_name']},\n\nYour OTP is: $otp\n\nThis code expires in 5 minutes.");
+
+        echo json_encode([
+            "status" => "verify_required",
+            "type" => "parent",
+            "message" => "Verification required. OTP sent to email."
+        ]);
+        exit;
+    }
+}
+
+// ========================
+// NO ACCOUNT FOUND
+// ========================
 echo json_encode([
     "status" => "error",
-    "message" => "No faculty or student account found with this email"
+    "message" => "No student, faculty, or parent account found with this email"
 ]);
 exit;
-
 ?>
