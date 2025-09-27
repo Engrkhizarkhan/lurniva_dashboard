@@ -44,6 +44,8 @@ jobs:
             echo "Running database migration..."
  
             # Create database
+            mysql -u lurnivauser -p'lurniva@testVM' -e "CREATE DATABASE IF NOT EXISTS lurnivaDB"
+
             mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB_production_ready.sql
             echo "Database migration completed."
 
