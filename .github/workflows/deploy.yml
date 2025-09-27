@@ -46,7 +46,7 @@ jobs:
             # Create database
             mysql -u lurnivauser -p'lurniva@testVM' -e "CREATE DATABASE IF NOT EXISTS lurnivaDB"
 
-            mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB_production_ready.sql
+            mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql
             echo "Database migration completed."
 
             # 7. Reload PHP and Nginx services

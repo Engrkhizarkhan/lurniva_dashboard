@@ -1,11 +1,79 @@
+-- The db should be update as 
+-- -- ===========================
+-- -- Tables: Existing + New
+-- -- ===========================
+
+-- -- Users table
+-- CREATE TABLE IF NOT EXISTS users (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     name VARCHAR(50),
+--     email VARCHAR(100) UNIQUE
+-- );
+
+-- -- Activity Logs table
+-- CREATE TABLE IF NOT EXISTS activity_logs (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT,
+--     action VARCHAR(100),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Orders table (new)
+-- CREATE TABLE IF NOT EXISTS orders (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT,
+--     product VARCHAR(100),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Payments table (new)
+-- CREATE TABLE IF NOT EXISTS payments (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     order_id INT,
+--     amount DECIMAL(10,2),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- ===========================
+-- -- Add new columns if needed
+-- -- ===========================
+
+-- -- Add phone to users if not exists (MySQL 8+)
+-- ALTER TABLE users 
+-- ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+
+-- -- Add status to orders if not exists
+-- ALTER TABLE orders 
+-- ADD COLUMN IF NOT EXISTS status VARCHAR(50);
+
+-- CREATE TABLE IF NOT EXISTS
+
+-- Prevents errors if the table already exists.
+
+-- Only new tables are created.
+
+-- ALTER TABLE ... ADD COLUMN IF NOT EXISTS
+
+-- Adds new columns safely without touching old columns or data.
+
+-- No DROP TABLE statements
+
+-- Your existing data is fully preserved.
+
+-- You can run this file multiple times
+
+-- Existing tables and columns are untouched.
+
+-- Only missing tables/columns are added.
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 27, 2025 at 05:16 PM
+-- Generation Time: Sep 10, 2025 at 10:08 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.2.12 
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,11 +92,28 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `activity_logs`
+--
+
+CREATE TABLE `activity_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `action` varchar(255) DEFAULT NULL,
+  `entity_type` varchar(100) DEFAULT NULL,
+  `entity_id` int(11) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `app_admin`
 --
 
 CREATE TABLE `app_admin` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -44,7 +129,9 @@ CREATE TABLE `app_admin` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `verification_code` varchar(10) DEFAULT NULL,
-  `code_expires_at` datetime DEFAULT NULL
+  `code_expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -52,84 +139,7 @@ CREATE TABLE `app_admin` (
 --
 
 INSERT INTO `app_admin` (`id`, `username`, `email`, `password`, `full_name`, `phone`, `profile_image`, `message_email`, `merchant_id`, `store_id`, `secret_key`, `role`, `status`, `created_at`, `updated_at`, `verification_code`, `code_expires_at`) VALUES
-(1, 'usman', 'admin@lurniva.com', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, NULL, NULL, 'shayans1215225@gmail.com', NULL, NULL, NULL, 'super_admin', 'active', '2025-09-09 14:08:19', '2025-09-16 08:11:12', '807891', '2025-09-16 10:16:12');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `books`
---
-
-CREATE TABLE `books` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `author` varchar(255) DEFAULT NULL,
-  `publisher` varchar(255) DEFAULT NULL,
-  `isbn` varchar(50) DEFAULT NULL,
-  `category` varchar(100) DEFAULT NULL,
-  `quantity` int(11) DEFAULT 1,
-  `available` int(11) DEFAULT 1,
-  `added_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `books`
---
-
-INSERT INTO `books` (`id`, `school_id`, `title`, `author`, `publisher`, `isbn`, `category`, `quantity`, `available`, `added_at`) VALUES
-(1, 0, 'Islamayt', 'Abc', 'Def', 'ISBN', 'abcdf', 1, 13, '2025-09-11 21:23:39'),
-(2, 4, 'Islamayt', 'Abc', 'Def', 'ISBN', 'abcd', 6, 4, '2025-09-12 04:44:52');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `buses`
---
-
-CREATE TABLE `buses` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `bus_number` varchar(50) NOT NULL,
-  `capacity` int(11) NOT NULL,
-  `status` enum('Active','Inactive') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `buses`
---
-
-INSERT INTO `buses` (`id`, `school_id`, `bus_number`, `capacity`, `status`, `created_at`) VALUES
-(1, 4, '101', 20, 'Active', '2025-09-11 21:44:02'),
-(2, 4, '102', 20, 'Active', '2025-09-16 07:44:26');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `bus_problems`
---
-
-CREATE TABLE `bus_problems` (
-  `id` int(11) NOT NULL,
-  `bus_id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `problem` text NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `status` enum('Open','Resolved') DEFAULT 'Open'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `bus_problems`
---
-
-INSERT INTO `bus_problems` (`id`, `bus_id`, `school_id`, `problem`, `created_at`, `status`) VALUES
-(1, 1, 4, 'it is a probelm', '2025-09-13 21:00:15', 'Open'),
-(2, 1, 4, 'it is a probelm', '2025-09-13 21:00:17', 'Open'),
-(3, 1, 4, 'it is a probelm', '2025-09-13 21:00:18', 'Open'),
-(4, 1, 4, 'it is a probelm', '2025-09-13 21:00:18', 'Open'),
-(5, 1, 4, 'abcd', '2025-09-13 21:13:19', ''),
-(6, 1, 4, 'it is a probelm', '2025-09-13 21:16:41', '');
+(1, 'usman', 'admin@lurniva.com', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, NULL, NULL, 'shayans1215225@gmail.com', NULL, NULL, NULL, 'super_admin', 'active', '2025-09-09 14:08:19', '2025-09-09 14:57:56', '845371', '2025-09-09 17:02:56');
 
 -- --------------------------------------------------------
 
@@ -138,12 +148,16 @@ INSERT INTO `bus_problems` (`id`, `bus_id`, `school_id`, `problem`, `created_at`
 --
 
 CREATE TABLE `class_fee_types` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `fee_structure_id` int(11) DEFAULT NULL,
   `school_id` int(11) NOT NULL,
   `class_grade` varchar(50) NOT NULL,
   `fee_type_id` int(11) NOT NULL,
-  `rate` decimal(10,2) NOT NULL
+  `rate` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `school_id` (`school_id`),
+  KEY `fee_type_id` (`fee_type_id`),
+  KEY `fk_fee_structure` (`fee_structure_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -277,13 +291,6 @@ CREATE TABLE `diary_entries` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
---
--- Dumping data for table `diary_entries`
---
-
-INSERT INTO `diary_entries` (`id`, `school_id`, `class_meta_id`, `subject`, `teacher_id`, `topic`, `description`, `attachment`, `deadline`, `parent_approval_required`, `student_option`, `created_at`, `updated_at`) VALUES
-(2, '4', 6, 'math', 9, 'kjsdkf', 'kljsfj', '', '2025-09-18', 'yes', 'specific', '2025-09-16 07:55:01', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -296,14 +303,6 @@ CREATE TABLE `diary_students` (
   `diary_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `diary_students`
---
-
-INSERT INTO `diary_students` (`id`, `approve_parent`, `diary_id`, `student_id`) VALUES
-(1, '', 2, 3),
-(2, '', 2, 5);
 
 -- --------------------------------------------------------
 
@@ -324,40 +323,6 @@ CREATE TABLE `digital_notices` (
   `file_path` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `digital_notices`
---
-
-INSERT INTO `digital_notices` (`id`, `school_id`, `title`, `notice_date`, `expiry_date`, `issued_by`, `purpose`, `notice_type`, `audience`, `file_path`, `created_at`) VALUES
-(5, 4, 'asdlkfasjlf', '2025-09-11', '2025-09-20', 'klsadfjlasdf', 'jsdflkaflkafk', 'Announcement', 'Everyone', '', '2025-09-20 06:36:30'),
-(6, 4, 'asdlkflasdkf', '2025-09-20', '2025-09-21', 'ldflfsdlf', 'fskfsdflkjfk', 'Holiday', 'All Students', '', '2025-09-19 19:15:38');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `drivers`
---
-
-CREATE TABLE `drivers` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `bus_id` int(11) DEFAULT NULL,
-  `name` varchar(100) NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `license_no` varchar(50) DEFAULT NULL,
-  `status` enum('Active','Inactive') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `drivers`
---
-
-INSERT INTO `drivers` (`id`, `school_id`, `bus_id`, `name`, `phone`, `license_no`, `status`, `created_at`) VALUES
-(1, 4, 1, 'Chacha G', '93234324232', '122424', 'Inactive', '2025-09-11 22:14:46'),
-(2, 4, 1, 'abc', '03030204102', '232312', 'Active', '2025-09-13 17:47:10'),
-(3, 4, 2, 'abc', '03091991002', '19343', 'Active', '2025-09-16 07:44:55');
 
 -- --------------------------------------------------------
 
@@ -480,7 +445,7 @@ CREATE TABLE `faculty` (
 --
 
 INSERT INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualification`, `subjects`, `email`, `password`, `phone`, `address`, `joining_date`, `employment_type`, `schedule_preference`, `photo`, `created_at`, `status`, `rating`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `subscription_start`, `subscription_end`) VALUES
-(9, 4, 'Shayan Khan', '3740587639645', 'BS SE', 'CSIT', 'shayanm1215225@gmail.com', '$2y$10$0S2Wn/mEzR6GE6ZnHcCjrumfvGcuUs5Gc.waxXiIJfynJ6eQkRR56', '03091991002', 'jehangira moh awan Swabi', '0000-00-00', '', '', 'faculty_9_1757519797.png', '2025-08-22 14:20:33', 'Approved', NULL, NULL, 1, NULL, 0, '2025-09-10', '2025-10-10'),
+(9, 4, 'Shayan Khan', '3740587639645', 'BS SE', 'CSIT', 'shayanm1215225@gmail.com', '$2y$10$x4e587EPTl3QXIRpr8KHW.B/7JJXK6QMDdzSX5JjBDCfB1hD6pDsG', '03091991002', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872433_Untitled.jpg', '2025-08-22 14:20:33', 'Approved', NULL, NULL, 1, NULL, 0, '2025-09-10', '2025-10-10'),
 (10, 4, 'Sana Khan', '3740587946212', 'FSc', 'Math, physic', 'shayans1215225@gmai.com', '$2y$10$f4tVQ2Y3ekH6p3GvXg0vZeMwjpQEhbAEuBvFz0adbm3lMmtCf0lce', '03491916168', 'jehangira moh awan Swabi', '2023-06-23', 'Full-time', 'Morning', '1755872508_dme.jpg', '2025-08-22 14:21:48', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-10', '2025-10-10'),
 (11, 5, 'Ikhtisham wahabi', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$XGVmzjJQLumJxbMhkO827Oe2/hwkMtcGRpmC3h1d529slA1zyZ6pi', '03414738901', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '1755880919_IMG_3698.jpeg', '2025-08-22 16:41:59', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-09', '2025-10-09'),
 (12, 5, 'Munir ahmad', '1620122617891', 'Metric', 'English', 'ikhtishamakhtar@gmail.com', '$2y$10$v3oiUE1zMSD8HM0sf2PFwuLZiwywI03EWQ1yRXW7uCe1GcxGya3IG', '0355627189', 'Jahengira swabi', '2025-08-02', 'Full-time', 'Morning', '', '2025-08-22 16:49:24', 'Approved', NULL, NULL, 0, NULL, 0, '2025-09-09', '2025-10-09'),
@@ -489,6 +454,7 @@ INSERT INTO `faculty` (`id`, `campus_id`, `full_name`, `cnic`, `qualification`, 
 --
 -- Triggers `faculty`
 --
+DROP TRIGGER IF EXISTS `prevent_invalid_faculty_approval`;
 DELIMITER $$
 CREATE TRIGGER `prevent_invalid_faculty_approval` BEFORE UPDATE ON `faculty` FOR EACH ROW BEGIN
     -- If someone tries to approve an expired subscription
@@ -537,13 +503,6 @@ CREATE TABLE `faculty_leaves` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `faculty_leaves`
---
-
-INSERT INTO `faculty_leaves` (`id`, `school_id`, `faculty_id`, `leave_type`, `start_date`, `end_date`, `reason`, `status`, `approved_by`, `approved_at`, `created_at`, `updated_at`) VALUES
-(4, 4, 9, 'sick', '2025-09-17', '2025-09-18', 'I am sick', 'Pending', NULL, NULL, '2025-09-16 07:48:41', '2025-09-16 07:48:41');
 
 -- --------------------------------------------------------
 
@@ -724,78 +683,6 @@ INSERT INTO `fee_types` (`id`, `school_id`, `fee_name`, `status`, `created_at`) 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `library_fines`
---
-
-CREATE TABLE `library_fines` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `transaction_id` int(11) NOT NULL,
-  `fine_amount` decimal(10,2) NOT NULL,
-  `paid_status` enum('Unpaid','Paid') DEFAULT 'Unpaid'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `library_fines`
---
-
-INSERT INTO `library_fines` (`id`, `school_id`, `transaction_id`, `fine_amount`, `paid_status`) VALUES
-(1, 0, 16, 2000.00, 'Paid'),
-(2, 0, 16, 2000.00, 'Paid'),
-(3, 0, 14, 200.00, 'Paid'),
-(4, 0, 14, 200.00, 'Paid'),
-(5, 0, 17, 150.00, 'Paid'),
-(6, 0, 18, 150.00, 'Paid'),
-(7, 4, 21, 20.00, 'Paid');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `library_transactions`
---
-
-CREATE TABLE `library_transactions` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `book_id` int(11) NOT NULL,
-  `student_id` int(11) DEFAULT NULL,
-  `faculty_id` int(11) DEFAULT NULL,
-  `issue_date` date NOT NULL,
-  `due_date` date NOT NULL,
-  `return_date` date DEFAULT NULL,
-  `status` enum('Issued','Returned','Overdue') DEFAULT 'Issued'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `library_transactions`
---
-
-INSERT INTO `library_transactions` (`id`, `school_id`, `book_id`, `student_id`, `faculty_id`, `issue_date`, `due_date`, `return_date`, `status`) VALUES
-(1, 0, 1, 3, NULL, '2025-09-10', '2025-09-18', '2025-09-12', 'Returned'),
-(2, 0, 1, 4, NULL, '2025-09-12', '2025-09-15', '2025-09-11', 'Returned'),
-(3, 0, 1, 5, NULL, '2025-09-12', '2025-09-03', '2025-09-12', 'Returned'),
-(4, 0, 1, 5, NULL, '2025-09-11', '2025-09-18', '2025-09-11', 'Returned'),
-(5, 0, 1, 5, NULL, '2025-09-01', '2025-09-09', '2025-09-12', 'Returned'),
-(6, 0, 1, 4, NULL, '2025-09-01', '2025-09-03', '2025-09-12', 'Returned'),
-(7, 0, 1, NULL, 9, '2025-09-03', '2025-09-11', '2025-09-11', 'Returned'),
-(8, 0, 1, NULL, 9, '2025-09-03', '2025-09-11', '2025-09-11', 'Returned'),
-(9, 0, 1, NULL, 9, '2025-09-03', '2025-09-11', '2025-09-11', 'Returned'),
-(10, 0, 1, NULL, 9, '2025-09-12', '2025-09-15', '2025-09-11', 'Returned'),
-(11, 0, 1, 4, NULL, '2025-09-01', '2025-09-10', '2025-09-11', 'Returned'),
-(12, 0, 1, 4, NULL, '2025-09-01', '2025-09-10', '2025-09-11', 'Returned'),
-(13, 0, 1, NULL, 9, '2025-09-01', '2025-09-10', '2025-09-11', 'Returned'),
-(14, 0, 1, NULL, 9, '2025-09-01', '2025-09-10', '2025-09-12', 'Returned'),
-(15, 0, 1, NULL, 9, '2025-09-01', '2025-09-08', '2025-09-11', 'Returned'),
-(16, 0, 1, NULL, 10, '2025-09-01', '2025-09-07', '2025-09-12', 'Returned'),
-(17, 0, 1, NULL, 9, '2025-09-01', '2025-09-08', '2025-09-12', 'Returned'),
-(18, 0, 1, NULL, 9, '2025-09-02', '2025-09-08', '2025-09-12', 'Returned'),
-(19, 4, 2, NULL, 9, '2025-09-01', '2025-09-10', NULL, 'Issued'),
-(20, 4, 2, NULL, 9, '2025-09-01', '2025-09-10', NULL, 'Issued'),
-(21, 4, 2, NULL, 9, '2025-09-01', '2025-09-10', '2025-09-12', 'Returned');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `meeting_announcements`
 --
 
@@ -819,8 +706,7 @@ CREATE TABLE `meeting_announcements` (
 --
 
 INSERT INTO `meeting_announcements` (`id`, `school_id`, `title`, `meeting_agenda`, `meeting_date`, `meeting_time`, `meeting_person`, `person_id_one`, `meeting_person2`, `person_id_two`, `status`, `created_at`) VALUES
-(2, 4, 'meeting', 'sfsfsffsfas', '2025-09-03', '08:00:00', 'admin', 9, 'admin', 3, 'scheduled', '2025-09-02 10:20:03'),
-(3, 4, 'Islamayt', 'klsdaflkjdfk', '2025-09-22', '08:00:00', 'teacher', 9, 'admin', 4, '', '2025-09-19 19:32:36');
+(2, 4, 'meeting', 'sfsfsffsfas', '2025-09-03', '08:00:00', 'admin', 9, 'admin', 3, 'scheduled', '2025-09-02 10:20:03');
 
 -- --------------------------------------------------------
 
@@ -846,9 +732,7 @@ CREATE TABLE `meeting_requests` (
 --
 
 INSERT INTO `meeting_requests` (`id`, `school_id`, `requested_by`, `requester_id`, `with_meeting`, `id_meeter`, `title`, `agenda`, `status`, `created_at`) VALUES
-(3, 4, 'teacher', 9, 'parent', 3, 'meeting', 'sfsfsffsfas', 'approved', '2025-09-02 10:06:34'),
-(4, 4, 'parent', 3, 'admin', 4, 'make a meeting for the ', 'fjksafjafjlksflk', 'pending', '2025-09-11 06:46:50'),
-(5, 4, 'teacher', 9, 'parent', 5, 'Islamayt', 'sdkfijefie', 'pending', '2025-09-16 07:49:20');
+(3, 4, 'teacher', 9, 'parent', 3, 'meeting', 'sfsfsffsfas', 'approved', '2025-09-02 10:06:34');
 
 -- --------------------------------------------------------
 
@@ -876,86 +760,9 @@ CREATE TABLE `messages` (
 
 INSERT INTO `messages` (`id`, `school_id`, `sender_designation`, `sender_id`, `receiver_designation`, `receiver_id`, `message`, `file_attachment`, `voice_note`, `sent_at`, `status`) VALUES
 (26, 4, 'admin', 4, 'teacher', 9, 'hello', NULL, NULL, '2025-09-02 10:09:18', 'unread'),
-(27, 4, 'admin', 4, 'student', 3, 'hello it is a test', NULL, NULL, '2025-09-02 10:52:37', 'read'),
-(28, 4, 'admin', 4, 'student', 3, 'hi', NULL, NULL, '2025-09-02 11:49:37', 'read'),
-(29, 4, 'student', 3, 'teacher', 9, 'how abut the test', NULL, NULL, '2025-09-05 14:42:28', 'unread'),
-(30, 4, 'admin', 4, 'teacher', 9, 'hello', NULL, NULL, '2025-09-11 08:17:32', 'unread'),
-(31, 4, 'teacher', 9, 'admin', 4, NULL, NULL, 'voice_68c26d1f06b295.98291873.webm', '2025-09-11 08:33:03', 'read'),
-(32, 4, 'teacher', 9, 'admin', 4, NULL, NULL, 'voice_68c26d34375849.60227896.webm', '2025-09-11 08:33:24', 'read'),
-(33, 4, 'admin', 4, 'teacher', 9, 'hello', NULL, NULL, '2025-09-16 09:46:37', 'unread'),
-(34, 4, 'admin', 4, 'teacher', 9, NULL, NULL, 'voice_68c915e6a45f96.16835669.webm', '2025-09-16 09:46:46', 'unread'),
-(35, 4, 'admin', 4, 'teacher', 9, 'apple-touch-icon.png', 'file_68c915ef601e47.11286659.png', NULL, '2025-09-16 09:46:55', 'unread'),
-(36, 4, 'student', 3, 'teacher', 9, 'shwo', NULL, NULL, '2025-09-16 09:57:59', 'unread');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `notifications`
---
-
-CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `type` varchar(255) NOT NULL,
-  `school_id` varchar(50) NOT NULL,
-  `module` varchar(50) NOT NULL DEFAULT 'general',
-  `title` varchar(255) NOT NULL,
-  `user_type` varchar(255) NOT NULL,
-  `is_read` tinyint(1) DEFAULT 0,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `notifications`
---
-
-INSERT INTO `notifications` (`id`, `user_id`, `type`, `school_id`, `module`, `title`, `user_type`, `is_read`, `created_at`) VALUES
-(1, 3, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'student', 1, '2025-09-12 01:21:28'),
-(2, 9, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 01:27:02'),
-(3, 9, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 01:35:39'),
-(4, 9, 'library', '', 'general', 'Book Islamayt has been returned successfully.', 'faculty', 0, '2025-09-12 01:44:28'),
-(5, 9, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 01:45:38'),
-(6, 9, 'library', '', 'general', 'Book Islamayt has been returned successfully.', 'faculty', 0, '2025-09-12 01:46:22'),
-(7, 10, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 01:51:19'),
-(8, 9, 'library', '', 'general', 'Book Islamayt returned late. Fine: Rs 200', 'faculty', 0, '2025-09-12 01:57:43'),
-(9, 9, 'library', '', 'general', 'Book Islamayt returned late. Fine: Rs 200', 'faculty', 0, '2025-09-12 02:01:26'),
-(10, 9, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 02:05:28'),
-(11, 9, 'library', '', 'general', 'Book Islamayt returned late. Fine: Rs 150', 'faculty', 0, '2025-09-12 02:06:05'),
-(12, 9, 'library', '', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 02:08:43'),
-(13, 9, 'library', '', 'general', 'Book Islamayt returned late. Fine: Rs 150', 'faculty', 0, '2025-09-12 02:09:03'),
-(14, 9, 'library', '4', 'general', 'Book Islamayt has been issued to you.', 'faculty', 0, '2025-09-12 04:58:17'),
-(15, 9, 'library', '4', 'general', 'Book Islamayt returned late. Fine: Rs 20', 'faculty', 0, '2025-09-12 04:58:40');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `parents`
---
-
-CREATE TABLE `parents` (
-  `id` int(11) NOT NULL,
-  `full_name` varchar(100) NOT NULL,
-  `parent_cnic` varchar(20) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `profile_photo` varchar(255) DEFAULT NULL,
-  `password` varchar(255) NOT NULL,
-  `status` enum('pending','active','inactive') DEFAULT 'pending',
-  `verification_code` varchar(6) DEFAULT NULL,
-  `is_verified` tinyint(1) DEFAULT 0,
-  `code_expires_at` datetime DEFAULT NULL,
-  `verification_attempts` int(11) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `subscription_start` date DEFAULT NULL,
-  `subscription_end` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `parents`
---
-
-INSERT INTO `parents` (`id`, `full_name`, `parent_cnic`, `email`, `phone`, `profile_photo`, `password`, `status`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `created_at`, `subscription_start`, `subscription_end`) VALUES
-(1, 'Faheem', '34094892992311', 'faheem@gmail.com', '03030204102', '1757872145_team-1.jpg', '$2y$10$9j5oHY9VK7UsOs69YhWWE.73nYDCQ5iVv1CkoFujuLTdhOOKMkOHG', 'pending', NULL, 1, '2025-09-14 19:54:05', 0, '2025-09-14 17:49:05', NULL, NULL);
+(27, 4, 'admin', 4, 'student', 3, 'hello it is a test', NULL, NULL, '2025-09-02 10:52:37', 'unread'),
+(28, 4, 'admin', 4, 'student', 3, 'hi', NULL, NULL, '2025-09-02 11:49:37', 'unread'),
+(29, 4, 'student', 3, 'teacher', 9, 'how abut the test', NULL, NULL, '2025-09-05 14:42:28', 'unread');
 
 -- --------------------------------------------------------
 
@@ -970,21 +777,6 @@ CREATE TABLE `payments` (
   `amount_paid` decimal(10,2) NOT NULL,
   `method` enum('cash','card','online','bank_transfer') DEFAULT 'cash',
   `remarks` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `routes`
---
-
-CREATE TABLE `routes` (
-  `id` int(11) NOT NULL,
-  `route_name` varchar(100) NOT NULL,
-  `start_point` varchar(150) NOT NULL,
-  `end_point` varchar(150) NOT NULL,
-  `stops` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
@@ -1027,7 +819,6 @@ CREATE TABLE `schools` (
   `address` text DEFAULT NULL,
   `logo` varchar(255) DEFAULT NULL,
   `admin_contact_person` varchar(255) DEFAULT NULL,
-  `username` varchar(8) DEFAULT NULL,
   `admin_email` varchar(150) DEFAULT NULL,
   `admin_phone` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
@@ -1046,13 +837,14 @@ CREATE TABLE `schools` (
 -- Dumping data for table `schools`
 --
 
-INSERT INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`, `affiliation_board`, `school_email`, `school_phone`, `school_website`, `country`, `state`, `city`, `address`, `logo`, `admin_contact_person`, `username`, `admin_email`, `admin_phone`, `password`, `verification_code`, `is_verified`, `status`, `code_expires_at`, `verification_attempts`, `created_at`, `subscription_start`, `subscription_end`, `num_students`) VALUES
-(4, 'Kurtlar Developer', 'Private', '1215225', 'mardan', 'kurtlar1215225@gmail.com', '03091991002', 'https://kurtlardeveloper.com', 'Pakistan', 'KPK', 'Jehangira', 'jehangira moh awan Swabi', '1755841590_apple-touch-icon.png', 'Shayan Khan', 'Kurtlar', 'school12@gmail.com', '03491916168', '$2y$10$2uqBC9ly54skkEagFhNLh.9RSnOgnNVz/GP1IkuFu8hkWhjtL8R7O', NULL, 1, 'Approved', '2025-08-22 18:31:33', 0, '2025-08-22 05:46:30', '2025-09-10', '2025-09-30', 0),
-(5, 'Raffey school jahengira', 'Private', '003345671889', 'Mardan board', 'abdullahparkour17@gmail.com', '03466294461', 'http://www.epop.pk/portal/oxford-public-school-swabi/5510', 'Pakustan', 'Peshawar', 'Kpk', 'Jahengira swabi', '1755876579_IMG_3192.png', 'Abdullah Raffey', NULL, 'abdullahparkour17@gmail.com', '03499545143', '$2y$10$6r/NkrW5AsXTPqTRcqiL4Od2ZMs2PxbuegavxuBTCCAejp9L9UoIa', NULL, 1, 'Approved', '2025-08-22 17:34:39', 0, '2025-08-22 15:29:39', '2025-09-09', '2025-09-20', 0);
+INSERT INTO `schools` (`id`, `school_name`, `school_type`, `registration_number`, `affiliation_board`, `school_email`, `school_phone`, `school_website`, `country`, `state`, `city`, `address`, `logo`, `admin_contact_person`, `admin_email`, `admin_phone`, `password`, `verification_code`, `is_verified`, `status`, `code_expires_at`, `verification_attempts`, `created_at`, `subscription_start`, `subscription_end`, `num_students`) VALUES
+(4, 'Kurtlar Developer', 'Private', '1215225', 'mardan', 'kurtlar1215225@gmail.com', '03091991002', 'https://kurtlardeveloper.com', 'Pakistan', 'KPK', 'Jehangira', 'jehangira moh awan Swabi', '1755841590_apple-touch-icon.png', 'Shayan Khan', 'school12@gmail.com', '03491916168', '$2y$10$2uqBC9ly54skkEagFhNLh.9RSnOgnNVz/GP1IkuFu8hkWhjtL8R7O', NULL, 1, 'Approved', '2025-08-22 18:31:33', 0, '2025-08-22 05:46:30', '2025-09-10', '2025-10-10', 0),
+(5, 'Raffey school jahengira', 'Private', '003345671889', 'Mardan board', 'abdullahparkour17@gmail.com', '03466294461', 'http://www.epop.pk/portal/oxford-public-school-swabi/5510', 'Pakustan', 'Peshawar', 'Kpk', 'Jahengira swabi', '1755876579_IMG_3192.png', 'Abdullah Raffey', 'abdullahparkour17@gmail.com', '03499545143', '$2y$10$6r/NkrW5AsXTPqTRcqiL4Od2ZMs2PxbuegavxuBTCCAejp9L9UoIa', NULL, 1, 'Approved', '2025-08-22 17:34:39', 0, '2025-08-22 15:29:39', '2025-09-09', '2025-10-09', 0);
 
 --
 -- Triggers `schools`
 --
+DROP TRIGGER IF EXISTS `prevent_invalid_approval`;
 DELIMITER $$
 CREATE TRIGGER `prevent_invalid_approval` BEFORE UPDATE ON `schools` FOR EACH ROW BEGIN
     -- If someone tries to set status to Approved but subscription_end is expired
@@ -1080,34 +872,21 @@ CREATE TABLE `school_settings` (
   `mini_sidebar` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=Off, 1=On',
   `sticky_header` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=Off, 1=On',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `attendance_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `behavior_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `chat_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `dairy_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `exam_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `fee_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `library_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `meeting_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `notice_board_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `assign_task_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `tests_assignments_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `timetable_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `transport_enabled` tinyint(1) NOT NULL DEFAULT 1
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `school_settings`
 --
 
-INSERT INTO `school_settings` (`id`, `person`, `person_id`, `layout`, `sidebar_color`, `color_theme`, `mini_sidebar`, `sticky_header`, `created_at`, `updated_at`, `attendance_enabled`, `behavior_enabled`, `chat_enabled`, `dairy_enabled`, `exam_enabled`, `fee_enabled`, `library_enabled`, `meeting_enabled`, `notice_board_enabled`, `assign_task_enabled`, `tests_assignments_enabled`, `timetable_enabled`, `transport_enabled`) VALUES
-(1, 'admin', 4, 1, 1, 'white', 0, 0, '2025-08-22 11:17:09', '2025-09-21 20:11:32', 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(2, 'student', 3, 1, 1, 'white', 0, 0, '2025-08-22 17:13:32', '2025-09-21 20:11:32', 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(3, 'admin', 5, 1, 1, 'white', 0, 0, '2025-08-22 17:16:18', '2025-08-22 17:17:17', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(6, 'facility', 9, 1, 1, 'white', 0, 0, '2025-08-23 12:08:32', '2025-09-21 20:19:47', 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(7, 'student', 4, 1, 1, 'white', 0, 0, '2025-08-27 16:38:54', '2025-09-21 20:11:32', 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(8, 'student', 5, 1, 1, 'white', 0, 0, '2025-08-28 19:08:40', '2025-09-21 20:11:32', 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(9, 'app_admin', 1, 1, 1, 'white', 0, 0, '2025-09-09 11:54:56', '2025-09-11 07:03:44', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO `school_settings` (`id`, `person`, `person_id`, `layout`, `sidebar_color`, `color_theme`, `mini_sidebar`, `sticky_header`, `created_at`, `updated_at`) VALUES
+(1, 'admin', 4, 1, 1, 'white', 0, 0, '2025-08-22 11:17:09', '2025-09-05 12:34:44'),
+(2, 'student', 3, 1, 1, 'white', 0, 0, '2025-08-22 17:13:32', '2025-09-08 09:30:34'),
+(3, 'admin', 5, 1, 1, 'white', 0, 0, '2025-08-22 17:16:18', '2025-08-22 17:17:17'),
+(6, 'facility', 9, 1, 1, 'white', 0, 0, '2025-08-23 12:08:32', '2025-08-23 15:08:34'),
+(7, 'student', 4, 1, 1, 'white', 0, 0, '2025-08-27 16:38:54', '2025-08-27 16:38:54'),
+(8, 'student', 5, 1, 1, 'white', 0, 0, '2025-08-28 19:08:40', '2025-08-28 19:08:40'),
+(9, 'app_admin', 1, 1, 1, 'white', 0, 0, '2025-09-09 11:54:56', '2025-09-09 14:55:10');
 
 -- --------------------------------------------------------
 
@@ -1126,13 +905,6 @@ CREATE TABLE `school_tasks` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
---
--- Dumping data for table `school_tasks`
---
-
-INSERT INTO `school_tasks` (`id`, `school_id`, `task_title`, `task_description`, `due_date`, `task_completed_percent`, `created_by`, `created_at`) VALUES
-(7, 4, 'title', 'afkadjf', '2025-09-17', 100.00, 4, '2025-09-16 07:39:06');
-
 -- --------------------------------------------------------
 
 --
@@ -1148,14 +920,6 @@ CREATE TABLE `school_task_assignees` (
   `status` enum('Active','Not Active') DEFAULT 'Active',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `school_task_assignees`
---
-
-INSERT INTO `school_task_assignees` (`id`, `school_id`, `task_id`, `assigned_to_type`, `assigned_to_id`, `status`, `created_at`) VALUES
-(9, 4, 7, 'teacher', 10, '', '2025-09-16 02:38:45'),
-(10, 4, 7, 'student', 3, '', '2025-09-16 02:38:54');
 
 -- --------------------------------------------------------
 
@@ -1193,9 +957,7 @@ CREATE TABLE `students` (
   `id` int(11) NOT NULL,
   `school_id` int(11) DEFAULT NULL,
   `parent_name` varchar(100) DEFAULT NULL,
-  `parent_cnic` varchar(20) DEFAULT NULL,
   `full_name` varchar(100) DEFAULT NULL,
-  `username` varchar(8) DEFAULT NULL,
   `gender` enum('Male','Female','Other') DEFAULT NULL,
   `dob` date DEFAULT NULL,
   `cnic_formb` varchar(20) DEFAULT NULL,
@@ -1204,6 +966,7 @@ CREATE TABLE `students` (
   `roll_number` varchar(50) DEFAULT NULL,
   `address` text DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `parent_email` varchar(255) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `profile_photo` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
@@ -1214,22 +977,22 @@ CREATE TABLE `students` (
   `status` enum('Approved','Inactive','Pending') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `subscription_start` date DEFAULT NULL,
-  `subscription_end` date DEFAULT NULL,
-  `route_id` int(11) DEFAULT NULL
+  `subscription_end` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`id`, `school_id`, `parent_name`, `parent_cnic`, `full_name`, `username`, `gender`, `dob`, `cnic_formb`, `class_grade`, `section`, `roll_number`, `address`, `email`, `phone`, `profile_photo`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `status`, `created_at`, `subscription_start`, `subscription_end`, `route_id`) VALUES
-(3, 4, 'Feheem', '34094892992311', 'Ferdeen', NULL, 'Male', '2020-02-02', '1023343345553', '1', 'A', '1', 'it is a address', 'ferdeen@gmail.com', '03030204102', 'student_3_1757525163.png', '$2y$10$UqpufdBvoZ2HDGZTBMm5SuMESCh1AUhxUo/DP7nDlzfRkEUeVHzP6', NULL, 1, '2025-08-22 19:18:32', 0, 'Pending', '2025-08-22 17:13:32', '2025-09-10', '2025-10-10', NULL),
-(4, 4, 'Khan', '34094892992311', 'sun', NULL, 'Male', '2017-09-27', '232423423423423', '2', 'A', '12', 'kjdgkdfhgksd', 'awasjanzab1919@gmail.com', '02813823801', NULL, '$2y$10$iP.kySkNejvxSx7r5rFq8edF21Gg71Vc/hlguQmhcCDoQRCW5Imxi', '748976', 1, '2025-08-27 18:44:49', 0, 'Approved', '2025-08-27 16:38:54', '2025-09-10', '2025-10-10', NULL),
-(5, 4, 'Farman Ullah', '34094892992311', 'khan khan', NULL, 'Male', '2005-12-01', '7837493284923', '1', 'A', '19985', 'Peshware', 'jfksdjf@gmail.com', '03023434233', NULL, '$2y$10$bXk2yqpPTdi4XJFtOp6JK.WvY3d4iBT90IW.p4.75TeF1fV/kZ4k6', '962419', 0, '2025-08-28 21:13:40', 0, 'Approved', '2025-08-28 19:08:40', '2025-09-10', '2025-10-10', NULL);
+INSERT INTO `students` (`id`, `school_id`, `parent_name`, `full_name`, `gender`, `dob`, `cnic_formb`, `class_grade`, `section`, `roll_number`, `address`, `email`, `parent_email`, `phone`, `profile_photo`, `password`, `verification_code`, `is_verified`, `code_expires_at`, `verification_attempts`, `status`, `created_at`, `subscription_start`, `subscription_end`) VALUES
+(3, 4, 'Feheem', 'Ferdeen', 'Male', '2020-02-02', '1023343345553', '1', 'A', '1', 'it is a address', 'ferdeen@gmail.com', 'faheem@gmail.com', '03030204102', '1755882812_user-8.png', '$2y$10$vu1OqO/ZJC/YKARHx0LlRueL/JojWg3AguqTPbOyyXmJl5kcjELeO', NULL, 1, '2025-08-22 19:18:32', 0, 'Pending', '2025-08-22 17:13:32', '2025-09-10', '2025-10-10'),
+(4, 4, 'Khan', 'sun', 'Male', '2017-09-27', '232423423423423', '2', 'A', '12', 'kjdgkdfhgksd', 'awasjanzab1919@gmail.com', 'abc123@gmil.com', '02813823801', NULL, '$2y$10$iP.kySkNejvxSx7r5rFq8edF21Gg71Vc/hlguQmhcCDoQRCW5Imxi', '748976', 1, '2025-08-27 18:44:49', 0, 'Approved', '2025-08-27 16:38:54', '2025-09-10', '2025-10-10'),
+(5, 4, 'Farman Ullah', 'khan khan', 'Male', '2005-12-01', '7837493284923', '1', 'A', '19985', 'Peshware', 'jfksdjf@gmail.com', 'jdkflsdasd123@gmail.com', '03023434233', NULL, '$2y$10$bXk2yqpPTdi4XJFtOp6JK.WvY3d4iBT90IW.p4.75TeF1fV/kZ4k6', '962419', 0, '2025-08-28 21:13:40', 0, 'Pending', '2025-08-28 19:08:40', '2025-09-10', '2025-10-10');
 
 --
 -- Triggers `students`
 --
+DROP TRIGGER IF EXISTS `prevent_invalid_student_approval`;
 DELIMITER $$
 CREATE TRIGGER `prevent_invalid_student_approval` BEFORE UPDATE ON `students` FOR EACH ROW BEGIN
     -- If someone tries to approve an expired subscription
@@ -1269,37 +1032,7 @@ INSERT INTO `student_attendance` (`id`, `school_id`, `teacher_id`, `class_meta_i
 (6, 4, 9, 6, 3, 'Absent', '2025-07-21', '2025-08-24 19:22:45'),
 (7, 4, 9, 6, 3, 'Absent', '2025-01-21', '2025-08-24 19:23:11'),
 (8, 4, 9, 6, 3, 'Present', '2025-09-05', '2025-09-05 17:41:25'),
-(9, 4, 9, 6, 5, 'Present', '2025-09-05', '2025-09-05 17:41:25'),
-(10, 4, 9, 6, 3, 'Present', '2025-09-11', '2025-09-11 11:08:53'),
-(11, 4, 9, 6, 5, 'Present', '2025-09-11', '2025-09-11 11:08:53');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `student_behavior`
---
-
-CREATE TABLE `student_behavior` (
-  `id` int(11) NOT NULL,
-  `class_id` int(11) NOT NULL,
-  `teacher_id` int(11) NOT NULL,
-  `student_id` int(11) NOT NULL,
-  `topic` varchar(255) NOT NULL,
-  `description` text NOT NULL,
-  `attachment` varchar(255) DEFAULT NULL,
-  `deadline` date NOT NULL,
-  `parent_approval` enum('yes','no') DEFAULT 'no',
-  `parent_approved` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `student_behavior`
---
-
-INSERT INTO `student_behavior` (`id`, `class_id`, `teacher_id`, `student_id`, `topic`, `description`, `attachment`, `deadline`, `parent_approval`, `parent_approved`, `created_at`, `updated_at`) VALUES
-(1, 6, 9, 3, 'abc', 'kjsflkjsfklj dsfkjsflkf', NULL, '2025-09-24', 'yes', 1, '2025-09-12 22:06:40', '2025-09-13 20:00:24');
+(9, 4, 9, 6, 5, 'Present', '2025-09-05', '2025-09-05 17:41:25');
 
 -- --------------------------------------------------------
 
@@ -1415,11 +1148,7 @@ CREATE TABLE `student_results` (
 INSERT INTO `student_results` (`id`, `school_id`, `assignment_id`, `student_id`, `marks_obtained`, `remarks`, `attachment`, `created_at`, `updated_at`) VALUES
 (3, 4, 3, 3, 50.00, 'kdifdnfi', '', '2025-08-23 22:35:27', NULL),
 (4, 4, 2, 3, 90.00, 'sdfsdf', '', '2025-08-23 22:43:27', NULL),
-(5, 4, 4, 3, 60.00, 'jfksdjf', '', '2025-08-24 10:14:38', NULL),
-(6, 4, 5, 3, 90.00, 'akfjs', '', '2025-09-11 11:10:02', NULL),
-(7, 4, 5, 5, 80.00, 'kjsdfkj', '', '2025-09-11 11:10:02', NULL),
-(8, 4, 6, 3, 80.00, '', '', '2025-09-16 12:51:36', NULL),
-(9, 4, 6, 5, 90.00, '', '', '2025-09-16 12:51:36', NULL);
+(5, 4, 4, 3, 60.00, 'jfksdjf', '', '2025-08-24 10:14:38', NULL);
 
 -- --------------------------------------------------------
 
@@ -1451,97 +1180,13 @@ INSERT INTO `teacher_assignments` (`id`, `school_id`, `teacher_id`, `class_meta_
 (2, 4, 9, 6, 'english', 'Assignment', 'abc', 'it is description', '2025-08-26', 100, 'assignment_1755970254.', '2025-08-23 22:30:54', '2025-08-24 10:24:58'),
 (3, 4, 9, 6, 'math', 'Test', 'titel', 'abc (../uploads/assignment/assignment_1755970254.', '2025-08-25', 100, 'assignment_1755970490.jpg', '2025-08-23 22:34:50', NULL),
 (4, 4, 9, 6, 'english', 'Test', 'titel', 'ksdfjsdkf', '2025-08-29', 80, 'assignment_1756012434.png', '2025-08-24 10:13:54', NULL),
-(5, 4, 9, 6, 'english', 'Test', 'titel', 'sdfsdfanj djsjf', '2025-09-09', 100, NULL, '2025-09-08 21:47:08', NULL),
-(6, 4, 9, 6, 'islamyat', 'Assignment', 'jkk', 'kjasdlfkj', '2025-09-17', 100, 'assignment_1758009024.docx', '2025-09-16 12:50:24', NULL),
-(7, 4, 9, 6, 'english', 'Assignment', 'klsdfkl', 'slkdflsak', '2025-09-26', 100, NULL, '2025-09-19 21:30:33', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `transport_routes`
---
-
-CREATE TABLE `transport_routes` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `route_name` varchar(100) NOT NULL,
-  `stops` text DEFAULT NULL,
-  `status` enum('Active','Inactive') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `transport_routes`
---
-
-INSERT INTO `transport_routes` (`id`, `school_id`, `route_name`, `stops`, `status`, `created_at`) VALUES
-(1, 4, 'abc', 'def', 'Active', '2025-09-11 22:26:27'),
-(2, 4, 'abc', 'kjfsakdf asfksdf kajfkaf', 'Active', '2025-09-13 17:47:46'),
-(3, 4, 'jehangira', 'S1, S2 S3', 'Active', '2025-09-16 07:45:45');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `transport_student_routes`
---
-
-CREATE TABLE `transport_student_routes` (
-  `id` int(11) NOT NULL,
-  `school_id` int(11) NOT NULL,
-  `student_id` int(11) NOT NULL,
-  `route_id` int(11) NOT NULL,
-  `assigned_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Dumping data for table `transport_student_routes`
---
-
-INSERT INTO `transport_student_routes` (`id`, `school_id`, `student_id`, `route_id`, `assigned_at`) VALUES
-(1, 4, 4, 1, '2025-09-11 23:03:41'),
-(2, 4, 3, 2, '2025-09-13 17:48:06'),
-(3, 4, 5, 3, '2025-09-16 07:46:10');
+(5, 4, 9, 6, 'english', 'Test', 'titel', 'sdfsdfanj djsjf', '2025-09-09', 100, NULL, '2025-09-08 21:47:08', NULL);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `app_admin`
---
-ALTER TABLE `app_admin`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- Indexes for table `books`
---
-ALTER TABLE `books`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `buses`
---
-ALTER TABLE `buses`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `bus_problems`
---
-ALTER TABLE `bus_problems`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`),
-  ADD KEY `fee_type_id` (`fee_type_id`),
-  ADD KEY `fk_fee_structure` (`fee_structure_id`);
-
 --
 -- Indexes for table `class_timetable_details`
 --
@@ -1580,13 +1225,6 @@ ALTER TABLE `diary_students`
 --
 ALTER TABLE `digital_notices`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `drivers`
---
-ALTER TABLE `drivers`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`);
 
 --
 -- Indexes for table `exams`
@@ -1681,22 +1319,6 @@ ALTER TABLE `fee_types`
   ADD KEY `school_id` (`school_id`);
 
 --
--- Indexes for table `library_fines`
---
-ALTER TABLE `library_fines`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `transaction_id` (`transaction_id`);
-
---
--- Indexes for table `library_transactions`
---
-ALTER TABLE `library_transactions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `book_id` (`book_id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `faculty_id` (`faculty_id`);
-
---
 -- Indexes for table `meeting_announcements`
 --
 ALTER TABLE `meeting_announcements`
@@ -1718,29 +1340,9 @@ ALTER TABLE `messages`
   ADD KEY `school_id` (`school_id`);
 
 --
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `parents`
---
-ALTER TABLE `parents`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `parent_cnic` (`parent_cnic`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `routes`
---
-ALTER TABLE `routes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1756,8 +1358,7 @@ ALTER TABLE `scholarships`
 ALTER TABLE `schools`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `registration_number` (`registration_number`),
-  ADD UNIQUE KEY `school_email` (`school_email`),
-  ADD UNIQUE KEY `username` (`username`);
+  ADD UNIQUE KEY `school_email` (`school_email`);
 
 --
 -- Indexes for table `school_settings`
@@ -1791,7 +1392,6 @@ ALTER TABLE `school_timings`
 ALTER TABLE `students`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `username` (`username`),
   ADD KEY `school_id` (`school_id`);
 
 --
@@ -1799,15 +1399,6 @@ ALTER TABLE `students`
 --
 ALTER TABLE `student_attendance`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `student_behavior`
---
-ALTER TABLE `student_behavior`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `class_id` (`class_id`),
-  ADD KEY `teacher_id` (`teacher_id`),
-  ADD KEY `student_id` (`student_id`);
 
 --
 -- Indexes for table `student_fee_plans`
@@ -1853,53 +1444,10 @@ ALTER TABLE `teacher_assignments`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `transport_routes`
---
-ALTER TABLE `transport_routes`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `transport_student_routes`
---
-ALTER TABLE `transport_student_routes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `route_id` (`route_id`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `app_admin`
---
-ALTER TABLE `app_admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `books`
---
-ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `buses`
---
-ALTER TABLE `buses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `bus_problems`
---
-ALTER TABLE `bus_problems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
-
 --
 -- AUTO_INCREMENT for table `class_timetable_details`
 --
@@ -1922,25 +1470,19 @@ ALTER TABLE `class_timetable_weekdays`
 -- AUTO_INCREMENT for table `diary_entries`
 --
 ALTER TABLE `diary_entries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `diary_students`
 --
 ALTER TABLE `diary_students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `digital_notices`
 --
 ALTER TABLE `digital_notices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `drivers`
---
-ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `exams`
@@ -1976,7 +1518,7 @@ ALTER TABLE `faculty_attendance`
 -- AUTO_INCREMENT for table `faculty_leaves`
 --
 ALTER TABLE `faculty_leaves`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `fee_installments`
@@ -2021,57 +1563,27 @@ ALTER TABLE `fee_types`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `library_fines`
---
-ALTER TABLE `library_fines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `library_transactions`
---
-ALTER TABLE `library_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
 -- AUTO_INCREMENT for table `meeting_announcements`
 --
 ALTER TABLE `meeting_announcements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `meeting_requests`
 --
 ALTER TABLE `meeting_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
-
---
--- AUTO_INCREMENT for table `notifications`
---
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
-
---
--- AUTO_INCREMENT for table `parents`
---
-ALTER TABLE `parents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `routes`
---
-ALTER TABLE `routes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -2096,13 +1608,13 @@ ALTER TABLE `school_settings`
 -- AUTO_INCREMENT for table `school_tasks`
 --
 ALTER TABLE `school_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `school_task_assignees`
 --
 ALTER TABLE `school_task_assignees`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `school_timings`
@@ -2120,13 +1632,7 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `student_attendance`
 --
 ALTER TABLE `student_attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT for table `student_behavior`
---
-ALTER TABLE `student_behavior`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `student_fee_plans`
@@ -2156,35 +1662,17 @@ ALTER TABLE `student_plan_orders`
 -- AUTO_INCREMENT for table `student_results`
 --
 ALTER TABLE `student_results`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `teacher_assignments`
 --
 ALTER TABLE `teacher_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `transport_routes`
---
-ALTER TABLE `transport_routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `transport_student_routes`
---
-ALTER TABLE `transport_student_routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `bus_problems`
---
-ALTER TABLE `bus_problems`
-  ADD CONSTRAINT `bus_problems_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`);
 
 --
 -- Constraints for table `class_fee_types`
@@ -2206,12 +1694,6 @@ ALTER TABLE `class_timetable_weekdays`
 ALTER TABLE `diary_students`
   ADD CONSTRAINT `diary_students_ibfk_1` FOREIGN KEY (`diary_id`) REFERENCES `diary_entries` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `diary_students_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `drivers`
---
-ALTER TABLE `drivers`
-  ADD CONSTRAINT `drivers_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `exams`
@@ -2273,20 +1755,6 @@ ALTER TABLE `fee_types`
   ADD CONSTRAINT `fee_types_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
 
 --
--- Constraints for table `library_fines`
---
-ALTER TABLE `library_fines`
-  ADD CONSTRAINT `library_fines_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `library_transactions` (`id`);
-
---
--- Constraints for table `library_transactions`
---
-ALTER TABLE `library_transactions`
-  ADD CONSTRAINT `library_transactions_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`),
-  ADD CONSTRAINT `library_transactions_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
-  ADD CONSTRAINT `library_transactions_ibfk_3` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`);
-
---
 -- Constraints for table `meeting_announcements`
 --
 ALTER TABLE `meeting_announcements`
@@ -2329,14 +1797,6 @@ ALTER TABLE `students`
   ADD CONSTRAINT `students_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
 
 --
--- Constraints for table `student_behavior`
---
-ALTER TABLE `student_behavior`
-  ADD CONSTRAINT `student_behavior_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class_timetable_meta` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `student_behavior_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `student_behavior_ibfk_3` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `student_fee_plans`
 --
 ALTER TABLE `student_fee_plans`
@@ -2351,13 +1811,6 @@ ALTER TABLE `student_leaves`
   ADD CONSTRAINT `fk_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `transport_student_routes`
---
-ALTER TABLE `transport_student_routes`
-  ADD CONSTRAINT `transport_student_routes_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `transport_student_routes_ibfk_2` FOREIGN KEY (`route_id`) REFERENCES `transport_routes` (`id`) ON DELETE CASCADE;
 
 DELIMITER $$
 --
