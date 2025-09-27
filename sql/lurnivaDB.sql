@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `app_admin`
+-- Table structure for table `app_admin` 
 --
 
 CREATE TABLE `app_admin` (
