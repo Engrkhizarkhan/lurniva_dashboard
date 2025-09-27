@@ -118,7 +118,7 @@ while ($class = $res_classes->fetch_assoc()) {
             $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" . rawurlencode($jsonData) . "&size=150x150";
 
             echo "<tr>
-                <td><img src='uploads/profile/{$row['profile_photo']}' width='60' height='60' style='object-fit:cover'></td>
+                <td><img src='../student/uploads/profile/{$row['profile_photo']}' width='60' height='60' style='object-fit:cover'></td>
                 <td>{$row['full_name']}</td>
                 <td>{$row['parent_name']}</td>
                 <td>{$row['class_grade']} - {$row['section']}</td>

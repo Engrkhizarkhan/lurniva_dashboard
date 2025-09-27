@@ -133,7 +133,11 @@
                     if (selectedSubject) $('#subject_id').val(selectedSubject);
                 });
             }
-
+            // ✅ add this listener
+            $('#class_id').change(function() {
+                let class_id = $(this).val();
+                loadSubjects(class_id);
+            });
             // Load students for specific selection
             function loadClassStudents(class_id) {
                 if (!class_id) return;

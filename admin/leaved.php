@@ -1,4 +1,31 @@
-<?php require_once 'assets/php/header.php'; ?>
+<?php
+require_once 'assets/php/header.php';
+require_once 'sass/db_config.php';
+
+if (!isset($_SESSION['admin_id'])) {
+    echo "Unauthorized";
+    exit;
+}
+
+$school_id = $_SESSION['admin_id'];
+
+// Fetch school settings
+$sql = "SELECT attendance_enabled FROM school_settings WHERE person = 'admin' AND person_id = ? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $school_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$settings = $result->fetch_assoc();
+$stmt->close();
+
+// 🚨 If attendance is disabled
+if (!$settings || $settings['attendance_enabled'] == 0) {
+    echo "<script>alert('Attendance module is disabled by school admin.'); window.location.href='logout.php';</script>";
+    exit;
+}
+?>
+
 <style>
 #Managements {
     padding-left: 20px;

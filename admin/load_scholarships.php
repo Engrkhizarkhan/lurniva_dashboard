@@ -3,12 +3,41 @@ require_once 'assets/php/header.php';
 require_once 'sass/db_config.php';
 $school_id = $_SESSION['admin_id'];
 ?>
+<?php
+session_start();
+include_once('sass/db_config.php');
+
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: logout.php");
+    exit;
+}
+
+$school_id = $_SESSION['admin_id']; // adjust if using campus_id or student_id
+
+// Fetch school settings
+$sql = "SELECT fee_enabled FROM school_settings WHERE person = 'school' AND person_id = ? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $school_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$settings = $result->fetch_assoc();
+$stmt->close();
+
+// 🚨 If fee is disabled
+if (!$settings || $settings['fee_enabled'] == 0) {
+    echo "<script>alert('Fee module is disabled by school admin.'); window.location.href='logout.php';</script>";
+    exit;
+}
+?>
+
 <style>
 #fee_type {
     padding-left: 20px;
     color: #6777ef !important;
     background-color: #f0f3ff;
 }
+
 #fee_type svg {
     color: #6777ef !important;
 }
@@ -16,6 +45,7 @@ $school_id = $_SESSION['admin_id'];
 #fee_type span {
     color: #6777ef !important;
 }
+
 #fee_type ul {
     display: block !important;
 }

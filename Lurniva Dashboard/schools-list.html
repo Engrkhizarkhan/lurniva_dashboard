@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schools Record</title>
+  <!-- Bootstrap 4/5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .main-content {
+      padding: 40px 0;
+    }
+    .card {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background: linear-gradient(90deg, #4e73df, #1cc88a);
+      color: white;
+      padding: 1rem;
+    }
+    .table thead {
+      background-color: #343a40;
+      color: #fff;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #f8f9fc;
+      transition: 0.3s;
+    }
+    .btn-success {
+      background: linear-gradient(90deg, #1cc88a, #17a673);
+      border: none;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+    }
+    .btn-danger {
+      background: linear-gradient(90deg, #e74a3b, #be2617);
+      border: none;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+    }
+    .badge {
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+    h1 {
+      font-weight: 600;
+      color: #4e73df;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Content -->
+  <div class="main-content container">
+    <section class="section">
+      <div class="section-header text-center mb-4">
+        <h1>Schools Record</h1>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <div class="col-12 col-lg-10">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="mb-0">Registered Schools</h4>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-hover text-center align-middle">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>School Name</th>
+                      <th>School ID</th>
+                      <th>Address</th>
+                      <th>Registered Date</th>
+                      <th>Fee Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Bright Future School</td>
+                      <td>SC-1001</td>
+                      <td>Peshawar Cantt</td>
+                      <td>2025-01-15</td>
+                      <td><span class="badge badge-success">Paid</span></td>
+                      <td>
+                        <button class="btn btn-success btn-sm editBtn"
+                          data-name="Bright Future School"
+                          data-address="Peshawar Cantt">Edit</button>
+                        <button class="btn btn-danger btn-sm deleteBtn">Delete</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>City Grammar School</td>
+                      <td>SC-1002</td>
+                      <td>University Town</td>
+                      <td>2025-02-01</td>
+                      <td><span class="badge badge-danger">Unpaid</span></td>
+                      <td>
+                        <button class="btn btn-success btn-sm editBtn"
+                          data-name="City Grammar School"
+                          data-address="University Town">Edit</button>
+                        <button class="btn btn-danger btn-sm deleteBtn">Delete</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Edit School</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <div class="form-group">
+              <label>School Name</label>
+              <input type="text" class="form-control" id="editSchoolName">
+            </div>
+            <div class="form-group">
+              <label>Address</label>
+              <input type="text" class="form-control" id="editSchoolAddress">
+            </div>
+            <button type="submit" class="btn btn-success">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Confirm Delete</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <p>Are you sure you want to delete this record?</p>
+          <button class="btn btn-danger">Yes, Delete</button>
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Edit button click
+      $(".editBtn").click(function () {
+        let name = $(this).data("name");
+        let address = $(this).data("address");
+
+        $("#editSchoolName").val(name);
+        $("#editSchoolAddress").val(address);
+
+        $("#editModal").modal("show");
+      });
+
+      // Delete button click
+      $(".deleteBtn").click(function () {
+        $("#deleteModal").modal("show");
+      });
+    });
+  </script>
+</body>
+</html>

@@ -7,136 +7,84 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 
-$school_id = $_SESSION['admin_id'];
+$school_id   = $_SESSION['admin_id'];
+$period_id   = $_POST['period_id']   ?? '';
+$class_grade = $_POST['class_name'] ?? ''; // from your JS it's `class_name`
+$student_id  = $_POST['student_id']  ?? '';
 
-$period_id = $_POST['period_id'] ?? '';
-$class_grade = $_POST['class_grade'] ?? '';
-$student_id = $_POST['student_id'] ?? '';
-
-// Function to escape input
+// Escape helper
 function esc($conn, $str) {
     return mysqli_real_escape_string($conn, $str);
 }
 
-// Escape values
-$period_id = esc($conn, $period_id);
+$period_id   = esc($conn, $period_id);
 $class_grade = esc($conn, $class_grade);
-$student_id = esc($conn, $student_id);
+$student_id  = esc($conn, $student_id);
 
-// Where school_id
-$school_condition = "AND school_id = '$school_id'";
-
-// 1. PERIOD ID only
-// 1. PERIOD ID only
-if (!empty($period_id) && empty($student_id) && empty($class_grade)) {
-    $period_query = "
-        SELECT * 
-        FROM fee_periods p
-        WHERE p.id = '$period_id'
-          AND p.school_id = '$school_id'
-          AND EXISTS (
-              SELECT 1 
-              FROM students s
-              WHERE s.school_id = p.school_id
-                AND NOT EXISTS (
-                    SELECT 1 
-                    FROM fee_slip_details f
-                    WHERE f.fee_period_id = p.id
-                      AND f.student_id = s.id
-                      AND f.school_id = p.school_id
-                )
-          )";
+// ===============================
+// 1. Get Period Information
+// ===============================
+$period_query = "SELECT * FROM fee_periods WHERE school_id = '$school_id'";
+if (!empty($period_id)) {
+    $period_query .= " AND id = '$period_id'";
 }
-
-
-// 2. STUDENT ID only
-elseif (!empty($student_id) && empty($period_id) && empty($class_grade)) {
-    $period_query = "SELECT * FROM fee_periods WHERE id NOT IN (
-        SELECT fee_period_id FROM fee_slip_details 
-        WHERE student_id = '$student_id' AND school_id = '$school_id'
-    ) $school_condition";
-}
-
-// 3. CLASS GRADE only
-elseif (!empty($class_grade) && empty($period_id) && empty($student_id)) {
-    $period_query = "SELECT * FROM fee_periods WHERE id NOT IN (
-        SELECT fee_period_id FROM fee_slip_details 
-        WHERE school_id = '$school_id'
-    ) $school_condition";
-}
-
-// 4. PERIOD ID + STUDENT ID
-elseif (!empty($period_id) && !empty($student_id) && empty($class_grade)) {
-    $period_query = "SELECT * FROM fee_periods WHERE id = '$period_id' AND id NOT IN (
-        SELECT fee_period_id FROM fee_slip_details 
-        WHERE student_id = '$student_id' AND school_id = '$school_id'
-    ) $school_condition";
-}
-
-// 5. PERIOD ID + CLASS GRADE
-elseif (!empty($period_id) && !empty($class_grade) && empty($student_id)) {
-    $period_query = "SELECT * FROM fee_periods WHERE id = '$period_id' AND id NOT IN (
-        SELECT fee_period_id FROM fee_slip_details 
-        WHERE school_id = '$school_id'
-    ) $school_condition";
-}
-
-// 6. Show all
-else {
-    $period_query = "SELECT * FROM fee_periods WHERE id NOT IN (
-        SELECT fee_period_id FROM fee_slip_details 
-        WHERE school_id = '$school_id'
-    ) $school_condition";
-}
-
 $period_result = mysqli_query($conn, $period_query);
 
-if (mysqli_num_rows($period_result) > 0) {
-    while ($period = mysqli_fetch_assoc($period_result)) {
-        $p_id = $period['id'];
-        $p_name = $period['period_name'];
-        $p_start_date = $period['start_date'];
-        $p_end_date = $period['end_date'];
+if (!$period_result || mysqli_num_rows($period_result) == 0) {
+    echo "<div class='alert alert-warning'>No fee periods found.</div>";
+    exit;
+}
 
-        // Build student query inside loop
-        $student_query = "SELECT * FROM students WHERE id NOT IN (
-            SELECT student_id FROM fee_slip_details 
-            WHERE fee_period_id = '$p_id' AND school_id = '$school_id'
-        ) AND school_id = '$school_id'";
+while ($period = mysqli_fetch_assoc($period_result)) {
+    $p_id         = $period['id'];
+    $p_name       = $period['period_name'];
+    $p_start_date = $period['start_date'];
+    $p_end_date   = $period['end_date'];
 
-        if (!empty($student_id)) {
-            $student_query .= " AND id = '$student_id'";
-        } elseif (!empty($class_grade)) {
-            $student_query .= " AND class_grade = '$class_grade'";
-        }
+    // ===============================
+    // 2. Get Students Without Slips
+    // ===============================
+    // Fetch all students with their slip (if exists) for this period
+$student_query = "
+    SELECT s.*, f.id AS slip_id, f.total_amount, f.scholarship_amount, 
+           f.net_payable, f.amount_paid, f.payment_status
+    FROM students s
+    LEFT JOIN fee_slip_details f 
+        ON f.student_id = s.id 
+        AND f.fee_period_id = '$p_id' 
+        AND f.school_id = '$school_id'
+    WHERE s.school_id = '$school_id'
+";
 
-        $student_result = mysqli_query($conn, $student_query);
+// Filter by class or student if selected
+if (!empty($student_id)) {
+    $student_query .= " AND s.id = '$student_id'";
+} elseif (!empty($class_grade)) {
+    $student_query .= " AND s.class_grade = '$class_grade'";
+}
 
-        if (mysqli_num_rows($student_result) > 0) {
-            while ($student = mysqli_fetch_assoc($student_result)) {
+    $student_result = mysqli_query($conn, $student_query);
+    if (!$student_result || mysqli_num_rows($student_result) == 0) {
+        echo "<div class='alert alert-info'>All students have fee slips for <b>$p_name</b>.</div>";
+        continue;
+    }
 
-                
-// Fetch all school records
-$sql = "SELECT * FROM `schools` WHERE `id`=$school_id";
-$result = mysqli_query($conn, $sql);
+    // ===============================
+    // 3. Print Each Student Slip
+    // ===============================
+    while ($student = mysqli_fetch_assoc($student_result)) {
+        $student_class = $student['class_grade'];
+        $stu_id        = $student['id'];
 
-// Display results
-if (mysqli_num_rows($result) > 0) {
-   $student_result = mysqli_query($conn, $student_query);
+        // Fetch school details
+        $school_sql = "SELECT * FROM schools WHERE id = $school_id";
+        $school_res = mysqli_query($conn, $school_sql);
+        $school = mysqli_fetch_assoc($school_res);
 
-        while ($student = mysqli_fetch_assoc($student_result)) {
-            $student_class = $student['class_grade'];
-            $student_id = $student['id'];
-
-            $school_sql = "SELECT * FROM schools WHERE id = $school_id";
-            $school_res = mysqli_query($conn, $school_sql);
-            $school = mysqli_fetch_assoc($school_res);
-?>
-
+        ?>
 <div class="section">
-
-
     <div class="card shadow-sm">
+        <!-- School Header -->
         <div class="card-header text-center bg-primary text-white">
             <?php if (!empty($school['logo'])): ?>
             <img src="uploads/logos/<?= $school['logo'] ?>" height="80"><br>
@@ -148,37 +96,35 @@ if (mysqli_num_rows($result) > 0) {
         </div>
 
         <div class="card-body">
-
             <!-- Student Info -->
             <div class="row mb-4 border-bottom pb-3">
                 <div class="col-md-3">
                     <h6 class="text-dark">Student Information</h6>
-                    <p class="mb-1"><strong>Name:</strong> <?= $student['full_name'] ?></p>
-                    <p class="mb-1"><strong>Roll No:</strong> <?= $student['roll_number'] ?></p>
+                    <p><strong>Name:</strong> <?= $student['full_name'] ?></p>
+                    <p><strong>Roll No:</strong> <?= $student['roll_number'] ?></p>
                 </div>
                 <div class="col-md-3">
                     <h6 class="text-dark">Class & Contact</h6>
-                    <p class="mb-1"><strong>Class:</strong> <?= $student['class_grade'] ?></p>
-                    <p class="mb-1"><strong>Email:</strong> <?= $student['email'] ?></p>
+                    <p><strong>Class:</strong> <?= $student['class_grade'] ?></p>
+                    <p><strong>Email:</strong> <?= $student['email'] ?></p>
                 </div>
                 <div class="col-md-3">
                     <h6 class="text-dark">Other Details</h6>
-                    <p class="mb-1"><strong>Phone:</strong> <?= $student['phone'] ?></p>
-                    <p class="mb-1"><strong>Status:</strong> <?= $student['status'] ? 'Active' : 'Inactive' ?></p>
+                    <p><strong>Phone:</strong> <?= $student['phone'] ?></p>
+                    <p><strong>Status:</strong> <?= $student['status'] ? 'Active' : 'Inactive' ?></p>
                 </div>
                 <div class="col-md-3">
                     <h6 class="text-dark">Fee Details</h6>
-                    <p class="mb-1">Fee Slip - <?= htmlspecialchars($p_name) ?></p>
-                    <p class="mb-1">Fee Start Date - <?= htmlspecialchars($p_start_date) ?></p>
-                    <p class="mb-1">Fee End Data - <?= htmlspecialchars($p_end_date) ?></p>
-
+                    <p>Fee Slip - <?= htmlspecialchars($p_name) ?></p>
+                    <p>Start Date - <?= htmlspecialchars($p_start_date) ?></p>
+                    <p>End Date - <?= htmlspecialchars($p_end_date) ?></p>
                 </div>
             </div>
 
-            <!-- Class Fee Structure -->
+            <!-- Class Fee -->
             <h6 class="text-primary mt-4">Class-based Fee Structure</h6>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-sm">
+                <table class="table table-bordered table-sm">
                     <thead class="bg-light">
                         <tr>
                             <th>#</th>
@@ -188,29 +134,29 @@ if (mysqli_num_rows($result) > 0) {
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT fee_types.fee_name, class_fee_types.rate 
-                                FROM class_fee_types 
-                                INNER JOIN fee_types ON class_fee_types.fee_type_id = fee_types.id 
-                                WHERE class_fee_types.class_grade = $student_class AND class_fee_types.school_id = $school_id";
-                        $result = mysqli_query($conn, $sql);
-                        $x = 0; $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "<tr>
-                                    <td>$i</td>
-                                    <td>{$row['fee_name']}</td>
-                                    <td class='text-right'>" . number_format($row['rate'], 2) . "</td>
-                                </tr>";
-                            $x += $row['rate']; $i++;
-                        }
-                        ?>
+                                $sql = "SELECT ft.fee_name, cft.rate 
+                                        FROM class_fee_types cft
+                                        INNER JOIN fee_types ft ON cft.fee_type_id = ft.id
+                                        WHERE cft.class_grade = '$student_class' AND cft.school_id = $school_id";
+                                $res = mysqli_query($conn, $sql);
+                                $x = 0; $i = 1;
+                                while ($row = mysqli_fetch_assoc($res)) {
+                                    echo "<tr>
+                                        <td>$i</td>
+                                        <td>{$row['fee_name']}</td>
+                                        <td class='text-right'>" . number_format($row['rate'], 2) . "</td>
+                                    </tr>";
+                                    $x += $row['rate']; $i++;
+                                }
+                                ?>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Student Monthly Fees -->
+            <!-- Student Fee -->
             <h6 class="text-primary mt-4">Student-specific Monthly Fees</h6>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-sm">
+                <table class="table table-bordered table-sm">
                     <thead class="bg-light">
                         <tr>
                             <th>#</th>
@@ -220,37 +166,38 @@ if (mysqli_num_rows($result) > 0) {
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT ft.fee_name, sfp.base_amount
-                                FROM student_fee_plans AS sfp
-                                INNER JOIN fee_types AS ft ON sfp.fee_component = ft.id
-                                WHERE sfp.student_id = $student_id AND sfp.school_id = $school_id AND sfp.frequency = 'monthly'";
-                        $result = mysqli_query($conn, $sql);
-                        $y = 0; $j = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "<tr>
-                                    <td>$j</td>
-                                    <td>{$row['fee_name']}</td>
-                                    <td class='text-right'>" . number_format($row['base_amount'], 2) . "</td>
-                                </tr>";
-                            $y += $row['base_amount']; $j++;
-                        }
-                        ?>
+                                $sql = "SELECT ft.fee_name, sfp.base_amount
+                                        FROM student_fee_plans sfp
+                                        INNER JOIN fee_types ft ON sfp.fee_component = ft.id
+                                        WHERE sfp.student_id = $stu_id AND sfp.school_id = $school_id AND sfp.frequency = 'monthly'";
+                                $res = mysqli_query($conn, $sql);
+                                $y = 0; $j = 1;
+                                while ($row = mysqli_fetch_assoc($res)) {
+                                    echo "<tr>
+                                        <td>$j</td>
+                                        <td>{$row['fee_name']}</td>
+                                        <td class='text-right'>" . number_format($row['base_amount'], 2) . "</td>
+                                    </tr>";
+                                    $y += $row['base_amount']; $j++;
+                                }
+                                ?>
                     </tbody>
                 </table>
             </div>
 
             <!-- Scholarship -->
             <?php
-            $total = $x + $y;
+                    $total = $x + $y;
+                    $scholarship_total = 0;
 
-            $sql = "SELECT type, amount FROM scholarships WHERE student_id = $student_id AND school_id = $school_id";
-            $result = mysqli_query($conn, $sql);
-            $scholarship_total = 0;
-            if (mysqli_num_rows($result) > 0):
-            ?>
+                    $sql = "SELECT type, amount FROM scholarships 
+                            WHERE student_id = $stu_id AND school_id = $school_id AND status = 'approved'";
+                    $res = mysqli_query($conn, $sql);
+
+                    if ($res && mysqli_num_rows($res) > 0): ?>
             <h6 class="text-primary mt-4">Scholarship Details</h6>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-sm">
+                <table class="table table-bordered table-sm">
                     <thead class="bg-light">
                         <tr>
                             <th>Type</th>
@@ -260,53 +207,93 @@ if (mysqli_num_rows($result) > 0) {
                     </thead>
                     <tbody>
                         <?php
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $type = strtolower($row['type']);
-                            $amount = floatval($row['amount']);
-                            $deduction = ($type === 'percentage') ? ($amount / 100) * $total : $amount;
-                            $scholarship_total += $deduction;
+                                    while ($row = mysqli_fetch_assoc($res)) {
+                                        $type = strtolower($row['type']);
+                                        $amount = floatval($row['amount']);
+                                        $deduction = ($type === 'percentage') ? ($amount / 100) * $total : $amount;
+                                        $scholarship_total += $deduction;
 
-                            echo "<tr>
-                                    <td>$type</td>
-                                    <td>$amount</td>
-                                    <td class='text-right'>" . number_format($deduction, 2) . "</td>
-                                </tr>";
-                        }
-                        ?>
+                                        echo "<tr>
+                                            <td>$type</td>
+                                            <td>$amount</td>
+                                            <td class='text-right'>" . number_format($deduction, 2) . "</td>
+                                        </tr>";
+                                    }
+                                    ?>
                     </tbody>
                 </table>
             </div>
             <?php endif; ?>
 
             <!-- Final Summary -->
+            <?php
+    // Net after scholarship
+    $net_fee = $total - $scholarship_total;
+
+    // Fetch student slip for this period (to check payments)
+    $slip_sql = "SELECT amount_paid, net_payable, payment_status 
+                 FROM fee_slip_details 
+                 WHERE student_id = $stu_id 
+                   AND fee_period_id = $p_id 
+                   AND school_id = $school_id
+                 LIMIT 1";
+    $slip_res = mysqli_query($conn, $slip_sql);
+
+    $status = "UNPAID";
+    $paid = 0;
+    $remaining = $net_fee;
+
+    if ($slip_res && mysqli_num_rows($slip_res) > 0) {
+        $slip = mysqli_fetch_assoc($slip_res);
+        $paid = $slip['amount_paid'];
+        $remaining = $net_fee - $paid;
+
+        if ($paid >= $net_fee) {
+            $status = "PAID";
+            $remaining = 0;
+        } elseif ($paid > 0) {
+            $status = "PARTIALLY PAID";
+        }
+    }
+?>
             <div class="row mt-4">
                 <div class="col-md-6 offset-md-6">
                     <table class="table table-borderless table-sm">
                         <tr>
-                            <th class="text-left">Total Fee</th>
-                            <td class="text-right">Rs<?= number_format($total, 2) ?></td>
+                            <th>Total Fee</th>
+                            <td class="text-right">Rs <?= number_format($total, 2) ?></td>
                         </tr>
                         <tr>
-                            <th class="text-left text-danger">Scholarship Deduction</th>
-                            <td class="text-right text-danger">- Rs<?= number_format($scholarship_total, 2) ?></td>
+                            <th class="text-danger">Scholarship Deduction</th>
+                            <td class="text-right text-danger">- Rs <?= number_format($scholarship_total, 2) ?></td>
                         </tr>
                         <tr>
-                            <th class="text-left text-success h5">Net Payable</th>
-                            <td class="text-right text-success h5">
-                                Rs<?= number_format($total - $scholarship_total, 2) ?>
+                            <th>Net Payable</th>
+                            <td class="text-right">Rs <?= number_format($net_fee, 2) ?></td>
+                        </tr>
+                        <tr>
+                            <th>Paid</th>
+                            <td class="text-right">Rs <?= number_format($paid, 2) ?></td>
+                        </tr>
+                        <tr>
+                            <th class="<?= ($remaining > 0) ? 'text-danger' : 'text-success' ?>">Remaining</th>
+                            <td class="text-right <?= ($remaining > 0) ? 'text-danger' : 'text-success' ?>">
+                                Rs <?= number_format($remaining, 2) ?>
                             </td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td class="text-right"><b><?= $status ?></b></td>
                         </tr>
                     </table>
                 </div>
             </div>
 
 
-
         </div>
     </div>
 </div>
-
 <?php
-        }
-}}}}}
+    }
+}
 ?>

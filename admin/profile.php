@@ -1,8 +1,5 @@
 <?php require_once 'assets/php/header.php'; ?>
 
-<style>
-/* Your existing styles */
-</style>
 
 <div class="main-content" style="min-height: 577px;">
     <section class="section">

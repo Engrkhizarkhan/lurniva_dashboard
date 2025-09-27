@@ -11,6 +11,7 @@ $sql = "SELECT id, title, meeting_agenda, meeting_date, meeting_time, meeting_pe
         FROM meeting_announcements
         WHERE school_id = ?
         AND (person_id_one = ? OR person_id_two = ?)
+        AND (meeting_person = 'teacher' OR meeting_person2 = 'teacher')
         ORDER BY meeting_date DESC";
 
 $stmt = $conn->prepare($sql);

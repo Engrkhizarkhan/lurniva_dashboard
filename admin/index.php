@@ -30,7 +30,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                     <div class="banner-img">
-                                        <img src="assets/img/student.png" alt="">
+                                        <img src="assets/img/student logo.png" alt="">
                                     </div>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                     <div class="banner-img">
-                                        <img src="assets/img/techer.png" alt="">
+                                        <img src="assets/img/teacher logo.png" alt="">
                                     </div>
                                 </div>
                             </div>
@@ -105,6 +105,7 @@
                 </div>
             </div>
 
+
         </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -136,7 +137,7 @@
         </script>
 
         <div class="row">
-            <div class="col-12 col-sm-12 col-lg-12">
+            <div class="col-8 col-sm-12 col-lg-8">
                 <div class="card ">
                     <div class="card-header">
                         <h4>Revenue chart</h4>
@@ -186,9 +187,87 @@
                     </div>
                 </div>
             </div>
+            <style>
+            .news-bar {
+                height: 40px;
+                overflow: hidden;
+                position: relative;
+                background: #f5f5f5;
+                border: 1px solid #ddd;
+            }
+
+            .news-bar ul {
+                position: absolute;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                animation: scrollUp 50s linear infinite;
+            }
+
+            .news-bar li {
+                height: 40px;
+                line-height: 40px;
+                padding-left: 10px;
+            }
+
+            .news-bar a {
+                text-decoration: none;
+                color: #333;
+            }
+
+            @keyframes scrollUp {
+                0% {
+                    top: 100%;
+                }
+
+                100% {
+                    top: -500%;
+                }
+
+                /* adjust for li count */
+            }
+
+            .news-bar:hover ul {
+                animation-play-state: paused;
+            }
+            </style>
+            <div class="col-sm-12 col-md-4 col-lg-4 card shadow p-4 mb-4" id="adminInfo">
+                <div class="news-bar  h-100">
+                    <ul id="newsList"></ul>
+                </div>
+            </div>
+
+
         </div>
 
         <script>
+        function loadAdminNews() {
+            $.getJSON("ajax/get_admin_news.php", res => {
+                if (res.status !== "success") return;
+
+                let html = "";
+                res.data.forEach(n => {
+                    if (n.link) {
+                        html += `<li><a href="${n.link}" style="${n.style || ''}">${n.title}</a></li>`;
+                    } else {
+                        // No link (expiry warning)
+                        html += `<li style="${n.style || ''}">${n.title}</li>`;
+                    }
+                });
+
+                $("#newsList").html(html);
+
+                // auto adjust animation speed depending on items
+                let itemCount = res.data.length || 1;
+                let duration = itemCount * 5; // 5s per item
+                $(".news-bar ul").css("animation-duration", duration + "s");
+            });
+        }
+
+        loadAdminNews();
+        setInterval(loadAdminNews, 60000); // refresh every 1 min
+
+
         $(function() {
             // Initialize feather icons
             feather.replace();
@@ -410,8 +489,4 @@
         }
         </script>
     </section>
-
-
-
-
     <?php require_once 'assets/php/footer.php'; ?>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+  <title>Lurniva Dashboard</title>
+  <!-- General CSS Files -->
+  <link rel="stylesheet" href="assets/css/app.min.css">
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <!-- Custom style CSS -->
+  <link rel="stylesheet" href="assets/css/custom.css">
+  <link rel='shortcut icon' type='image/x-icon' href='assets/img/T Logo.png' />
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+</head>
+
+<body>
+  <div class="loader"></div>
+  <div id="app">
+    <div class="main-wrapper main-wrapper-1">
+      <div class="navbar-bg"></div>
+      <nav class="navbar navbar-expand-lg main-navbar sticky" style="background: linear-gradient(135deg, #ff0080, #7928ca, #2af598);">
+  <div class="form-inline mr-auto">
+    <ul class="navbar-nav mr-3">
+      <li>
+        <a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn text-white"> 
+          <i data-feather="align-justify"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <ul class="navbar-nav navbar-right">
+    <li class="dropdown dropdown-list-toggle">
+      <a href="#" data-toggle="dropdown" class="nav-link nav-link-lg message-toggle text-white">
+        <i data-feather="mail"></i>
+        <span class="badge headerBadge1 bg-warning">6</span>
+      </a>
+      <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
+        <div class="dropdown-header">Messages
+          <div class="float-right"><a href="#">Mark All As Read</a></div>
+        </div>
+        <div class="dropdown-list-content dropdown-list-message">
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-item-avatar">
+              <img alt="image" src="assets/img/users/user-1.png" class="rounded-circle">
+            </span>
+            <span class="dropdown-item-desc">
+              <span class="message-user">Parent 1</span>
+              <span class="time messege-text">When will new admission start?</span>
+              <span class="time">4 Hours Ago</span>
+            </span>
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-item-avatar">
+              <img alt="image" src="assets/img/users/user-2.png" class="rounded-circle">
+            </span>
+            <span class="dropdown-item-desc">
+              <span class="message-user">Student</span>
+              <span class="time messege-text">Request for leave application</span>
+              <span class="time">1 Day Ago</span>
+            </span>
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-item-avatar">
+              <img alt="image" src="assets/img/users/user-5.png" class="rounded-circle">
+            </span>
+            <span class="dropdown-item-desc">
+              <span class="message-user">Parent 5</span>
+              <span class="time messege-text">When will mid term exam start?</span>
+              <span class="time">1 Day Ago</span>
+            </span>
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-item-avatar">
+              <img alt="image" src="assets/img/users/user-2.png" class="rounded-circle">
+            </span>
+            <span class="dropdown-item-desc">
+              <span class="message-user">Miss Nargis</span>
+              <span class="time messege-text">Request for Leave</span>
+              <span class="time">2 Days Ago</span>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-footer text-center"><a href="#">View All <i class="fas fa-chevron-right"></i></a></div>
+      </div>
+    </li>
+
+    <li class="dropdown dropdown-list-toggle">
+      <a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg text-white">
+        <i data-feather="bell" class="bell"></i>
+      </a>
+      <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
+        <div class="dropdown-header">Notifications
+          <div class="float-right"><a href="#">Mark All As Read</a></div>
+        </div>
+        <div class="dropdown-list-content dropdown-list-icons">
+          <a href="#" class="dropdown-item dropdown-item-unread">
+            <span class="dropdown-item-icon bg-primary text-white"><i class="fas fa-code"></i></span>
+            <span class="dropdown-item-desc">Tomorrow is Public Holiday</span>
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-item-icon bg-info text-white"><i class="far fa-user"></i></span>
+            <span class="dropdown-item-desc">Today is Assignment 4 Last Date</span>
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-item-icon bg-success text-white"><i class="fas fa-check"></i></span>
+            <span class="dropdown-item-desc">Check email for new messages!</span>
+          </a>
+        </div>
+        <div class="dropdown-footer text-center"><a href="#">View All <i class="fas fa-chevron-right"></i></a></div>
+      </div>
+    </li>
+
+    <li class="dropdown">
+      <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user text-white">
+        <img alt="image" src="assets/img/usman.jpeg" class="user-img-radious-style"> 
+        <span class="d-sm-none d-lg-inline-block"></span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right pullDown">
+        <div class="dropdown-title">Hello Admin</div>
+        <a href="profile.html" class="dropdown-item has-icon"><i class="far fa-user"></i> Profile</a>
+        <a href="timeline.html" class="dropdown-item has-icon"><i class="fas fa-bolt"></i> Activities</a>
+        <a href="#" class="dropdown-item has-icon"><i class="fas fa-cog"></i> Settings</a>
+        <div class="dropdown-divider"></div>
+        <a href="auth-login.html" class="dropdown-item has-icon text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<div class="main-sidebar sidebar-style-2" style="background: linear-gradient(135deg, #ff0080, #7928ca, #2af598);">
+  <aside id="sidebar-wrapper">
+    <div class="sidebar-brand" style="margin-top: 20px; text-align: center;">
+      <a href="index.html" style="display: flex; align-items: center; justify-content: center; color: white; text-decoration: none;">
+        <img alt="image" src="assets/img/T Logo.png" class="header-logo" style="height: 80px; width: auto;" />
+        <span class="logo-name" style="font-size: 22px; font-weight: bold; margin-left: 10px;">Lurniva</span>
+      </a>
+    </div>
+    <ul class="sidebar-menu" style="color:white; list-style:none; padding:0; margin:0;">
+      <li class="dropdown active">
+        <a href="index.html" class="nav-link text-white" style="font-weight:bold; border-left: 4px solid white;">
+          <i data-feather="monitor"></i><span>Dashboard</span>
+        </a>
+      </li>
+          <li class="dropdown">
+      <a href="#" class="menu-toggle nav-link has-dropdown text-white">
+        <i data-feather="bar-chart-2"></i><span>Graphs</span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="nav-link text-white" href="devlopment.html">Lurniva Development</a></li>
+        <li><a class="nav-link text-white" href="revenue.html">Lurniva Revenue</a></li>
+      </ul>
+    </li>
+      <li class="dropdown">
+        <a href="#" class="menu-toggle nav-link has-dropdown text-white"><i data-feather="command"></i><span>Apps</span></a>
+        <ul class="dropdown-menu">
+          <li><a class="nav-link text-white" href="chat.html">Chat</a></li>
+          <li><a class="nav-link text-white" href="calendar.html">Calendar</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="menu-toggle nav-link has-dropdown text-white"><i data-feather="mail"></i><span>Email</span></a>
+        <ul class="dropdown-menu">
+          <li><a class="nav-link text-white" href="email-inbox.html">Inbox</a></li>
+          <li><a class="nav-link text-white" href="email-compose.html">Compose</a></li>
+          <li><a class="nav-link text-white" href="email-read.html">Read</a></li>
+        </ul>
+      </li>
+      <li class="dropdown"><a href="assignment-test.html" class="nav-link text-white"><i data-feather="clipboard"></i><span>Test / Assignment</span></a></li>
+      <li class="dropdown"><a href="Dairy.html" class="nav-link text-white"><i data-feather="book"></i><span>Dairy</span></a></li>
+      <li class="dropdown"><a href="Attendance.html" class="nav-link text-white"><i data-feather="edit"></i><span>Student Attendance</span></a></li>
+      <li class="dropdown"><a href="student-leave.html" class="nav-link text-white"><i data-feather="log-out"></i><span>Student Leave</span></a></li>
+      <li class="dropdown"><a href="see-all-student.html" class="nav-link text-white"><i data-feather="users"></i><span>See all student</span></a></li>
+    </ul>
+  </aside>
+</div>
+
+<style>
+  /* Sidebar hover fix */
+  .sidebar-menu li a {
+    transition: all 0.3s ease;
+  }
+  .sidebar-menu li a:hover {
+    background: none !important;
+    font-weight: bold;
+    transform: scale(1.05);
+    color: #fff !important;
+  }
+  /* Remove white highlight from active item */
+  .sidebar-menu li.active > a {
+    background: none !important;
+    font-weight: bold;
+    border-left: 4px solid white;
+    color: #fff !important;
+  }
+</style>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <section class="section">
+          <div class="section-body">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="card">
+                  <div class="body">
+                    <div id="mail-nav">
+                      <button type="button" class="btn btn-danger waves-effect btn-compose m-b-15">COMPOSE</button>
+                      <ul class="" id="mail-folders">
+                        <li class="active">
+                          <a href="mail-inbox.html" title="Inbox">Inbox (10)
+                          </a>
+                        </li>
+                        <li>
+                          <a href="javascript:;" title="Sent">Sent</a>
+                        </li>
+                        <li>
+                          <a href="javascript:;" title="Draft">Draft</a>
+                        </li>
+                        <li>
+                          <a href="javascript:;" title="Bin">Bin</a>
+                        </li>
+                        <li>
+                          <a href="javascript:;" title="Starred">Starred</a>
+                        </li>
+                      </ul>
+                      <h5 class="b-b p-10 text-strong">Campuses</h5>
+                      <ul class="" id="mail-labels">
+                        <li>
+                          <a href="javascript:;">
+                            <i class="material-icons col-red">local_offer</i>Campus 1</a>
+                        </li>
+                        <li>
+                          <a href="javascript:;">
+                            <i class="material-icons col-blue">local_offer</i>Campus 2</a>
+                        </li>
+                        <li>
+                          <a href="javascript:;">
+                            <i class="material-icons col-orange">local_offer</i>Campus 3</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                <div class="card">
+                  <div class="boxs mail_listing">
+                    <div class="inbox-center table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th colspan="1">
+                              <div class="inbox-header">
+                                Compose New Message
+                              </div>
+                            </th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <div class="row">
+                                    <div class="col-lg-12">
+                  <form class="composeForm">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" id="email_address" class="form-control" placeholder="TO">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-line">
+                        <input type="text" id="subject" class="form-control" placeholder="Subject">
+                      </div>
+                    </div>
+
+                    <!-- 🆕 Main Text Field -->
+                    <div class="form-group">
+                      <div class="form-line">
+                        <textarea id="mainText" class="form-control" rows="5" placeholder="Main Text"></textarea>
+                      </div>
+                    </div>
+
+                    <!-- Optional Rich Editor -->
+                    <textarea id="ckeditor"></textarea>
+
+                    <div class="compose-editor m-t-20">
+                      <div id="summernote"></div>
+                      <input type="file" class="default" multiple>
+                    </div>
+                  </form>
+                </div>
+                                      <div class="col-lg-12">
+                  <div class="d-flex justify-content-end m-b-20">
+                    <button type="button" class="btn btn-info btn-border-radius waves-effect mr-2">Send</button>
+                    <button type="button" class="btn btn-danger btn-border-radius waves-effect">Discard</button>
+                  </div>
+                </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <footer class="footer d-flex justify-content-center align-items-center" style="height: 20px;">
+          <div class="text-center">
+            All Rights Reserved to <strong>Lurniva</strong> @Developed by <strong>SUIT Incubation</strong>
+          </div>
+        </footer>
+    </div>
+  </div>
+  <!-- General JS Scripts -->
+  <script src="assets/js/app.min.js"></script>
+  <!-- JS Libraies -->
+  <script src="assets/bundles/ckeditor/ckeditor.js"></script>
+  <!-- Page Specific JS File -->
+  <script src="assets/js/page/ckeditor.js"></script>
+  <!-- Template JS File -->
+  <script src="assets/js/scripts.js"></script>
+  <!-- Custom JS File -->
+  <script src="assets/js/custom.js"></script>
+</body>
+
+</html>

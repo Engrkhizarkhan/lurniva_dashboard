@@ -32,6 +32,7 @@ $types = 'i' . $types;
 $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
+
 echo "<table class='table table-bordered table-striped table-hover'>
 <thead class='table-dark text-white'>
 <tr>
@@ -42,8 +43,9 @@ echo "<table class='table table-bordered table-striped table-hover'>
   <th>Roll No</th>
   <th>QR Code</th>
   <th>Status</th>
-  <th>Download</th>
-  <th>View Profile</th> <!-- New column -->
+  <th>View Profile</th>
+  <th>Migration</th>
+  <th>Promote</th>
 </tr>
 </thead><tbody>";
 
@@ -59,17 +61,17 @@ while ($row = $result->fetch_assoc()) {
         'section' => $row['section'],
         'roll_number' => $row['roll_number'],
         'email' => $row['email'],
-        'parent_email' => $row['parent_email'],
+        'parent_email' => $row['parent_cnic'],
         'phone' => $row['phone'],
         'address' => $row['address'],
         'status' => $row['status']
     ], JSON_UNESCAPED_UNICODE);
 
     $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" . rawurlencode($jsonData) . "&size=150x150";
-    $downloadLink = "download_single_qr.php?id=" . $row['id'];
+   
 
     echo "<tr>
-        <td><img src='uploads/profile/{$row['profile_photo']}' width='60' height='60' style='object-fit:cover'></td>
+        <td><img src='../student/uploads/profile/{$row['profile_photo']}' width='60' height='60' style='object-fit:cover'></td>
         <td>{$row['full_name']}</td>
         <td>{$row['parent_name']}</td>
         <td>{$row['class_grade']} - {$row['section']}</td>
@@ -79,18 +81,22 @@ while ($row = $result->fetch_assoc()) {
             <small><strong>{$row['full_name']}</strong><br>{$row['class_grade']} - {$row['section']}<br>Roll: {$row['roll_number']}</small>
         </td>
         <td>
-            <select class='form-select status-select' data-id='{$row['id']}'>
-                <option value='Active' " . ($row['status'] == 'Active' ? 'selected' : '') . ">Active</option>
-                <option value='Inactive' " . ($row['status'] == 'Inactive' ? 'selected' : '') . ">Inactive</option>
-                <option value='Pending Verification' " . ($row['status'] == 'Pending Verification' ? 'selected' : '') . ">Pending Verification</option>
+            <select class='form-select status-select' id='status-select' data-id='{$row['id']}'>
+                <option value='Approved' " . ($row['status'] == 'Approved' ? 'selected' : '') . ">Approved</option>
+                <option value='Pending' " . ($row['status'] == 'Pending' ? 'selected' : '') . ">Pending Verification</option>
             </select>
         </td>
-        <td><a href='{$downloadLink}' class='btn btn-sm btn-primary' target='_blank'>Download</a></td>
         <td>
             <form action='view_profile.php' method='POST'>
                 <input type='hidden' name='id' value='{$row['id']}'>
                 <button type='submit' class='btn btn-sm btn-info'>View</button>
             </form>
+        </td>
+        <td>
+            <button class='btn btn-sm btn-warning migrate-btn' data-id='{$row['id']}'>Migrate</button>
+        </td>
+        <td>
+            <button class='btn btn-sm btn-success promote-btn' data-id='{$row['id']}'>Promote</button>
         </td>
     </tr>";
 }

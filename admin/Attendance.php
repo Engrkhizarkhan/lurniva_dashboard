@@ -8,7 +8,24 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 $school_id = $_SESSION['admin_id'];
+
+// Fetch school settings
+$sql = "SELECT attendance_enabled FROM school_settings WHERE person = 'admin' AND person_id = ? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $school_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$settings = $result->fetch_assoc();
+$stmt->close();
+
+// 🚨 If attendance is disabled
+if (!$settings || $settings['attendance_enabled'] == 0) {
+    echo "<script>alert('Attendance module is disabled by school admin.'); window.location.href='logout.php';</script>";
+    exit;
+}
 ?>
+
 
 <style>
 #attendanceData {
@@ -65,7 +82,7 @@ $school_id = $_SESSION['admin_id'];
 
           while ($row = $result->fetch_assoc()) {
               $fid = $row['id'];
-              $photo = !empty($row['photo']) ? "uploads/{$row['photo']}" : "assets/img/default-user.png";
+              $photo = !empty($row['photo']) ? "../Faculty Dashboard/uploads/{$row['photo']}" : "assets/img/default-user.png";
               echo "
               <tr class='align-middle'>
                 <td class='text-center'>{$count}</td>

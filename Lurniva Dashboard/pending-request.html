@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pending Requests</title>
+  <!-- Bootstrap 4/5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .main-content {
+      padding: 40px 0;
+    }
+    .card {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background: linear-gradient(90deg, #4e73df, #1cc88a);
+      color: white;
+      padding: 1rem;
+    }
+    .table thead {
+      background-color: #343a40;
+      color: #fff;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #f8f9fc;
+      transition: 0.3s;
+    }
+    .btn-success {
+      background: linear-gradient(90deg, #1cc88a, #17a673);
+      border: none;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+    }
+    .btn-danger {
+      background: linear-gradient(90deg, #e74a3b, #be2617);
+      border: none;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+    }
+    .badge {
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+    h1 {
+      font-weight: 600;
+      color: #4e73df;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Content -->
+  <div class="main-content container">
+    <section class="section">
+      <div class="section-header text-center mb-4">
+        <h1>Pending Requests</h1>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <div class="col-12 col-lg-11">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="mb-0">Requests Waiting for Approval</h4>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped table-hover text-center align-middle">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Type</th>
+                      <th>Name</th>
+                      <th>Contact</th>
+                      <th>ID</th>
+                      <th>Fee Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>School</td>
+                      <td>Bright Future School</td>
+                      <td>091-1234567</td>
+                      <td>SC-2001</td>
+                      <td><span class="badge badge-success">Paid</span></td>
+                      <td>
+                        <button class="btn btn-success btn-sm approveBtn" data-name="Bright Future School">Approve</button>
+                        <button class="btn btn-danger btn-sm rejectBtn" data-name="Bright Future School">Reject</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>User</td>
+                      <td>Ali Khan</td>
+                      <td>0300-9876543</td>
+                      <td>U-1005</td>
+                      <td><span class="badge badge-danger">Unpaid</span></td>
+                      <td>
+                        <button class="btn btn-success btn-sm approveBtn" data-name="Ali Khan">Approve</button>
+                        <button class="btn btn-danger btn-sm rejectBtn" data-name="Ali Khan">Reject</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Approve Modal -->
+  <div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">Confirm Approval</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <p id="approveText">Are you sure you want to approve?</p>
+          <button class="btn btn-success">Yes, Approve</button>
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject Modal -->
+  <div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Confirm Rejection</h5>
+          <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <p id="rejectText">Are you sure you want to reject?</p>
+          <button class="btn btn-danger">Yes, Reject</button>
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Approve button click
+      $(".approveBtn").click(function () {
+        let name = $(this).data("name");
+        $("#approveText").text("Are you sure you want to approve " + name + "?");
+        $("#approveModal").modal("show");
+      });
+
+      // Reject button click
+      $(".rejectBtn").click(function () {
+        let name = $(this).data("name");
+        $("#rejectText").text("Are you sure you want to reject " + name + "?");
+        $("#rejectModal").modal("show");
+      });
+    });
+  </script>
+</body>
+</html>

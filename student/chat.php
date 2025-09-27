@@ -6,28 +6,48 @@ if (!isset($_SESSION['student_id'])) {
 }
 include_once('sass/db_config.php');
 
-$school_id = $_SESSION['student_id']; // or dynamically get this if needed
+$student_id = $_SESSION['student_id']; 
 
-$sql = "SELECT id, full_name, profile_photo AS photo FROM students WHERE id = ?";
+$sql = "SELECT id, full_name, profile_photo AS photo, subscription_end, status 
+        FROM students 
+        WHERE id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $school_id);
+$stmt->bind_param("i", $student_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$school = null;
+$student = null;
 if ($result->num_rows > 0) {
-    $school = $result->fetch_assoc();
+    $student = $result->fetch_assoc();
+
+    $today = date("Y-m-d");
+
+    // 🚨 Check subscription expiry
+    if (!empty($student['subscription_end']) && $student['subscription_end'] < $today) {
+
+        // If still Approved → set to Pending
+        if ($student['status'] === 'Approved') {
+            $update = $conn->prepare("UPDATE students SET status = 'Pending' WHERE id = ?");
+            $update->bind_param("i", $student_id);
+            $update->execute();
+            $update->close();
+        }
+
+        // Force logout
+        header("Location: logout.php");
+        exit;
+    }
+
 } else {
-    // fallback/default values if no school found
-    $school = [
+    // fallback/default values if no student found
+    $student = [
         'id' => 0,
-        'full_name' => 'Default School Name',
+        'full_name' => 'Default Student Name',
         'photo' => 'assets/img/default-logo.png'
     ];
 }
 $stmt->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -129,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     </li>
                     <li class="dropdown"><a href="#" data-toggle="dropdown"
                             class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image"
-                                src="uploads/profile/<?php echo htmlspecialchars($school['photo']); ?>"
+                                src="uploads/profile/<?php echo htmlspecialchars($student['photo']); ?>"
                                 class="user-img-radious-style"> <span class="d-sm-none d-lg-inline-block"></span></a>
                         <div class="dropdown-menu dropdown-menu-right pullDown">
                             <div class="dropdown-title">Hello Admin</div>
@@ -153,10 +173,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 <aside id="sidebar-wrapper">
                     <div class="sidebar-brand" style="margin-top: 16px; padding-left: 10px;   height: fit-content;">
                         <a href="index.php">
-                            <img alt="image" src="uploads/profile/<?php echo htmlspecialchars($school['photo']); ?>"
+                            <img alt="image" src="uploads/profile/<?php echo htmlspecialchars($student['photo']); ?>"
                                 class="header-logo" style="width: 50px;border-radius: 50%;" />
                             <span class="logo-name"
-                                style="font-size: 16px; font-weight: bold; margin-left: 10px;"><?php echo htmlspecialchars($school['full_name']); ?></span>
+                                style="font-size: 16px; font-weight: bold; margin-left: 10px;"><?php echo htmlspecialchars($student['full_name']); ?></span>
                         </a>
                     </div>
                     <ul class="sidebar-menu">
@@ -621,6 +641,28 @@ document.addEventListener("DOMContentLoaded", function() {
                     loadChatMessages(currentChatId, currentChatDesignation);
                 }
             }, 3000);
+            $('.chat-search input').on('keyup', function() {
+                const keyword = $(this).val().trim();
+
+                if (keyword.length > 0) {
+                    $.ajax({
+                        url: 'ajax/search_contacts.php',
+                        type: 'POST',
+                        data: {
+                            keyword: keyword
+                        },
+                        success: function(response) {
+                            $('.chat-list').html(response);
+                        },
+                        error: function() {
+                            $('.chat-list').html('<li>Error searching contacts</li>');
+                        }
+                    });
+                } else {
+                    // Reload default contact list when search is empty
+                    loadChatContacts();
+                }
+            });
 
         });
         </script>

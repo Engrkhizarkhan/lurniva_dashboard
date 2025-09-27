@@ -170,7 +170,7 @@ $total_tasks = $row['total_tasks']; // number of tasks
         </div>
 
         <div class="row">
-            <div class="col-12">
+            <div class="col-md-8 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>Student Progress (Attendance / Exams / Tests)</h4>
@@ -219,6 +219,76 @@ $total_tasks = $row['total_tasks']; // number of tasks
 
                     </div>
                 </div>
+            </div>
+            <style>
+            .news-bar {
+                height: 40px;
+                overflow: hidden;
+                position: relative;
+                background: #f9f9f9;
+                border: 1px solid #ddd;
+            }
+
+            .news-bar ul {
+                position: absolute;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                animation: scrollUp 30s linear infinite;
+            }
+
+            .news-bar li {
+                height: 40px;
+                line-height: 40px;
+                padding-left: 10px;
+                white-space: nowrap;
+            }
+
+            .news-bar a {
+                text-decoration: none;
+                color: #333;
+            }
+
+            .news-bar:hover ul {
+                animation-play-state: paused;
+            }
+
+            @keyframes scrollUp {
+                0% {
+                    top: 100%;
+                }
+
+                100% {
+                    top: -500%;
+                }
+
+                /* adjust depending on # of items */
+            }
+            </style>
+            <div class="col-sm-12 col-md-4 col-lg-4 card shadow p-4 mb-4" id="facultyNews">
+                <div class="news-bar h-100">
+                    <ul id="newsList"></ul>
+                </div>
+
+
+                <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+                <script>
+                function loadFacultyNews() {
+                    $.getJSON("ajax/get_faculty_news.php", res => {
+                        if (res.status !== "success") return;
+                        let html = "";
+                        res.data.forEach(n => {
+                            html += `<li>
+                                    ${n.link ? `<a href="${n.link}">${n.title}</a>` : n.title}
+                                </li>`;
+                        });
+                        $("#newsList").html(html);
+                    });
+                }
+                loadFacultyNews();
+                setInterval(loadFacultyNews, 60000); // refresh every 1 min
+                </script>
+
             </div>
         </div>
 

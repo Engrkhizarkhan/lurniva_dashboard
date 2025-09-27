@@ -26,7 +26,7 @@ if (mysqli_num_rows($result) > 0) {
             $imagePath='../admin/uploads/logos/';
         } elseif ($designation == 'student') {
             $user_q = mysqli_query($conn, "SELECT full_name, profile_photo AS photo FROM students WHERE id = '$user_id'");
-            $imagePath='../school/uploads/profile/';
+            $imagePath='../student/uploads/profile/';
 
         } else {
             continue;

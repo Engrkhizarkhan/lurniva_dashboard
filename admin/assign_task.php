@@ -1,4 +1,28 @@
-<?php require_once 'assets/php/header.php'; ?>
+<?php require_once 'assets/php/header.php'; 
+include_once('sass/db_config.php');
+
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: logout.php");
+    exit;
+}
+
+$admin_id = $_SESSION['admin_id']; // admin ID
+
+// Fetch admin settings
+$sql = "SELECT assign_task_enabled FROM school_settings WHERE person='admin' AND person_id=? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$settings = $result->fetch_assoc();
+$stmt->close();
+
+// 🚨 If Assign Task module is disabled
+if (!$settings || $settings['assign_task_enabled'] == 0) {
+    echo "<script>alert('Assign Task module is disabled by admin settings.'); window.location.href='logout.php';</script>";
+    exit;
+}
+?>
 
 <style>
 #app_link {

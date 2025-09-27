@@ -15,6 +15,32 @@
  </style>
 
  <?php require_once 'assets/php/header.php';?>
+ <?php
+
+include_once('sass/db_config.php');
+
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: logout.php");
+    exit;
+}
+
+$school_id = $_SESSION['admin_id']; // adjust if using campus_id/student_id
+
+$sql = "SELECT meeting_enabled FROM school_settings WHERE person='admin' AND person_id=? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $school_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$settings = $result->fetch_assoc();
+$stmt->close();
+
+// 🚨 If meeting module is disabled
+if (!$settings || $settings['meeting_enabled'] == 0) {
+    echo "<script>alert('Meeting module is disabled by school admin.'); window.location.href='logout.php';</script>";
+    exit;
+}
+?>
+
  <!-- Main Content -->
  <div class="main-content">
      <section class="section">

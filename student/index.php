@@ -6,6 +6,80 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+<style>
+/* Notification bar container */
+#notificationBar {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 300px;
+    display: flex;
+    flex-direction: column-reverse;
+    /* New notifications appear at the bottom */
+    gap: 10px;
+    z-index: 9999;
+}
+
+/* Notification style */
+.notification {
+    background: #4caf50;
+    /* green */
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideIn 0.3s forwards;
+}
+
+/* Animation: bottom to top */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.news-bar {
+    height: 40px;
+    /* Height of one item */
+    overflow: hidden;
+    position: relative;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding-left: 10px;
+}
+
+.news-bar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    animation: scrollNews 50s linear infinite;
+}
+
+.news-bar li {
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Animation from bottom → top */
+@keyframes scrollNews {
+    0% {
+        top: 100%;
+    }
+
+    100% {
+        top: -400%;
+    }
+
+    /* Adjust based on total items */
+}
+</style>
 
 <?php require_once 'assets/php/header.php'; ?>
 
@@ -15,7 +89,98 @@ document.addEventListener("DOMContentLoaded", function() {
             <h4>Profile </h4>
         </div>
 
-        <div id="studentInfo"></div>
+        <div class="row">
+            <div class="col-md-8" id="studentInfo"></div>
+            <div class="col-md-4 pb-4">
+                <div class="" id="studentInfo">
+                    <div class="news-bar card shadow p-4 mb-4 h-100">
+                        <ul id="newsList"></ul>
+                    </div>
+                </div>
+
+                <style>
+                .news-bar {
+                    height: 40px;
+                    overflow: hidden;
+                    position: relative;
+                    background: #f5f5f5;
+                    border: 1px solid #ddd;
+                }
+
+                .news-bar ul {
+                    position: absolute;
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                    animation: scrollUp 40s linear infinite;
+                }
+
+                .news-bar li {
+                    height: 40px;
+                    line-height: 40px;
+                    padding-left: 10px;
+                }
+
+                .news-bar a {
+                    text-decoration: none;
+                    color: #333;
+                }
+
+                /* Animation bottom → top */
+                @keyframes scrollUp {
+                    0% {
+                        top: 100%;
+                    }
+
+                    100% {
+                        top: -400%;
+                    }
+
+                    /* adjust based on number of <li> */
+                }
+
+                /* Pause on hover */
+                .news-bar:hover ul {
+                    animation-play-state: paused;
+                }
+                </style>
+                <script>
+                function getNotificationLink(module) {
+                    const map = {
+                        notice: "student_notice_board.php",
+                        library: "student_library.php",
+                        behavior: "StudentBehavior.php",
+                        dairy: "Dairy.php",
+                        exam: "student_exam_results.php",
+                        assignment: "assigment-result.php",
+                        test: "assigment-result.php",
+                        meeting: "student_meetings.php"
+                    };
+                    return map[(module || "").trim().toLowerCase()] || "#";
+                }
+
+                function loadNewsBar() {
+                    $.getJSON("ajax/get_news.php", res => {
+                        if (res.status !== "success") return;
+
+                        let html = "";
+                        res.data.forEach(n => {
+                            const link = getNotificationLink(n.module);
+                            html += `<li><a href="${link}">${n.title}</a></li>`;
+                        });
+                        $("#newsList").html(html);
+                    });
+                }
+
+                loadNewsBar();
+                setInterval(loadNewsBar, 60000); // refresh every 1 min
+                </script>
+            </div>
+        </div>
+
+
+        <!-- Notification bar -->
+        <div id="notificationBar"></div>
 
         <div class="section-header">
             <h4>Subjects</h4>
@@ -52,6 +217,76 @@ document.addEventListener("DOMContentLoaded", function() {
 <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
 <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
 <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let shownNotifications = new Set(); // Keep track of already shown notifications
+
+function playNotificationSound() {
+    const sound = document.getElementById("notificationSound");
+    sound.currentTime = 0; // reset
+    sound.play();
+}
+
+function showNotification(message, type = "success") {
+    const bar = document.getElementById("notificationBar");
+
+    // Create notification element
+    const note = document.createElement("div");
+    note.classList.add("notification");
+
+    // Different colors based on type
+    if (type === "error") {
+        note.style.background = "#f44336"; // red
+    } else if (type === "warning") {
+        note.style.background = "#ff9800"; // orange
+    }
+
+    note.innerText = message;
+    bar.appendChild(note);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        note.style.opacity = "0";
+        note.style.transform = "translateY(-20px)";
+        setTimeout(() => note.remove(), 300);
+    }, 5000);
+}
+
+// Load notifications with AJAX
+function loadNotifications() {
+    $.ajax({
+        url: "ajax/notifications.php",
+        method: "GET",
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                let newNotifications = 0;
+
+                response.notifications.forEach(n => {
+                    if (!shownNotifications.has(n.id)) {
+                        showNotification(n.title, "success");
+                        shownNotifications.add(n.id);
+                        newNotifications++;
+                    }
+                });
+
+                // Play sound if new notifications arrived
+                if (newNotifications > 0) {
+                    playNotificationSound();
+                }
+            }
+        }
+    });
+}
+
+// Load notifications on page load
+loadNotifications();
+
+// Refresh every 30 seconds
+setInterval(loadNotifications, 30000);
+</script>
+
 
 <script>
 $(function() {

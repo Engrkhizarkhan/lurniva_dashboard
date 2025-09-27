@@ -20,7 +20,7 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h2>Test / Assignment</h2>
+            <h2>Attendance</h2>
         </div>
 
         <div class="section-body">
@@ -56,7 +56,7 @@
 
             <div id="result" class="mt-3"></div>
             <hr>
-            <h3>All Tests / Assignments</h3>
+            <h3>Attendance</h3>
             <div id="allTasks"></div>
         </div>
     </section>

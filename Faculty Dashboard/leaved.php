@@ -20,7 +20,7 @@
 <div class="main-content">
     <section class="section">
         <div class="container mt-4">
-            <h3>Pending Faculty Leave Requests</h3>
+            <h3>Pending Students Leave Requests</h3>
             <div id="leaveTable">Loading...</div>
         </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
