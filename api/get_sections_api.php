@@ -9,7 +9,8 @@ $allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')
         'http://localhost:8080',
         'http://localhost:8081',
         'http://localhost:3000',
-        'http://localhost:5173'
+        'http://localhost:5173',
+        'http://localhost:60706' // ✅ add your current Flutter port
     ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
