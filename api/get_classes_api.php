@@ -3,7 +3,7 @@ require_once 'admin/sass/db_config.php';
 
 // --- CORS CONFIGURATION ---
 $allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')
-    ? ['https://lurniva.com', 'https://www.lurniva.com']
+    ? ['https://dashboard.lurniva.com/login.php', 'https://www.dashboard.lurniva.com/login.php']
     : [
         'http://localhost:8080',
         'http://localhost:8081',
