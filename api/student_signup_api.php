@@ -93,7 +93,7 @@ if ($type === "parent") {
         $id = $conn->insert_id;
         $subject = "Parent Account Verification - Lurniva";
         $message = "Hello $fullName,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.\n\nRegards,\nLurniva Support";
-        $headers = "From: Support@lurniva.com";
+        $headers = "From: support@lurniva.com";
 
         @mail($email, $subject, $message, $headers);
 
@@ -142,7 +142,7 @@ if ($type === "parent") {
         $id = $conn->insert_id;
         $subject = "Student Account Verification - Lurniva";
         $message = "Hello $fullName,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.\n\nRegards,\nLurniva Support";
-        $headers = "From: Support@lurniva.com";
+        $headers = "From: support@lurniva.com";
 
         @mail($email, $subject, $message, $headers);
 
