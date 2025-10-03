@@ -44,7 +44,9 @@ CREATE TABLE IF NOT EXISTS `app_admin` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `verification_code` varchar(10) DEFAULT NULL,
-  `code_expires_at` datetime DEFAULT NULL
+  `code_expires_at` datetime DEFAULT NULL,
+   PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -67,7 +69,8 @@ CREATE TABLE IF NOT EXISTS `books` (
   `category` varchar(100) DEFAULT NULL,
   `quantity` int(11) DEFAULT 1,
   `available` int(11) DEFAULT 1,
-  `added_at` datetime DEFAULT current_timestamp()
+  `added_at` datetime DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -86,7 +89,8 @@ CREATE TABLE IF NOT EXISTS `buses` (
   `bus_number` varchar(50) NOT NULL,
   `capacity` int(11) NOT NULL,
   `status` enum('Active','Inactive') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -105,7 +109,10 @@ CREATE TABLE IF NOT EXISTS `bus_problems` (
   `school_id` int(11) NOT NULL,
   `problem` text NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `status` enum('Open','Resolved') DEFAULT 'Open'
+  `status` enum('Open','Resolved') DEFAULT 'Open',
+   PRIMARY KEY (`id`),
+   KEY `bus_id` (`bus_id`),
+KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -124,7 +131,11 @@ CREATE TABLE IF NOT EXISTS `class_fee_types` (
   `school_id` int(11) NOT NULL,
   `class_grade` varchar(50) NOT NULL,
   `fee_type_id` int(11) NOT NULL,
-  `rate` decimal(10,2) NOT NULL
+  `rate` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`),
+KEY `fee_type_id` (`fee_type_id`),
+KEY `fk_fee_structure` (`fee_structure_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -148,7 +159,8 @@ CREATE TABLE IF NOT EXISTS `class_timetable_details` (
   `teacher_id` int(11) DEFAULT NULL,
   `is_break` tinyint(1) DEFAULT 0,
   `period_type` enum('Normal','Lab','Break','Sports','Library') DEFAULT 'Normal',
-  `created_by` int(11) DEFAULT NULL
+  `created_by` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -170,7 +182,8 @@ CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
   `total_periods` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_finalized` tinyint(1) DEFAULT 0,
-  `created_by` int(11) DEFAULT NULL
+  `created_by` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -191,7 +204,9 @@ CREATE TABLE IF NOT EXISTS `class_timetable_weekdays` (
   `leave_time` time NOT NULL,
   `total_periods` int(11) NOT NULL,
   `is_half_day` tinyint(1) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `fk_weekdays_school` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -217,7 +232,8 @@ CREATE TABLE IF NOT EXISTS `diary_entries` (
   `parent_approval_required` enum('yes','no') DEFAULT 'no',
   `student_option` enum('all','specific') DEFAULT 'all',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -235,7 +251,10 @@ CREATE TABLE IF NOT EXISTS `diary_students` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `approve_parent` varchar(255) NOT NULL,
   `diary_id` int(11) NOT NULL,
-  `student_id` int(11) NOT NULL
+  `student_id` int(11) NOT NULL,
+   PRIMARY KEY (`id`),
+   KEY `diary_id` (`diary_id`),
+   KEY `student_id` (`student_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -259,7 +278,8 @@ CREATE TABLE IF NOT EXISTS `digital_notices` (
   `notice_type` varchar(100) DEFAULT NULL,
   `audience` varchar(100) DEFAULT NULL,
   `file_path` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -280,7 +300,9 @@ CREATE TABLE IF NOT EXISTS `drivers` (
   `phone` varchar(20) DEFAULT NULL,
   `license_no` varchar(50) DEFAULT NULL,
   `status` enum('Active','Inactive') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `bus_id` (`bus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -298,7 +320,9 @@ CREATE TABLE IF NOT EXISTS `exams` (
   `school_id` int(11) NOT NULL,
   `exam_name` varchar(255) NOT NULL,
   `total_marks` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `fk_exams_school` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -321,7 +345,8 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
   `marks_obtained` int(11) NOT NULL,
   `remarks` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -345,7 +370,9 @@ CREATE TABLE IF NOT EXISTS `exam_schedule` (
   `exam_time` time NOT NULL,
   `day` varchar(15) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `subject_id` (`subject_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -381,7 +408,8 @@ CREATE TABLE IF NOT EXISTS `faculty` (
   `code_expires_at` datetime DEFAULT NULL,
   `verification_attempts` int(11) NOT NULL DEFAULT 0,
   `subscription_start` date DEFAULT NULL,
-  `subscription_end` date DEFAULT NULL
+  `subscription_end` date DEFAULT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -405,7 +433,10 @@ CREATE TABLE IF NOT EXISTS `faculty_attendance` (
   `attendance_date` date NOT NULL,
   `status` enum('Present','Absent','Leave') NOT NULL,
   `remarks` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `faculty_id` (`faculty_id`),
+KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -427,7 +458,10 @@ CREATE TABLE IF NOT EXISTS `faculty_leaves` (
   `approved_by` int(11) DEFAULT NULL,
   `approved_at` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `faculty_id` (`faculty_id`),
+KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -449,7 +483,8 @@ CREATE TABLE IF NOT EXISTS `fee_installments` (
   `amount` decimal(10,2) NOT NULL,
   `due_date` date NOT NULL,
   `status` enum('Pending','Paid') DEFAULT 'Pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -471,7 +506,10 @@ CREATE TABLE IF NOT EXISTS `fee_payments` (
   `payment_method` varchar(50) NOT NULL,
   `payment_date` date NOT NULL,
   `status` enum('PENDING','CLEARED','FAILED') DEFAULT 'CLEARED',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `fee_slip_id` (`fee_slip_id`),
+KEY `student_id` (`student_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -492,7 +530,9 @@ CREATE TABLE IF NOT EXISTS `fee_periods` (
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `status` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -513,7 +553,9 @@ CREATE TABLE IF NOT EXISTS `fee_refunds` (
   `refund_amount` decimal(10,2) NOT NULL,
   `refund_reason` text DEFAULT NULL,
   `refund_date` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `slip_id` (`slip_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -538,7 +580,11 @@ CREATE TABLE IF NOT EXISTS `fee_slip_details` (
   `payment_status` enum('UNPAID','PARTIALLY_PAID','PAID') DEFAULT 'UNPAID',
   `amount_paid` decimal(10,2) DEFAULT 0.00,
   `payment_date` date DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`),
+KEY `student_id` (`student_id`),
+KEY `fee_period_id` (`fee_period_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -558,7 +604,8 @@ CREATE TABLE IF NOT EXISTS `fee_structures` (
   `amount` decimal(10,2) NOT NULL,
   `frequency` enum('monthly','yearly','one_time') DEFAULT 'monthly',
   `status` enum('active','inactive') DEFAULT 'active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -576,7 +623,9 @@ CREATE TABLE IF NOT EXISTS `fee_types` (
   `school_id` int(11) NOT NULL,
   `fee_name` varchar(100) NOT NULL,
   `status` enum('active','inactive') DEFAULT 'active',
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -595,7 +644,9 @@ CREATE TABLE IF NOT EXISTS `library_fines` (
   `school_id` int(11) NOT NULL,
   `transaction_id` int(11) NOT NULL,
   `fine_amount` decimal(10,2) NOT NULL,
-  `paid_status` enum('Unpaid','Paid') DEFAULT 'Unpaid'
+  `paid_status` enum('Unpaid','Paid') DEFAULT 'Unpaid',
+   PRIMARY KEY (`id`),
+   KEY `transaction_id` (`transaction_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -617,7 +668,11 @@ CREATE TABLE IF NOT EXISTS `library_transactions` (
   `issue_date` date NOT NULL,
   `due_date` date NOT NULL,
   `return_date` date DEFAULT NULL,
-  `status` enum('Issued','Returned','Overdue') DEFAULT 'Issued'
+  `status` enum('Issued','Returned','Overdue') DEFAULT 'Issued',
+   PRIMARY KEY (`id`),
+   KEY `book_id` (`book_id`),
+KEY `student_id` (`student_id`),
+KEY `faculty_id` (`faculty_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -642,7 +697,9 @@ CREATE TABLE IF NOT EXISTS `meeting_announcements` (
   `meeting_person2` enum('admin','teacher','parent') NOT NULL,
   `person_id_two` int(11) NOT NULL,
   `status` enum('scheduled','cancelled','completed') DEFAULT 'scheduled',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -665,7 +722,9 @@ CREATE TABLE IF NOT EXISTS `meeting_requests` (
   `title` varchar(255) NOT NULL,
   `agenda` text DEFAULT NULL,
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -689,7 +748,9 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `file_attachment` varchar(255) DEFAULT NULL,
   `voice_note` varchar(255) DEFAULT NULL,
   `sent_at` datetime DEFAULT current_timestamp(),
-  `status` enum('unread','read') DEFAULT 'unread'
+  `status` enum('unread','read') DEFAULT 'unread',
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -709,7 +770,8 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `title` varchar(255) NOT NULL,
   `user_type` varchar(255) NOT NULL,
   `is_read` tinyint(1) DEFAULT 0,
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -736,7 +798,10 @@ CREATE TABLE IF NOT EXISTS `parents` (
   `verification_attempts` int(11) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `subscription_start` date DEFAULT NULL,
-  `subscription_end` date DEFAULT NULL
+  `subscription_end` date DEFAULT NULL,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `parent_cnic` (`parent_cnic`),
+UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -756,7 +821,8 @@ CREATE TABLE IF NOT EXISTS `payments` (
   `amount_paid` decimal(10,2) NOT NULL,
   `method` enum('cash','card','online','bank_transfer') DEFAULT 'cash',
   `remarks` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -771,7 +837,8 @@ CREATE TABLE IF NOT EXISTS `routes` (
   `start_point` varchar(150) NOT NULL,
   `end_point` varchar(150) NOT NULL,
   `stops` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -789,7 +856,9 @@ CREATE TABLE IF NOT EXISTS `scholarships` (
   `reason` varchar(255) DEFAULT NULL,
   `status` enum('approved','pending','rejected') DEFAULT 'pending',
   `approved_by` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `fk_scholarships_school` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -825,7 +894,11 @@ CREATE TABLE IF NOT EXISTS `schools` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `subscription_start` date DEFAULT NULL,
   `subscription_end` date DEFAULT NULL,
-  `num_students` int(11) DEFAULT 0
+  `num_students` int(11) DEFAULT 0,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `registration_number` (`registration_number`),
+UNIQUE KEY `school_email` (`school_email`),
+UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -865,7 +938,8 @@ CREATE TABLE IF NOT EXISTS `school_settings` (
   `assign_task_enabled` tinyint(1) NOT NULL DEFAULT 1,
   `tests_assignments_enabled` tinyint(1) NOT NULL DEFAULT 1,
   `timetable_enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `transport_enabled` tinyint(1) NOT NULL DEFAULT 1
+  `transport_enabled` tinyint(1) NOT NULL DEFAULT 1,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -886,7 +960,9 @@ CREATE TABLE IF NOT EXISTS `school_tasks` (
   `due_date` date NOT NULL,
   `task_completed_percent` decimal(5,2) DEFAULT 0.00,
   `created_by` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `fk_school_tasks_school` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -906,7 +982,9 @@ CREATE TABLE IF NOT EXISTS `school_task_assignees` (
   `assigned_to_type` enum('teacher','student') NOT NULL,
   `assigned_to_id` int(11) NOT NULL,
   `status` enum('Active','Not Active') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -928,7 +1006,8 @@ CREATE TABLE IF NOT EXISTS `school_timings` (
   `half_day_config` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`half_day_config`)),
   `is_finalized` tinyint(1) DEFAULT 0,
   `is_preview` tinyint(1) DEFAULT 0,
-  `created_by` int(11) DEFAULT NULL
+  `created_by` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -967,7 +1046,11 @@ CREATE TABLE IF NOT EXISTS `students` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `subscription_start` date DEFAULT NULL,
   `subscription_end` date DEFAULT NULL,
-  `route_id` int(11) DEFAULT NULL
+  `route_id` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `email` (`email`),
+UNIQUE KEY `username` (`username`),
+KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -992,7 +1075,8 @@ CREATE TABLE IF NOT EXISTS `student_attendance` (
   `student_id` int(11) NOT NULL,
   `status` enum('Present','Absent','Leave') NOT NULL,
   `date` date NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
+  `created_at` datetime DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1017,7 +1101,11 @@ CREATE TABLE IF NOT EXISTS `student_behavior` (
   `parent_approval` enum('yes','no') DEFAULT 'no',
   `parent_approved` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `class_id` (`class_id`),
+KEY `teacher_id` (`teacher_id`),
+KEY `student_id` (`student_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1038,7 +1126,11 @@ CREATE TABLE IF NOT EXISTS `student_fee_plans` (
   `base_amount` decimal(10,2) NOT NULL,
   `frequency` varchar(50) DEFAULT NULL,
   `status` varchar(50) DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `school_id` (`school_id`),
+KEY `student_id` (`student_id`),
+KEY `fk_fee_component` (`fee_component`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -1058,7 +1150,11 @@ CREATE TABLE IF NOT EXISTS `student_leaves` (
   `reason` text DEFAULT NULL,
   `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `fk_student` (`student_id`),
+KEY `fk_school` (`school_id`),
+KEY `fk_teacher` (`teacher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -1075,7 +1171,8 @@ CREATE TABLE IF NOT EXISTS `student_payment_plans` (
   `duration_days` int(11) NOT NULL,
   `status` enum('Active','Inactive') DEFAULT 'Active',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1097,7 +1194,8 @@ CREATE TABLE IF NOT EXISTS `student_plan_orders` (
   `status` varchar(20) DEFAULT 'Pending',
   `transaction_id` varchar(100) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1118,7 +1216,8 @@ CREATE TABLE IF NOT EXISTS `student_results` (
   `remarks` varchar(255) DEFAULT NULL,
   `attachment` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL
+  `updated_at` datetime DEFAULT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1144,7 +1243,8 @@ CREATE TABLE IF NOT EXISTS `teacher_assignments` (
   `total_marks` int(5) NOT NULL,
   `attachment` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1163,7 +1263,8 @@ CREATE TABLE IF NOT EXISTS `transport_routes` (
   `route_name` varchar(100) NOT NULL,
   `stops` text DEFAULT NULL,
   `status` enum('Active','Inactive') DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
@@ -1181,588 +1282,13 @@ CREATE TABLE IF NOT EXISTS `transport_student_routes` (
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `route_id` int(11) NOT NULL,
-  `assigned_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `assigned_at` timestamp NOT NULL DEFAULT current_timestamp(),
+   PRIMARY KEY (`id`),
+   KEY `student_id` (`student_id`),
+KEY `route_id` (`route_id`);
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
---
--- Dumping data for table `transport_student_routes`
---
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `app_admin`
---
-ALTER TABLE `app_admin`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- Indexes for table `books`
---
-ALTER TABLE `books`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `buses`
---
-ALTER TABLE `buses`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `bus_problems`
---
-ALTER TABLE `bus_problems`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`),
-  ADD KEY `fee_type_id` (`fee_type_id`),
-  ADD KEY `fk_fee_structure` (`fee_structure_id`);
-
---
--- Indexes for table `class_timetable_details`
---
-ALTER TABLE `class_timetable_details`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `class_timetable_meta`
---
-ALTER TABLE `class_timetable_meta`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `class_timetable_weekdays`
---
-ALTER TABLE `class_timetable_weekdays`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_weekdays_school` (`school_id`);
-
---
--- Indexes for table `diary_entries`
---
-ALTER TABLE `diary_entries`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `diary_students`
---
-ALTER TABLE `diary_students`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `diary_id` (`diary_id`),
-  ADD KEY `student_id` (`student_id`);
-
---
--- Indexes for table `digital_notices`
---
-ALTER TABLE `digital_notices`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `drivers`
---
-ALTER TABLE `drivers`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`);
-
---
--- Indexes for table `exams`
---
-ALTER TABLE `exams`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_exams_school` (`school_id`);
-
---
--- Indexes for table `exam_results`
---
-ALTER TABLE `exam_results`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `exam_schedule`
---
-ALTER TABLE `exam_schedule`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `subject_id` (`subject_id`);
-
---
--- Indexes for table `faculty`
---
-ALTER TABLE `faculty`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `faculty_attendance`
---
-ALTER TABLE `faculty_attendance`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `faculty_id` (`faculty_id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `faculty_leaves`
---
-ALTER TABLE `faculty_leaves`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `faculty_id` (`faculty_id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `fee_installments`
---
-ALTER TABLE `fee_installments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `fee_payments`
---
-ALTER TABLE `fee_payments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fee_slip_id` (`fee_slip_id`),
-  ADD KEY `student_id` (`student_id`);
-
---
--- Indexes for table `fee_periods`
---
-ALTER TABLE `fee_periods`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `fee_refunds`
---
-ALTER TABLE `fee_refunds`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `slip_id` (`slip_id`);
-
---
--- Indexes for table `fee_slip_details`
---
-ALTER TABLE `fee_slip_details`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `fee_period_id` (`fee_period_id`);
-
---
--- Indexes for table `fee_structures`
---
-ALTER TABLE `fee_structures`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `fee_types`
---
-ALTER TABLE `fee_types`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `library_fines`
---
-ALTER TABLE `library_fines`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `transaction_id` (`transaction_id`);
-
---
--- Indexes for table `library_transactions`
---
-ALTER TABLE `library_transactions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `book_id` (`book_id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `faculty_id` (`faculty_id`);
-
---
--- Indexes for table `meeting_announcements`
---
-ALTER TABLE `meeting_announcements`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `meeting_requests`
---
-ALTER TABLE `meeting_requests`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `messages`
---
-ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `parents`
---
-ALTER TABLE `parents`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `parent_cnic` (`parent_cnic`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- Indexes for table `payments`
---
-ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `routes`
---
-ALTER TABLE `routes`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `scholarships`
---
-ALTER TABLE `scholarships`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_scholarships_school` (`school_id`);
-
---
--- Indexes for table `schools`
---
-ALTER TABLE `schools`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `registration_number` (`registration_number`),
-  ADD UNIQUE KEY `school_email` (`school_email`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
--- Indexes for table `school_settings`
---
-ALTER TABLE `school_settings`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `school_tasks`
---
-ALTER TABLE `school_tasks`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_school_tasks_school` (`school_id`);
-
---
--- Indexes for table `school_task_assignees`
---
-ALTER TABLE `school_task_assignees`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `task_id` (`task_id`);
-
---
--- Indexes for table `school_timings`
---
-ALTER TABLE `school_timings`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `students`
---
-ALTER TABLE `students`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD KEY `school_id` (`school_id`);
-
---
--- Indexes for table `student_attendance`
---
-ALTER TABLE `student_attendance`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `student_behavior`
---
-ALTER TABLE `student_behavior`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `class_id` (`class_id`),
-  ADD KEY `teacher_id` (`teacher_id`),
-  ADD KEY `student_id` (`student_id`);
-
---
--- Indexes for table `student_fee_plans`
---
-ALTER TABLE `student_fee_plans`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `school_id` (`school_id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `fk_fee_component` (`fee_component`);
-
---
--- Indexes for table `student_leaves`
---
-ALTER TABLE `student_leaves`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_student` (`student_id`),
-  ADD KEY `fk_school` (`school_id`),
-  ADD KEY `fk_teacher` (`teacher_id`);
-
---
--- Indexes for table `student_payment_plans`
---
-ALTER TABLE `student_payment_plans`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `student_plan_orders`
---
-ALTER TABLE `student_plan_orders`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `student_results`
---
-ALTER TABLE `student_results`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_submission` (`assignment_id`,`student_id`);
-
---
--- Indexes for table `teacher_assignments`
---
-ALTER TABLE `teacher_assignments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `transport_routes`
---
-ALTER TABLE `transport_routes`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `transport_student_routes`
---
-ALTER TABLE `transport_student_routes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `student_id` (`student_id`),
-  ADD KEY `route_id` (`route_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
-
---
--- AUTO_INCREMENT for table `books`
---
-
---
--- AUTO_INCREMENT for table `buses`
---
-
---
--- AUTO_INCREMENT for table `bus_problems`
---
-
---
--- AUTO_INCREMENT for table `class_fee_types`
---;
-
---
--- AUTO_INCREMENT for table `class_timetable_details`
---;
-
---
--- AUTO_INCREMENT for table `class_timetable_meta`
---;
-
---
--- AUTO_INCREMENT for table `class_timetable_weekdays`
---
-
---
--- AUTO_INCREMENT for table `diary_entries`
---
-
---
--- AUTO_INCREMENT for table `diary_students`
---
-
---
--- AUTO_INCREMENT for table `digital_notices`
---
-
---
--- AUTO_INCREMENT for table `drivers`
---
-
---
--- AUTO_INCREMENT for table `exams`
---
-
---
--- AUTO_INCREMENT for table `exam_results`
---
-
---
--- AUTO_INCREMENT for table `exam_schedule`
---
-
---
--- AUTO_INCREMENT for table `faculty`
---;
-
---
--- AUTO_INCREMENT for table `faculty_attendance`
---
-
---
--- AUTO_INCREMENT for table `faculty_leaves`
---
-
---
--- AUTO_INCREMENT for table `fee_installments`
---
-
---
--- AUTO_INCREMENT for table `fee_payments`
---
-
---
--- AUTO_INCREMENT for table `fee_periods`
---
-
---
--- AUTO_INCREMENT for table `fee_refunds`
---
-
---
--- AUTO_INCREMENT for table `fee_slip_details`
---
-
---
--- AUTO_INCREMENT for table `fee_structures`
---
-
---
--- AUTO_INCREMENT for table `fee_types`
---;
-
---
--- AUTO_INCREMENT for table `library_fines`
---
-
---
--- AUTO_INCREMENT for table `library_transactions`
---;
-
---
--- AUTO_INCREMENT for table `meeting_announcements`
---
-
---
--- AUTO_INCREMENT for table `meeting_requests`
---
-
---
--- AUTO_INCREMENT for table `messages`
---;
-
---
--- AUTO_INCREMENT for table `notifications`
---;
-
---
--- AUTO_INCREMENT for table `parents`
---
-
---
--- AUTO_INCREMENT for table `payments`
---
-
---
--- AUTO_INCREMENT for table `routes`
---
---
--- AUTO_INCREMENT for table `scholarships`
---
-
---
--- AUTO_INCREMENT for table `schools`
---
-
---
--- AUTO_INCREMENT for table `school_settings`
---;
-
---
--- AUTO_INCREMENT for table `school_tasks`
---
-
---
--- AUTO_INCREMENT for table `school_task_assignees`
---;
-
---
--- AUTO_INCREMENT for table `school_timings`
---
-
---
--- AUTO_INCREMENT for table `students`
---
-
---
--- AUTO_INCREMENT for table `student_attendance`
---;
-
---
--- AUTO_INCREMENT for table `student_behavior`
---
-
---
--- AUTO_INCREMENT for table `student_fee_plans`
---
-
---
--- AUTO_INCREMENT for table `student_leaves`
---
-
---
--- AUTO_INCREMENT for table `student_payment_plans`
---
-
---
--- AUTO_INCREMENT for table `student_plan_orders`
---
-
---
--- AUTO_INCREMENT for table `student_results`
---;
-
---
--- AUTO_INCREMENT for table `teacher_assignments`
---
-
---
--- AUTO_INCREMENT for table `transport_routes`
---
-
---
--- AUTO_INCREMENT for table `transport_student_routes`
---
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `bus_problems`
---
 ALTER TABLE `bus_problems`
   ADD CONSTRAINT `bus_problems_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`);
 
