@@ -1556,9 +1556,6 @@ ALTER TABLE `transport_student_routes`
 -- AUTO_INCREMENT for dumped tables
 --
 
---
--- AUTO_INCREMENT for table `app_admin`
---
 
 --
 -- AUTO_INCREMENT for table `books`
@@ -1687,15 +1684,10 @@ ALTER TABLE `transport_student_routes`
 --
 -- AUTO_INCREMENT for table `payments`
 --
-ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `routes`
 --
-ALTER TABLE `routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 -- AUTO_INCREMENT for table `scholarships`
 --
