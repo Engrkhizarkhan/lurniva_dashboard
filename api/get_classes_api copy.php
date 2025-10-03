@@ -1,15 +1,30 @@
 <?php
-require_once 'admin/sass/db_config.php';
+// =======================
+// Enable Error Reporting (DEV ONLY)
+// Comment these 3 lines in PRODUCTION
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// --- CORS CONFIGURATION ---
+// =======================
+// DB Connection
+require_once 'admin/sass/db_config.php';
+if (!$conn) {
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Database connection failed: " . mysqli_connect_error()]);
+    exit;
+}
+
+// =======================
+// CORS CONFIGURATION
 $allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')
-    ? ['https://dashboard.lurniva.com/login.php', 'https://www.dashboard.lurniva.com/login.php']
+    ? ['https://dashboard.lurniva.com', 'https://www.dashboard.lurniva.com']
     : [
         'http://localhost:8080',
         'http://localhost:8081',
         'http://localhost:3000',
         'http://localhost:5173',
-        'http://localhost:60706' // ✅ add your current Flutter port
+        'http://localhost:60706' // ✅ Flutter web dev port
     ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -21,29 +36,42 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 header("Content-Type: application/json");
 
-// Handle preflight OPTIONS request
+// =======================
+// Handle Preflight (OPTIONS)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// ✅ Read JSON input
-$data = json_decode(file_get_contents("php://input"), true);
+// =======================
+// Accept only POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(["status" => "error", "message" => "Invalid request method"]);
+    exit;
+}
 
-if (!isset($data['school_id'])) {
+// =======================
+// Read JSON Input
+$data = json_decode(file_get_contents("php://input"), true);
+if (!$data || !isset($data['school_id'])) {
     echo json_encode(["status" => "error", "message" => "Missing school_id"]);
     exit;
 }
 
 $school_id = intval($data['school_id']);
 
-// ✅ Fetch distinct classes
+// =======================
+// Fetch Classes
 $stmt = $conn->prepare("
     SELECT DISTINCT class_name 
     FROM class_timetable_meta 
     WHERE school_id = ? 
     ORDER BY class_name ASC
 ");
+if (!$stmt) {
+    echo json_encode(["status" => "error", "message" => "Prepare failed: " . $conn->error]);
+    exit;
+}
 $stmt->bind_param("i", $school_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -55,6 +83,8 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
+// =======================
+// Response
 echo json_encode([
     "status" => "success",
     "count"  => count($classes),
@@ -63,4 +93,3 @@ echo json_encode([
 
 $stmt->close();
 $conn->close();
-?>
