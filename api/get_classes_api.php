@@ -1,5 +1,5 @@
 <?php
-require_once 'admin/sass/db_config.php';
+require_once '../admin/sass/db_config.php';
 
 // --- CORS CONFIGURATION ---
 $allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')
