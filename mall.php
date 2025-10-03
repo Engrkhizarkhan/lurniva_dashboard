@@ -1,36 +1,37 @@
 <?php
-// Load PHPMailer classes
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Require Composer's autoloader
 require 'vendor/autoload.php';
 
 $mail = new PHPMailer(true);
 
 try {
-    // Server settings
+    // Enable verbose debug output (optional, for testing)
+    // 0 = off (production), 2 = debug
+    $mail->SMTPDebug = 2;                     
     $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';   // Gmail SMTP server
+    $mail->Host       = 'smtp.zoho.com';     
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'your-email@gmail.com';  // 👉 replace with your Gmail
-    $mail->Password   = 'your-app-password';     // 👉 replace with your Gmail App Password
-    $mail->SMTPSecure = 'tls';                   // Encryption (ssl or tls)
-    $mail->Port       = 587;
+    $mail->Username   = 'info@lurniva.com';   // Your Zoho email
+    $mail->Password   = 'Lurniva1290';        // Your Zoho password or app password
+    $mail->SMTPSecure = 'ssl';                // ssl for 465, tls for 587
+    $mail->Port       = 465;                  // 465 = SSL, 587 = TLS
 
-    // Sender & Recipient
-    $mail->setFrom('your-email@gmail.com', 'Your Name');
-    $mail->addAddress('recipient@example.com');  // 👉 replace with recipient
+    // Sender
+    $mail->setFrom('info@lurniva.com', 'Lurniva Support');
 
-    // Email content
+    // Recipient
+    $mail->addAddress('shayans1215225@gmail.com', 'Shayan Khan');
+
+    // Content
     $mail->isHTML(true);
-    $mail->Subject = 'Hello from PHP';
-    $mail->Body    = 'This is a <b>test email</b> using PHPMailer and Gmail SMTP!';
-    $mail->AltBody = 'This is a test email using PHPMailer and Gmail SMTP!';
+    $mail->Subject = 'Test Email from Lurniva';
+    $mail->Body    = 'Hello Shayan,<br><br>This is a <b>test email</b> sent from <b>Lurniva</b> using Zoho SMTP.';
+    $mail->AltBody = 'Hello Shayan, This is a test email sent from Lurniva using Zoho SMTP.';
 
-    // Send email
     $mail->send();
-    echo '✅ Email has been sent successfully';
+    echo '✅ Email has been sent successfully to shayans1215225@gmail.com';
 } catch (Exception $e) {
     echo "❌ Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
 }
