@@ -671,7 +671,8 @@ CREATE TABLE IF NOT EXISTS `meeting_requests` (
 --
 -- Dumping data for table `meeting_requests`
 --
--------------------------------------------------
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `messages`
