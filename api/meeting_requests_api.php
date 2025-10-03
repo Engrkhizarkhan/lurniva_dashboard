@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'admin/sass/db_config.php';
+require_once '../admin/sass/db_config.php';
 
 
 // --- CORS CONFIGURATION ---
