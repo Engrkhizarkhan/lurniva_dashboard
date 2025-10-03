@@ -1289,183 +1289,183 @@ KEY `route_id` (`route_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
-ALTER TABLE `bus_problems`
-  ADD CONSTRAINT `bus_problems_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`);
+-- ALTER TABLE `bus_problems`
+--   ADD CONSTRAINT `bus_problems_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`);
 
---
--- Constraints for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  ADD CONSTRAINT `class_fee_types_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`),
-  ADD CONSTRAINT `class_fee_types_ibfk_2` FOREIGN KEY (`fee_type_id`) REFERENCES `fee_types` (`id`),
-  ADD CONSTRAINT `fk_fee_structure` FOREIGN KEY (`fee_structure_id`) REFERENCES `fee_structures` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `class_fee_types`
+-- --
+-- ALTER TABLE `class_fee_types`
+--   ADD CONSTRAINT `class_fee_types_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`),
+--   ADD CONSTRAINT `class_fee_types_ibfk_2` FOREIGN KEY (`fee_type_id`) REFERENCES `fee_types` (`id`),
+--   ADD CONSTRAINT `fk_fee_structure` FOREIGN KEY (`fee_structure_id`) REFERENCES `fee_structures` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `class_timetable_weekdays`
---
-ALTER TABLE `class_timetable_weekdays`
-  ADD CONSTRAINT `fk_weekdays_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- --
+-- -- Constraints for table `class_timetable_weekdays`
+-- --
+-- ALTER TABLE `class_timetable_weekdays`
+--   ADD CONSTRAINT `fk_weekdays_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Constraints for table `diary_students`
---
-ALTER TABLE `diary_students`
-  ADD CONSTRAINT `diary_students_ibfk_1` FOREIGN KEY (`diary_id`) REFERENCES `diary_entries` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `diary_students_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `diary_students`
+-- --
+-- ALTER TABLE `diary_students`
+--   ADD CONSTRAINT `diary_students_ibfk_1` FOREIGN KEY (`diary_id`) REFERENCES `diary_entries` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `diary_students_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `drivers`
---
-ALTER TABLE `drivers`
-  ADD CONSTRAINT `drivers_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`) ON DELETE SET NULL;
+-- --
+-- -- Constraints for table `drivers`
+-- --
+-- ALTER TABLE `drivers`
+--   ADD CONSTRAINT `drivers_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `buses` (`id`) ON DELETE SET NULL;
 
---
--- Constraints for table `exams`
---
-ALTER TABLE `exams`
-  ADD CONSTRAINT `fk_exams_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- --
+-- -- Constraints for table `exams`
+-- --
+-- ALTER TABLE `exams`
+--   ADD CONSTRAINT `fk_exams_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Constraints for table `exam_schedule`
---
-ALTER TABLE `exam_schedule`
-  ADD CONSTRAINT `exam_schedule_ibfk_1` FOREIGN KEY (`subject_id`) REFERENCES `class_timetable_details` (`id`);
+-- --
+-- -- Constraints for table `exam_schedule`
+-- --
+-- ALTER TABLE `exam_schedule`
+--   ADD CONSTRAINT `exam_schedule_ibfk_1` FOREIGN KEY (`subject_id`) REFERENCES `class_timetable_details` (`id`);
 
---
--- Constraints for table `faculty_attendance`
---
-ALTER TABLE `faculty_attendance`
-  ADD CONSTRAINT `faculty_attendance_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `faculty_attendance_ibfk_2` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `faculty_attendance`
+-- --
+-- ALTER TABLE `faculty_attendance`
+--   ADD CONSTRAINT `faculty_attendance_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `faculty_attendance_ibfk_2` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `faculty_leaves`
---
-ALTER TABLE `faculty_leaves`
-  ADD CONSTRAINT `faculty_leaves_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `faculty_leaves_ibfk_2` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `faculty_leaves`
+-- --
+-- ALTER TABLE `faculty_leaves`
+--   ADD CONSTRAINT `faculty_leaves_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `faculty_leaves_ibfk_2` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `fee_payments`
---
-ALTER TABLE `fee_payments`
-  ADD CONSTRAINT `fee_payments_ibfk_1` FOREIGN KEY (`fee_slip_id`) REFERENCES `fee_slip_details` (`id`),
-  ADD CONSTRAINT `fee_payments_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`);
+-- --
+-- -- Constraints for table `fee_payments`
+-- --
+-- ALTER TABLE `fee_payments`
+--   ADD CONSTRAINT `fee_payments_ibfk_1` FOREIGN KEY (`fee_slip_id`) REFERENCES `fee_slip_details` (`id`),
+--   ADD CONSTRAINT `fee_payments_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`);
 
---
--- Constraints for table `fee_periods`
---
-ALTER TABLE `fee_periods`
-  ADD CONSTRAINT `fee_periods_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `fee_periods`
+-- --
+-- ALTER TABLE `fee_periods`
+--   ADD CONSTRAINT `fee_periods_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `fee_refunds`
---
-ALTER TABLE `fee_refunds`
-  ADD CONSTRAINT `fee_refunds_ibfk_1` FOREIGN KEY (`slip_id`) REFERENCES `fee_slip_details` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `fee_refunds`
+-- --
+-- ALTER TABLE `fee_refunds`
+--   ADD CONSTRAINT `fee_refunds_ibfk_1` FOREIGN KEY (`slip_id`) REFERENCES `fee_slip_details` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `fee_slip_details`
---
-ALTER TABLE `fee_slip_details`
-  ADD CONSTRAINT `fee_slip_details_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fee_slip_details_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fee_slip_details_ibfk_3` FOREIGN KEY (`fee_period_id`) REFERENCES `fee_periods` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `fee_slip_details`
+-- --
+-- ALTER TABLE `fee_slip_details`
+--   ADD CONSTRAINT `fee_slip_details_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `fee_slip_details_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `fee_slip_details_ibfk_3` FOREIGN KEY (`fee_period_id`) REFERENCES `fee_periods` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `fee_types`
---
-ALTER TABLE `fee_types`
-  ADD CONSTRAINT `fee_types_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
+-- --
+-- -- Constraints for table `fee_types`
+-- --
+-- ALTER TABLE `fee_types`
+--   ADD CONSTRAINT `fee_types_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
 
---
--- Constraints for table `library_fines`
---
-ALTER TABLE `library_fines`
-  ADD CONSTRAINT `library_fines_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `library_transactions` (`id`);
+-- --
+-- -- Constraints for table `library_fines`
+-- --
+-- ALTER TABLE `library_fines`
+--   ADD CONSTRAINT `library_fines_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `library_transactions` (`id`);
 
---
--- Constraints for table `library_transactions`
---
-ALTER TABLE `library_transactions`
-  ADD CONSTRAINT `library_transactions_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`),
-  ADD CONSTRAINT `library_transactions_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
-  ADD CONSTRAINT `library_transactions_ibfk_3` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`);
+-- --
+-- -- Constraints for table `library_transactions`
+-- --
+-- ALTER TABLE `library_transactions`
+--   ADD CONSTRAINT `library_transactions_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`),
+--   ADD CONSTRAINT `library_transactions_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
+--   ADD CONSTRAINT `library_transactions_ibfk_3` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`);
 
---
--- Constraints for table `meeting_announcements`
---
-ALTER TABLE `meeting_announcements`
-  ADD CONSTRAINT `meeting_announcements_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
+-- --
+-- -- Constraints for table `meeting_announcements`
+-- --
+-- ALTER TABLE `meeting_announcements`
+--   ADD CONSTRAINT `meeting_announcements_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
 
---
--- Constraints for table `meeting_requests`
---
-ALTER TABLE `meeting_requests`
-  ADD CONSTRAINT `meeting_requests_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `meeting_requests`
+-- --
+-- ALTER TABLE `meeting_requests`
+--   ADD CONSTRAINT `meeting_requests_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `messages`
---
-ALTER TABLE `messages`
-  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
+-- --
+-- -- Constraints for table `messages`
+-- --
+-- ALTER TABLE `messages`
+--   ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
 
---
--- Constraints for table `scholarships`
---
-ALTER TABLE `scholarships`
-  ADD CONSTRAINT `fk_scholarships_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- --
+-- -- Constraints for table `scholarships`
+-- --
+-- ALTER TABLE `scholarships`
+--   ADD CONSTRAINT `fk_scholarships_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Constraints for table `school_tasks`
---
-ALTER TABLE `school_tasks`
-  ADD CONSTRAINT `fk_school_tasks_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- --
+-- -- Constraints for table `school_tasks`
+-- --
+-- ALTER TABLE `school_tasks`
+--   ADD CONSTRAINT `fk_school_tasks_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Constraints for table `school_task_assignees`
---
-ALTER TABLE `school_task_assignees`
-  ADD CONSTRAINT `school_task_assignees_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `school_tasks` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `school_task_assignees`
+-- --
+-- ALTER TABLE `school_task_assignees`
+--   ADD CONSTRAINT `school_task_assignees_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `school_tasks` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `students`
---
-ALTER TABLE `students`
-  ADD CONSTRAINT `students_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
+-- --
+-- -- Constraints for table `students`
+-- --
+-- ALTER TABLE `students`
+--   ADD CONSTRAINT `students_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`);
 
---
--- Constraints for table `student_behavior`
---
-ALTER TABLE `student_behavior`
-  ADD CONSTRAINT `student_behavior_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class_timetable_meta` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `student_behavior_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `student_behavior_ibfk_3` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `student_behavior`
+-- --
+-- ALTER TABLE `student_behavior`
+--   ADD CONSTRAINT `student_behavior_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class_timetable_meta` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `student_behavior_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `student_behavior_ibfk_3` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `student_fee_plans`
---
-ALTER TABLE `student_fee_plans`
-  ADD CONSTRAINT `fk_fee_component` FOREIGN KEY (`fee_component`) REFERENCES `fee_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `student_fee_plans_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`),
-  ADD CONSTRAINT `student_fee_plans_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`);
+-- --
+-- -- Constraints for table `student_fee_plans`
+-- --
+-- ALTER TABLE `student_fee_plans`
+--   ADD CONSTRAINT `fk_fee_component` FOREIGN KEY (`fee_component`) REFERENCES `fee_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+--   ADD CONSTRAINT `student_fee_plans_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`),
+--   ADD CONSTRAINT `student_fee_plans_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`);
 
---
--- Constraints for table `student_leaves`
---
-ALTER TABLE `student_leaves`
-  ADD CONSTRAINT `fk_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `student_leaves`
+-- --
+-- ALTER TABLE `student_leaves`
+--   ADD CONSTRAINT `fk_school` FOREIGN KEY (`school_id`) REFERENCES `schools` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `fk_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `fk_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE;
 
---
--- Constraints for table `transport_student_routes`
---
-ALTER TABLE `transport_student_routes`
-  ADD CONSTRAINT `transport_student_routes_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `transport_student_routes_ibfk_2` FOREIGN KEY (`route_id`) REFERENCES `transport_routes` (`id`) ON DELETE CASCADE;
+-- --
+-- -- Constraints for table `transport_student_routes`
+-- --
+-- ALTER TABLE `transport_student_routes`
+--   ADD CONSTRAINT `transport_student_routes_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+--   ADD CONSTRAINT `transport_student_routes_ibfk_2` FOREIGN KEY (`route_id`) REFERENCES `transport_routes` (`id`) ON DELETE CASCADE;
 
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+-- /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+-- /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
