@@ -391,16 +391,6 @@ CREATE TABLE IF NOT EXISTS `faculty` (
 --
 -- Triggers `faculty`
 --
-DELIMITER $$
-CREATE TRIGGER `prevent_invalid_faculty_approval` BEFORE UPDATE ON `faculty` FOR EACH ROW BEGIN
-    -- If someone tries to approve an expired subscription
-    IF NEW.status = 'Approved' AND NEW.subscription_end <= CURDATE() THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Cannot approve student: subscription expired!';
-    END IF;
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -842,16 +832,8 @@ CREATE TABLE IF NOT EXISTS `schools` (
 --
 -- Triggers `schools`
 --
-DELIMITER $$
-CREATE TRIGGER `prevent_invalid_approval` BEFORE UPDATE ON `schools` FOR EACH ROW BEGIN
-    -- If someone tries to set status to Approved but subscription_end is expired
-    IF NEW.status = 'Approved' AND NEW.subscription_end <= CURDATE() THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Cannot approve school: subscription expired!';
-    END IF;
-END
-$$
-DELIMITER ;
+
+
 
 -- --------------------------------------------------------
 
@@ -994,16 +976,6 @@ CREATE TABLE IF NOT EXISTS `students` (
 --
 -- Triggers `students`
 --
-DELIMITER $$
-CREATE TRIGGER `prevent_invalid_student_approval` BEFORE UPDATE ON `students` FOR EACH ROW BEGIN
-    -- If someone tries to approve an expired subscription
-    IF NEW.status = 'Approved' AND NEW.subscription_end <= CURDATE() THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Cannot approve student: subscription expired!';
-    END IF;
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -2071,27 +2043,6 @@ ALTER TABLE `transport_student_routes`
   ADD CONSTRAINT `transport_student_routes_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `transport_student_routes_ibfk_2` FOREIGN KEY (`route_id`) REFERENCES `transport_routes` (`id`) ON DELETE CASCADE;
 
-DELIMITER $$
---
--- Events
---
-CREATE DEFINER=`root`@`localhost` EVENT `update_school_status` ON SCHEDULE EVERY 1 DAY STARTS '2025-09-10 00:55:50' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE schools
-    SET status = 'Pending'
-    WHERE subscription_end IS NOT NULL
-      AND subscription_end < CURDATE()$$
-
-CREATE DEFINER=`root`@`localhost` EVENT `update_student_status` ON SCHEDULE EVERY 1 DAY STARTS '2025-09-10 01:03:19' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE students
-    SET status = 'Pending'
-    WHERE subscription_end IS NOT NULL
-      AND subscription_end < CURDATE()$$
-
-CREATE DEFINER=`root`@`localhost` EVENT `update_faculty_status` ON SCHEDULE EVERY 1 DAY STARTS '2025-09-10 01:07:13' ON COMPLETION NOT PRESERVE ENABLE DO UPDATE faculty
-    SET status = 'Pending'
-    WHERE subscription_end IS NOT NULL
-      AND subscription_end < CURDATE()$$
-
-DELIMITER ;
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
