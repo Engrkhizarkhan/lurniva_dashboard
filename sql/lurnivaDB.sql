@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `app_admin` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `app_admin` (
 --
 
 CREATE TABLE IF NOT EXISTS `books` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `author` varchar(255) DEFAULT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `books` (
 --
 
 CREATE TABLE IF NOT EXISTS `buses` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `bus_number` varchar(50) NOT NULL,
   `capacity` int(11) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `buses` (
 --
 
 CREATE TABLE IF NOT EXISTS `bus_problems` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `bus_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `problem` text NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `bus_problems` (
 --
 
 CREATE TABLE IF NOT EXISTS `class_fee_types` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `fee_structure_id` int(11) DEFAULT NULL,
   `school_id` int(11) NOT NULL,
   `class_grade` varchar(50) NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `class_fee_types` (
 --
 
 CREATE TABLE IF NOT EXISTS `class_timetable_details` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `timing_meta_id` int(11) NOT NULL,
   `period_number` int(11) NOT NULL,
   `period_name` varchar(50) DEFAULT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_details` (
 --
 
 CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `timing_table_id` int(255) NOT NULL,
   `class_name` varchar(50) NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_meta` (
 --
 
 CREATE TABLE IF NOT EXISTS `class_timetable_weekdays` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `weekday` enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday') NOT NULL,
   `assembly_time` time NOT NULL,
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS `class_timetable_weekdays` (
 --
 
 CREATE TABLE IF NOT EXISTS `diary_entries` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` varchar(255) NOT NULL,
   `class_meta_id` int(11) NOT NULL,
   `subject` varchar(255) NOT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS `diary_entries` (
 --
 
 CREATE TABLE IF NOT EXISTS `diary_students` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `approve_parent` varchar(255) NOT NULL,
   `diary_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL
@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS `diary_students` (
 --
 
 CREATE TABLE IF NOT EXISTS `digital_notices` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `notice_date` date DEFAULT NULL,
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `digital_notices` (
 --
 
 CREATE TABLE IF NOT EXISTS `drivers` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `bus_id` int(11) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `drivers` (
 --
 
 CREATE TABLE IF NOT EXISTS `exams` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `exam_name` varchar(255) NOT NULL,
   `total_marks` int(11) NOT NULL,
@@ -312,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `exams` (
 --
 
 CREATE TABLE IF NOT EXISTS `exam_results` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `exam_schedule_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -335,7 +335,7 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
 --
 
 CREATE TABLE IF NOT EXISTS `exam_schedule` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `exam_name` varchar(255) NOT NULL,
   `class_name` varchar(255) NOT NULL,
@@ -359,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `exam_schedule` (
 --
 
 CREATE TABLE IF NOT EXISTS `faculty` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `campus_id` int(11) NOT NULL,
   `full_name` varchar(100) NOT NULL,
   `cnic` varchar(25) NOT NULL,
@@ -399,7 +399,7 @@ CREATE TABLE IF NOT EXISTS `faculty` (
 --
 
 CREATE TABLE IF NOT EXISTS `faculty_attendance` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `faculty_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `attendance_date` date NOT NULL,
@@ -415,7 +415,7 @@ CREATE TABLE IF NOT EXISTS `faculty_attendance` (
 --
 
 CREATE TABLE IF NOT EXISTS `faculty_leaves` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `faculty_id` int(11) NOT NULL,
   `leave_type` varchar(255) DEFAULT NULL,
@@ -441,7 +441,7 @@ CREATE TABLE IF NOT EXISTS `faculty_leaves` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_installments` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `fee_period_id` int(11) NOT NULL,
@@ -463,7 +463,7 @@ CREATE TABLE IF NOT EXISTS `fee_installments` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_payments` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `fee_slip_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -485,7 +485,7 @@ CREATE TABLE IF NOT EXISTS `fee_payments` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_periods` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `period_name` varchar(100) NOT NULL,
   `period_type` enum('monthly','quarterly','term','custom') NOT NULL,
@@ -507,7 +507,7 @@ CREATE TABLE IF NOT EXISTS `fee_periods` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_refunds` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `slip_id` int(11) NOT NULL,
   `refund_amount` decimal(10,2) NOT NULL,
@@ -527,7 +527,7 @@ CREATE TABLE IF NOT EXISTS `fee_refunds` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_slip_details` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `fee_period_id` int(11) NOT NULL,
@@ -552,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `fee_slip_details` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_structures` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `class_grade` varchar(50) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
@@ -572,7 +572,7 @@ CREATE TABLE IF NOT EXISTS `fee_structures` (
 --
 
 CREATE TABLE IF NOT EXISTS `fee_types` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `fee_name` varchar(100) NOT NULL,
   `status` enum('active','inactive') DEFAULT 'active',
@@ -591,7 +591,7 @@ CREATE TABLE IF NOT EXISTS `fee_types` (
 --
 
 CREATE TABLE IF NOT EXISTS `library_fines` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `transaction_id` int(11) NOT NULL,
   `fine_amount` decimal(10,2) NOT NULL,
@@ -609,7 +609,7 @@ CREATE TABLE IF NOT EXISTS `library_fines` (
 --
 
 CREATE TABLE IF NOT EXISTS `library_transactions` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `book_id` int(11) NOT NULL,
   `student_id` int(11) DEFAULT NULL,
@@ -631,7 +631,7 @@ CREATE TABLE IF NOT EXISTS `library_transactions` (
 --
 
 CREATE TABLE IF NOT EXISTS `meeting_announcements` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `meeting_agenda` text DEFAULT NULL,
@@ -656,7 +656,7 @@ CREATE TABLE IF NOT EXISTS `meeting_announcements` (
 --
 
 CREATE TABLE IF NOT EXISTS `meeting_requests` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `requested_by` enum('admin','teacher','parent') NOT NULL,
   `requester_id` int(11) NOT NULL,
@@ -679,7 +679,7 @@ CREATE TABLE IF NOT EXISTS `meeting_requests` (
 --
 
 CREATE TABLE IF NOT EXISTS `messages` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `sender_designation` enum('admin','teacher','student') NOT NULL,
   `sender_id` int(11) NOT NULL,
@@ -701,7 +701,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
 --
 
 CREATE TABLE IF NOT EXISTS `notifications` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `type` varchar(255) NOT NULL,
   `school_id` varchar(50) NOT NULL,
@@ -722,7 +722,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 --
 
 CREATE TABLE IF NOT EXISTS `parents` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `full_name` varchar(100) NOT NULL,
   `parent_cnic` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -750,7 +750,7 @@ CREATE TABLE IF NOT EXISTS `parents` (
 --
 
 CREATE TABLE IF NOT EXISTS `payments` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `slip_id` int(11) NOT NULL,
   `payment_date` date NOT NULL,
   `amount_paid` decimal(10,2) NOT NULL,
@@ -766,7 +766,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
 --
 
 CREATE TABLE IF NOT EXISTS `routes` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `route_name` varchar(100) NOT NULL,
   `start_point` varchar(150) NOT NULL,
   `end_point` varchar(150) NOT NULL,
@@ -781,7 +781,7 @@ CREATE TABLE IF NOT EXISTS `routes` (
 --
 
 CREATE TABLE IF NOT EXISTS `scholarships` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `type` enum('percentage','fixed') DEFAULT 'fixed',
@@ -799,7 +799,7 @@ CREATE TABLE IF NOT EXISTS `scholarships` (
 --
 
 CREATE TABLE IF NOT EXISTS `schools` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_name` varchar(255) DEFAULT NULL,
   `school_type` enum('Public','Private','Charter') DEFAULT NULL,
   `registration_number` varchar(100) DEFAULT NULL,
@@ -843,7 +843,7 @@ CREATE TABLE IF NOT EXISTS `schools` (
 --
 
 CREATE TABLE IF NOT EXISTS `school_settings` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `person` enum('app_admin','admin','facility','student') NOT NULL,
   `person_id` int(11) NOT NULL,
   `layout` tinyint(1) NOT NULL COMMENT '1=Light, 2=Dark',
@@ -879,7 +879,7 @@ CREATE TABLE IF NOT EXISTS `school_settings` (
 --
 
 CREATE TABLE IF NOT EXISTS `school_tasks` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `task_title` varchar(255) NOT NULL,
   `task_description` text NOT NULL,
@@ -900,7 +900,7 @@ CREATE TABLE IF NOT EXISTS `school_tasks` (
 --
 
 CREATE TABLE IF NOT EXISTS `school_task_assignees` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `task_id` int(11) NOT NULL,
   `assigned_to_type` enum('teacher','student') NOT NULL,
@@ -920,7 +920,7 @@ CREATE TABLE IF NOT EXISTS `school_task_assignees` (
 --
 
 CREATE TABLE IF NOT EXISTS `school_timings` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `assembly_time` time NOT NULL,
   `leave_time` time NOT NULL,
@@ -942,7 +942,7 @@ CREATE TABLE IF NOT EXISTS `school_timings` (
 --
 
 CREATE TABLE IF NOT EXISTS `students` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) DEFAULT NULL,
   `parent_name` varchar(100) DEFAULT NULL,
   `parent_cnic` varchar(20) DEFAULT NULL,
@@ -985,7 +985,7 @@ CREATE TABLE IF NOT EXISTS `students` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_attendance` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
   `class_meta_id` int(11) NOT NULL,
@@ -1006,7 +1006,7 @@ CREATE TABLE IF NOT EXISTS `student_attendance` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_behavior` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `class_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -1031,7 +1031,7 @@ CREATE TABLE IF NOT EXISTS `student_behavior` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_fee_plans` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `fee_component` int(11) NOT NULL,
@@ -1048,7 +1048,7 @@ CREATE TABLE IF NOT EXISTS `student_fee_plans` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_leaves` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `student_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
@@ -1068,7 +1068,7 @@ CREATE TABLE IF NOT EXISTS `student_leaves` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_payment_plans` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `plan_name` varchar(100) NOT NULL,
   `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
@@ -1089,7 +1089,7 @@ CREATE TABLE IF NOT EXISTS `student_payment_plans` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_plan_orders` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `plan_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL,
   `num_students` int(11) NOT NULL,
@@ -1110,7 +1110,7 @@ CREATE TABLE IF NOT EXISTS `student_plan_orders` (
 --
 
 CREATE TABLE IF NOT EXISTS `student_results` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `assignment_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
@@ -1132,7 +1132,7 @@ CREATE TABLE IF NOT EXISTS `student_results` (
 --
 
 CREATE TABLE IF NOT EXISTS `teacher_assignments` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
   `class_meta_id` int(11) NOT NULL,
@@ -1158,7 +1158,7 @@ CREATE TABLE IF NOT EXISTS `teacher_assignments` (
 --
 
 CREATE TABLE IF NOT EXISTS `transport_routes` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `route_name` varchar(100) NOT NULL,
   `stops` text DEFAULT NULL,
@@ -1177,7 +1177,7 @@ CREATE TABLE IF NOT EXISTS `transport_routes` (
 --
 
 CREATE TABLE IF NOT EXISTS `transport_student_routes` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `route_id` int(11) NOT NULL,
@@ -1559,194 +1559,130 @@ ALTER TABLE `transport_student_routes`
 --
 -- AUTO_INCREMENT for table `app_admin`
 --
-ALTER TABLE `app_admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `books`
 --
-ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `buses`
 --
-ALTER TABLE `buses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `bus_problems`
 --
-ALTER TABLE `bus_problems`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `class_fee_types`
---
-ALTER TABLE `class_fee_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+--;
 
 --
 -- AUTO_INCREMENT for table `class_timetable_details`
---
-ALTER TABLE `class_timetable_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+--;
 
 --
 -- AUTO_INCREMENT for table `class_timetable_meta`
---
-ALTER TABLE `class_timetable_meta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--;
 
 --
 -- AUTO_INCREMENT for table `class_timetable_weekdays`
 --
-ALTER TABLE `class_timetable_weekdays`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `diary_entries`
 --
-ALTER TABLE `diary_entries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `diary_students`
 --
-ALTER TABLE `diary_students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `digital_notices`
 --
-ALTER TABLE `digital_notices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `drivers`
 --
-ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `exams`
 --
-ALTER TABLE `exams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `exam_results`
 --
-ALTER TABLE `exam_results`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `exam_schedule`
 --
-ALTER TABLE `exam_schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `faculty`
---
-ALTER TABLE `faculty`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+--;
 
 --
 -- AUTO_INCREMENT for table `faculty_attendance`
 --
-ALTER TABLE `faculty_attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `faculty_leaves`
 --
-ALTER TABLE `faculty_leaves`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `fee_installments`
 --
-ALTER TABLE `fee_installments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `fee_payments`
 --
-ALTER TABLE `fee_payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `fee_periods`
 --
-ALTER TABLE `fee_periods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `fee_refunds`
 --
-ALTER TABLE `fee_refunds`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `fee_slip_details`
 --
-ALTER TABLE `fee_slip_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `fee_structures`
 --
-ALTER TABLE `fee_structures`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `fee_types`
---
-ALTER TABLE `fee_types`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+--;
 
 --
 -- AUTO_INCREMENT for table `library_fines`
 --
-ALTER TABLE `library_fines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `library_transactions`
---
-ALTER TABLE `library_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+--;
 
 --
 -- AUTO_INCREMENT for table `meeting_announcements`
 --
-ALTER TABLE `meeting_announcements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `meeting_requests`
 --
-ALTER TABLE `meeting_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `messages`
---
-ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+--;
 
 --
 -- AUTO_INCREMENT for table `notifications`
---
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+--;
 
 --
 -- AUTO_INCREMENT for table `parents`
 --
-ALTER TABLE `parents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -1763,104 +1699,70 @@ ALTER TABLE `routes`
 --
 -- AUTO_INCREMENT for table `scholarships`
 --
-ALTER TABLE `scholarships`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `schools`
 --
-ALTER TABLE `schools`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `school_settings`
---
-ALTER TABLE `school_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--;
 
 --
 -- AUTO_INCREMENT for table `school_tasks`
 --
-ALTER TABLE `school_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `school_task_assignees`
---
-ALTER TABLE `school_task_assignees`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+--;
 
 --
 -- AUTO_INCREMENT for table `school_timings`
 --
-ALTER TABLE `school_timings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
-ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_attendance`
---
-ALTER TABLE `student_attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+--;
 
 --
 -- AUTO_INCREMENT for table `student_behavior`
 --
-ALTER TABLE `student_behavior`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `student_fee_plans`
 --
-ALTER TABLE `student_fee_plans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `student_leaves`
 --
-ALTER TABLE `student_leaves`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `student_payment_plans`
 --
-ALTER TABLE `student_payment_plans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `student_plan_orders`
 --
-ALTER TABLE `student_plan_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `student_results`
---
-ALTER TABLE `student_results`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--;
 
 --
 -- AUTO_INCREMENT for table `teacher_assignments`
 --
-ALTER TABLE `teacher_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `transport_routes`
 --
-ALTER TABLE `transport_routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `transport_student_routes`
 --
-ALTER TABLE `transport_student_routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
