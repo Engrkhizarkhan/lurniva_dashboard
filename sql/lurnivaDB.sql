@@ -724,7 +724,7 @@ CREATE TABLE IF NOT EXISTS `meeting_requests` (
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
    PRIMARY KEY (`id`),
-   KEY `school_id` (`school_id`
+   KEY `school_id` (`school_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
