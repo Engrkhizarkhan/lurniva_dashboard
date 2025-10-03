@@ -1124,7 +1124,8 @@ CREATE TABLE IF NOT EXISTS `student_results` (
 --
 -- Dumping data for table `student_results`
 --
-----------------------------------------------
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `teacher_assignments`
