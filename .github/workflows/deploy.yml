@@ -41,21 +41,13 @@ jobs:
             sudo chown -R www-data:www-data /var/www/lurniva_dashboard
 
             # 6. Database Migration - Import/Update Database Schema
-            echo "Running database migration..."
- 
-            # Delete database
-            mysql -u lurnivauser -p'lurniva@testVM' -e "DROP DATABASE IF EXISTS lurnivaDB"
-            echo "Existing database dropped."
+            echo "Running database migration..." 
 
             # Create database
             mysql -u lurnivauser -p'lurniva@testVM' -e "CREATE DATABASE IF NOT EXISTS lurnivaDB"
 
             mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql
             echo "Database migration completed."
-
-            #again ading db for debug;
-            mysql -u lurnivauser -p'lurniva@testVM' lurnivaDB < /var/www/lurniva_dashboard/sql/lurnivaDB.sql
-            echo "Database migration completed V2."
 
             # 7. Reload PHP and Nginx services
             sudo systemctl restart php8.3-fpm
