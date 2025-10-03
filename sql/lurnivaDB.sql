@@ -1285,7 +1285,7 @@ CREATE TABLE IF NOT EXISTS `transport_student_routes` (
   `assigned_at` timestamp NOT NULL DEFAULT current_timestamp(),
    PRIMARY KEY (`id`),
    KEY `student_id` (`student_id`),
-KEY `route_id` (`route_id`);
+KEY `route_id` (`route_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
