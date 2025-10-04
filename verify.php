@@ -86,6 +86,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update->bind_param("ss", $newCode, $email);
         $update->execute();
 
+        // // ✅ Send email
+        // $subject = "Your Verification Code";
+        // $message = "Your new verification code is: $newCode\n\nThis code expires in 5 minutes.";
+        // $headers = "From: noreply@yourdomain.com";
+
+        // mail($email, $subject, $message, $headers);
+
+        // $success = "✅ A new verification code has been sent to $email";
+        
         // ✅ Send new code via PHPMailer
         $subject = "Your Verification Code - Lurniva";
         $body = "
