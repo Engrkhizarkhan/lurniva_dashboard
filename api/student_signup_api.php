@@ -1,6 +1,6 @@
 <?php
 require_once '../admin/sass/db_config.php';
-require_once '../mailer_library.php'; // ✅ include PHPMailer helper
+require_once '../mail_library.php'; // ✅ include PHPMailer helper
 
 // --------------------
 // ✅ CORS CONFIGURATION

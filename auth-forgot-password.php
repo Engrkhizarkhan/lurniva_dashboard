@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
-require_once 'mailer_library.php'; // ✅ Use PHPMailer library
+require_once 'mail_library.php'; // ✅ Use PHPMailer library
 
 $message = '';
 $message_type = '';

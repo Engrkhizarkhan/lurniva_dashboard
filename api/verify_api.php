@@ -1,6 +1,6 @@
 <?php
 require_once '../admin/sass/db_config.php';
-require_once '../lib/mailer.php'; // ✅ include your email library
+require_once '../mail_library.php'; // ✅ include your email library
 
 // --- CORS CONFIGURATION ---
 $allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')

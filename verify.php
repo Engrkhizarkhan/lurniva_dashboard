@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
-require_once 'mailer_library.php'; // ✅ use your new library
+require_once 'mail_library.php'; // ✅ use your new library
 
 // ✅ If session missing, redirect
 if (!isset($_SESSION['pending_email']) || !isset($_SESSION['user_type'])) {

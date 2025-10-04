@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
-require_once 'mailer_library.php'; // ✅ Include mailer
+require_once 'mail_library.php'; // ✅ Include mailer
 
 /**
  * Insert default settings for a school/student
