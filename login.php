@@ -1,14 +1,7 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
-
-function sendMail($to, $subject, $message) {
-    $from = "shayans1215225@gmail.com"; 
-    $headers  = "From: $from\r\n";
-    $headers .= "Reply-To: $from\r\n";
-    $headers .= "X-Mailer: PHP/" . phpversion();
-    return mail($to, $subject, $message, $headers);
-}
+require_once 'mail_library.php'; // include PHPMailer library
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -29,16 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows === 1) {
         $admin = $result->fetch_assoc();
         if (password_verify($password, $admin['password'])) {
-            // Generate OTP
             $otp = rand(100000, 999999);
             $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
             $conn->query("UPDATE app_admin SET verification_code='$otp', code_expires_at='$expiry' WHERE id=" . $admin['id']);
 
             $subject = "App Admin OTP Verification";
-            $msg = "Hello {$admin['full_name']},\n\nYour OTP is: $otp\n\nThis code expires in 5 minutes.";
+            $msg = "Hello {$admin['full_name']},<br><br>Your OTP is: <b>$otp</b><br><br>This code expires in 5 minutes.";
 
-            if (sendMail($admin['email'], $subject, $msg)) {
+            if (sendMail($admin['email'], $subject, $msg, $admin['full_name'])) {
                 $_SESSION['pending_email'] = $email;
                 $_SESSION['pending_admin_id'] = $admin['id'];
                 $_SESSION['user_type'] = 'app_admin';
@@ -56,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- ✅ Check Schools ---
     $stmt = $conn->prepare("
-        SELECT id, school_name, admin_contact_person, password, is_verified, status, subscription_end 
+        SELECT id, school_name, admin_contact_person, password, is_verified, status, subscription_end, school_email 
         FROM schools 
         WHERE school_email = ?
     ");
@@ -67,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        // 🚨 Check subscription expiry
         if (!empty($user['subscription_end']) && $user['subscription_end'] < $current_date) {
             $conn->query("UPDATE schools SET status='Pending' WHERE id=" . $user['id']);
             echo "<script>alert('Your school subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
@@ -82,15 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: admin/index.php");
                 exit;
             } else {
-                // resend OTP
                 $verification_code = rand(100000, 999999);
                 $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
                 $conn->query("UPDATE schools SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$user['id']);
 
                 $subject = "School Account Verification";
-                $msg = "Hello {$user['admin_contact_person']},\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
+                $msg = "Hello {$user['admin_contact_person']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
 
-                if (sendMail($email, $subject, $msg)) {
+                if (sendMail($email, $subject, $msg, $user['admin_contact_person'])) {
                     $_SESSION['pending_email'] = $email;
                     $_SESSION['user_type'] = 'school';
                     header("Location: verify.php");
@@ -119,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows === 1) {
         $faculty = $result->fetch_assoc();
 
-        // 🚨 Check subscription expiry
         if (!empty($faculty['subscription_end']) && $faculty['subscription_end'] < $current_date) {
             $conn->query("UPDATE faculty SET status='Pending' WHERE id=" . $faculty['id']);
             echo "<script>alert('Your faculty subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
@@ -135,15 +124,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: Faculty Dashboard/index.php");
                 exit;
             } else {
-                // resend OTP
                 $verification_code = rand(100000, 999999);
                 $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
                 $conn->query("UPDATE faculty SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$faculty['id']);
 
                 $subject = "Faculty Account Verification";
-                $msg = "Hello {$faculty['full_name']},\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
+                $msg = "Hello {$faculty['full_name']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
 
-                if (sendMail($email, $subject, $msg)) {
+                if (sendMail($email, $subject, $msg, $faculty['full_name'])) {
                     $_SESSION['pending_email'] = $email;
                     $_SESSION['user_type'] = 'faculty';
                     header("Location: verify.php");
@@ -172,7 +160,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows === 1) {
         $student = $result->fetch_assoc();
 
-        // 🚨 Check subscription expiry
         if (!empty($student['subscription_end']) && $student['subscription_end'] < $current_date) {
             $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
             echo "<script>alert('Your student subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
@@ -188,15 +175,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: student/index.php");
                 exit;
             } else {
-                // resend OTP
                 $verification_code = rand(100000, 999999);
                 $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
                 $conn->query("UPDATE students SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$student['id']);
 
                 $subject = "Student Account Verification";
-                $msg = "Hello {$student['full_name']},\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
+                $msg = "Hello {$student['full_name']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
 
-                if (sendMail($email, $subject, $msg)) {
+                if (sendMail($email, $subject, $msg, $student['full_name'])) {
                     $_SESSION['pending_email'] = $email;
                     $_SESSION['user_type'] = 'student';
                     header("Location: verify.php");
@@ -225,7 +211,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows === 1) {
         $parent = $result->fetch_assoc();
 
-        // 🚨 Check subscription expiry
         if (!empty($parent['subscription_end']) && $parent['subscription_end'] < $current_date) {
             $conn->query("UPDATE parents SET status='Pending' WHERE id=" . $parent['id']);
             echo "<script>alert('Your parent subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
@@ -243,15 +228,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: parent/index.php");
                 exit;
             } else {
-                // resend OTP
                 $verification_code = rand(100000, 999999);
                 $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
                 $conn->query("UPDATE parents SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$parent['id']);
 
                 $subject = "Parent Account Verification";
-                $msg = "Hello {$parent['full_name']},\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
+                $msg = "Hello {$parent['full_name']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
 
-                if (sendMail($email, $subject, $msg)) {
+                if (sendMail($email, $subject, $msg, $parent['full_name'])) {
                     $_SESSION['pending_email'] = $email;
                     $_SESSION['user_type']     = 'parent';
                     header("Location: verify.php");

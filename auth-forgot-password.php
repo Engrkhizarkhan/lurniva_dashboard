@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
+require_once 'mailer_library.php'; // ✅ Use PHPMailer library
 
 $message = '';
 $message_type = '';
@@ -9,11 +10,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
 
     if (empty($email)) {
-        $message = "Email is required.";
+        $message = "❌ Email is required.";
         $message_type = "danger";
     } else {
-        // check user in all tables
-        $tables = ['schools' => 'school_email', 'students' => 'email', 'faculty' => 'email'];
+        // Check user existence in all possible tables
+        $tables = [
+            'schools' => 'school_email',
+            'students' => 'email',
+            'faculty' => 'email'
+        ];
         $found = false;
 
         foreach ($tables as $table => $column) {
@@ -26,32 +31,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $found = true;
                 $user = $result->fetch_assoc();
 
-                // generate reset code
+                // Generate reset code
                 $reset_code = rand(100000, 999999);
                 $expires = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
-                // save to DB
-                $update = $conn->prepare("UPDATE $table SET verification_code=?, code_expires_at=?, verification_attempts=0 WHERE id=?");
+                // Update DB with reset code and expiry
+                $update = $conn->prepare("
+                    UPDATE $table 
+                    SET verification_code=?, code_expires_at=?, verification_attempts=0 
+                    WHERE id=?");
                 $update->bind_param("ssi", $reset_code, $expires, $user['id']);
                 $update->execute();
 
-                // send email
-                $subject = "Password Reset Code";
-                $body = "Hello,\n\nYour password reset code is: $reset_code\nThis code expires in 5 minutes.";
-                $headers = "From: shayans1215225@gmail.com";
+                // ✅ Send email using PHPMailer
+                $subject = "Password Reset Code - Lurniva";
+                $body = "
+                    <p>Hello,</p>
+                    <p>Your password reset code is:</p>
+                    <h2 style='color:#007bff;'>$reset_code</h2>
+                    <p>This code will expire in <b>5 minutes</b>.</p>
+                    <p>If you didn’t request this, please ignore this message.</p>
+                    <br>
+                    <p>Best regards,<br><b>Lurniva Support Team</b></p>
+                ";
 
-                mail($email, $subject, $body, $headers);
-
-                $_SESSION['reset_email'] = $email;
-                $_SESSION['reset_table'] = $table;
-
-                header("Location: reset_password.php");
-                exit;
+                if (sendEmail($email, $subject, $body)) {
+                    $_SESSION['reset_email'] = $email;
+                    $_SESSION['reset_table'] = $table;
+                    header("Location: reset_password.php");
+                    exit;
+                } else {
+                    $message = "❌ Failed to send reset code. Please try again.";
+                    $message_type = "danger";
+                }
             }
         }
 
         if (!$found) {
-            $message = "No account found with this email.";
+            $message = "❌ No account found with this email.";
             $message_type = "danger";
         }
     }

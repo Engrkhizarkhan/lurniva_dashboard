@@ -1,16 +1,16 @@
 <?php
 require_once '../admin/sass/db_config.php';
+require_once '../lib/mailer.php'; // ✅ include your email library
 
 // --- CORS CONFIGURATION ---
 $allowedOrigins = (($_SERVER['HTTP_HOST'] ?? '') === 'dashboard.lurniva.com')
-        ? ['https://dashboard.lurniva.com/login.php', 'https://www.dashboard.lurniva.com/login.php']
-
+    ? ['https://dashboard.lurniva.com/login.php', 'https://www.dashboard.lurniva.com/login.php']
     : [
         'http://localhost:8080',
         'http://localhost:8081',
         'http://localhost:3000',
         'http://localhost:5173',
-        'http://localhost:60706' // ✅ add your current Flutter port
+        'http://localhost:60706' // ✅ Flutter web port
     ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -65,8 +65,8 @@ switch ($type) {
         exit;
 }
 
+// ✅ Handle resend request
 if ($resend) {
-    // ✅ Generate new code
     $newCode = rand(100000, 999999);
     $expiry  = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
@@ -74,27 +74,37 @@ if ($resend) {
     $stmt->bind_param("sss", $newCode, $expiry, $email);
     $stmt->execute();
 
-    // TODO: replace with PHPMailer for real app
-    @mail(
-        $email,
-        "Your Verification Code",
-        "Your new code is: $newCode\n\nThis code expires in 5 minutes.",
-        "From: noreply@lurniva.com"
-    );
+    if ($stmt->affected_rows > 0) {
+        // ✅ Send email via library
+        $subject = "Your Verification Code";
+        $body = "
+        <p>Hello,</p>
+        <p>Your new verification code is: <b>$newCode</b></p>
+        <p>This code will expire in <b>5 minutes</b>.</p>
+        <p>— Lurniva Support</p>
+        ";
+        $sent = sendEmail($email, $subject, $body);
 
-    echo json_encode([
-        "status" => "success",
-        "message" => "New verification code sent to $email"
-    ]);
+        if ($sent) {
+            echo json_encode(["status" => "success", "message" => "New verification code sent to $email"]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Failed to send email"]);
+        }
+    } else {
+        echo json_encode(["status" => "error", "message" => "Account not found or already verified"]);
+    }
+
+    $stmt->close();
+    $conn->close();
     exit;
 }
 
+// ✅ Normal verification flow
 if (empty($code)) {
     echo json_encode(["status" => "error", "message" => "Verification code required"]);
     exit;
 }
 
-// ✅ Check code validity
 $stmt = $conn->prepare("SELECT id, code_expires_at FROM $table 
     WHERE $field=? AND verification_code=? AND is_verified=0");
 $stmt->bind_param("ss", $email, $code);

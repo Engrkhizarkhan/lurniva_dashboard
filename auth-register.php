@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
+require_once 'mailer_library.php'; // ✅ Include mailer
 
 /**
  * Insert default settings for a school/student
@@ -46,13 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $admin_phone = $_POST['admin_phone'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        // Verification
         $verification_code = rand(100000, 999999);
         $is_verified = 0;
         $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
         $verification_attempts = 0;
 
-        // Logo upload
         $logo_name = null;
         if (!empty($_FILES['logo']['name'])) {
             $logo_name = time() . "_" . basename($_FILES['logo']['name']);
@@ -96,17 +95,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $school_id = $conn->insert_id;
-
-            // ✅ Insert default settings
             createDefaultSettings($conn, "admin", $school_id);
 
-            // Send verification email
-            $to = $admin_email;
             $subject = "School Account Verification";
-            $message = "Hello $admin_contact_person,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-            $headers = "From: support@lurniva.com";
+            $body = "Hello $admin_contact_person,<br><br>
+            Your verification code is: <b>$verification_code</b><br>
+            This code expires in 5 minutes.<br><br>Regards,<br>Lurniva Support";
 
-            if (mail($to, $subject, $message, $headers)) {
+            if (sendEmail($admin_email, $subject, $body)) {
                 $_SESSION['pending_email'] = $admin_email;
                 $_SESSION['user_type'] = 'school';
                 header("Location: verify.php");
@@ -141,14 +137,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $phone = $_POST['phone'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        // Verification
         $verification_code = rand(100000, 999999);
         $is_verified = 0;
         $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
         $verification_attempts = 0;
         $status = "pending";
 
-        // Profile upload
         $profile_name = null;
         if (!empty($_FILES['profile_photo']['name'])) {
             $profile_name = time() . "_" . basename($_FILES['profile_photo']['name']);
@@ -194,17 +188,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $student_id = $conn->insert_id;
-
-            // ✅ Insert default settings
             createDefaultSettings($conn, "student", $student_id);
 
-            // Send verification email
-            $to = $email;
             $subject = "Student Account Verification";
-            $message = "Hello $full_name,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-            $headers = "From: support@lurniva.com";
+            $body = "Hello $full_name,<br><br>Your verification code is: <b>$verification_code</b><br>This code expires in 5 minutes.";
 
-            if (mail($to, $subject, $message, $headers)) {
+            if (sendEmail($email, $subject, $body)) {
                 $_SESSION['pending_email'] = $email;
                 $_SESSION['user_type'] = 'student';
                 header("Location: verify.php");
@@ -225,14 +214,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $phone = $_POST['phone'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        // Verification
         $verification_code = rand(100000, 999999);
         $is_verified = 0;
         $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
         $verification_attempts = 0;
         $status = "pending";
 
-        // Profile upload
         $profile_name = null;
         if (!empty($_FILES['profile_photo']['name'])) {
             $profile_name = time() . "_" . basename($_FILES['profile_photo']['name']);
@@ -265,15 +252,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($stmt->execute()) {
-            // 🚫 Do NOT insert settings for parents
-
-            // Send verification email
-            $to = $email;
             $subject = "Parent Account Verification";
-            $message = "Hello $full_name,\n\nYour verification code is: $verification_code\n\nThis code expires in 5 minutes.";
-            $headers = "From: support@lurniva.com";
+            $body = "Hello $full_name,<br><br>Your verification code is: <b>$verification_code</b><br>This code expires in 5 minutes.";
 
-            if (mail($to, $subject, $message, $headers)) {
+            if (sendEmail($email, $subject, $body)) {
                 $_SESSION['pending_email'] = $email;
                 $_SESSION['user_type'] = 'parent';
                 header("Location: verify.php");
