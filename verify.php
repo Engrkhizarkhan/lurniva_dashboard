@@ -3,7 +3,7 @@ session_start();
 require_once 'admin/sass/db_config.php';
 require_once 'mailer_library.php'; // ✅ use your new library
 
-// ✅ Redirect if session missing
+// ✅ If session missing, redirect
 if (!isset($_SESSION['pending_email']) || !isset($_SESSION['user_type'])) {
     header("Location: registration.php");
     exit;
@@ -11,63 +11,78 @@ if (!isset($_SESSION['pending_email']) || !isset($_SESSION['user_type'])) {
 
 $email = $_SESSION['pending_email'];
 $type  = $_SESSION['user_type'];
-$error = $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // ✅ Verification code submission
+    // ✅ Handle verification code submission
     if (isset($_POST['verification_code'])) {
         $code = trim($_POST['verification_code']);
 
-        // Determine target table & column
-        $query = match($type) {
-            'school' => "SELECT id FROM schools WHERE school_email=? AND verification_code=? AND is_verified=0",
-            'student' => "SELECT id FROM students WHERE email=? AND verification_code=? AND is_verified=0",
-            'faculty' => "SELECT id FROM faculty WHERE email=? AND verification_code=? AND is_verified=0",
-            'parent' => "SELECT id FROM parents WHERE email=? AND verification_code=? AND is_verified=0",
-            default => null
-        };
+        if ($type === 'school') {
+            $stmt = $conn->prepare("SELECT id FROM schools 
+                                    WHERE school_email=? AND verification_code=? AND is_verified=0");
+        } elseif ($type === 'student') {
+            $stmt = $conn->prepare("SELECT id FROM students 
+                                    WHERE email=? AND verification_code=? AND is_verified=0");
+        } elseif ($type === 'faculty') {
+            $stmt = $conn->prepare("SELECT id FROM faculty 
+                                    WHERE email=? AND verification_code=? AND is_verified=0");
+        } elseif ($type === 'parent') {
+            $stmt = $conn->prepare("SELECT id FROM parents 
+                                    WHERE email=? AND verification_code=? AND is_verified=0");
+        }
 
-        if ($query) {
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("ss", $email, $code);
-            $stmt->execute();
-            $result = $stmt->get_result();
+        $stmt->bind_param("ss", $email, $code);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            if ($result && $result->num_rows > 0) {
-                // ✅ Mark as verified
-                $updateQuery = match($type) {
-                    'school' => "UPDATE schools SET is_verified=1, verification_code=NULL WHERE school_email=?",
-                    'student' => "UPDATE students SET is_verified=1, verification_code=NULL WHERE email=?",
-                    'faculty' => "UPDATE faculty SET is_verified=1, verification_code=NULL WHERE email=?",
-                    'parent' => "UPDATE parents SET is_verified=1, verification_code=NULL WHERE email=?",
-                };
-                $update = $conn->prepare($updateQuery);
-                $update->bind_param("s", $email);
-                $update->execute();
-
-                // ✅ Clear session and redirect
-                unset($_SESSION['pending_email'], $_SESSION['user_type']);
-                header("Location: login.php");
-                exit;
-            } else {
-                $error = "❌ Invalid or expired verification code.";
+        if ($result && $result->num_rows > 0) {
+            if ($type === 'school') {
+                $update = $conn->prepare("UPDATE schools 
+                                          SET is_verified=1, verification_code=NULL 
+                                          WHERE school_email=?");
+            } elseif ($type === 'student') {
+                $update = $conn->prepare("UPDATE students 
+                                          SET is_verified=1, verification_code=NULL 
+                                          WHERE email=?");
+            } elseif ($type === 'faculty') {
+                $update = $conn->prepare("UPDATE faculty 
+                                          SET is_verified=1, verification_code=NULL 
+                                          WHERE email=?");
+            } elseif ($type === 'parent') {
+                $update = $conn->prepare("UPDATE parents 
+                                          SET is_verified=1, verification_code=NULL 
+                                          WHERE email=?");
             }
+
+            $update->bind_param("s", $email);
+            $update->execute();
+
+            // ✅ Clear session
+            unset($_SESSION['pending_email']);
+            unset($_SESSION['user_type']);
+
+            header("Location: login.php");
+            exit;
+        } else {
+            $error = "❌ Invalid or expired verification code.";
         }
     }
 
-    // ✅ Resend new verification code
+    // ✅ Handle resend code request
     if (isset($_POST['resend'])) {
         $newCode = rand(100000, 999999);
 
-        $updateQuery = match($type) {
-            'school' => "UPDATE schools SET verification_code=? WHERE school_email=?",
-            'student' => "UPDATE students SET verification_code=? WHERE email=?",
-            'faculty' => "UPDATE faculty SET verification_code=? WHERE email=?",
-            'parent' => "UPDATE parents SET verification_code=? WHERE email=?",
-        };
+        if ($type === 'school') {
+            $update = $conn->prepare("UPDATE schools SET verification_code=? WHERE school_email=?");
+        } elseif ($type === 'student') {
+            $update = $conn->prepare("UPDATE students SET verification_code=? WHERE email=?");
+        } elseif ($type === 'faculty') {
+            $update = $conn->prepare("UPDATE faculty SET verification_code=? WHERE email=?");
+        } elseif ($type === 'parent') {
+            $update = $conn->prepare("UPDATE parents SET verification_code=? WHERE email=?");
+        }
 
-        $update = $conn->prepare($updateQuery);
         $update->bind_param("ss", $newCode, $email);
         $update->execute();
 
@@ -91,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 
