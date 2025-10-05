@@ -113,7 +113,7 @@ if ($form_type === 'student') {
             <br><p>Best regards,<br><b>Lurniva Support Team</b></p>
         ";
 
-        sendEmail($email, $subject, $body);
+        sendMail($email, $subject, $body);
 
         echo json_encode([
             "status" => "success",
@@ -174,7 +174,7 @@ elseif ($form_type === 'parent') {
             <br><p>Best regards,<br><b>Lurniva Support Team</b></p>
         ";
 
-        sendEmail($email, $subject, $body);
+        sendMail($email, $subject, $body);
 
         echo json_encode([
             "status" => "success",
