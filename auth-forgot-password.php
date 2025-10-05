@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Best regards,<br><b>Lurniva Support Team</b></p>
                 ";
 
-                if (sendEmail($email, $subject, $body)) {
+                if (sendMail($email, $subject, $body)) {
                     $_SESSION['reset_email'] = $email;
                     $_SESSION['reset_table'] = $table;
                     header("Location: reset_password.php");

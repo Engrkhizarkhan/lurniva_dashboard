@@ -83,7 +83,7 @@ if ($resend) {
         <p>This code will expire in <b>5 minutes</b>.</p>
         <p>— Lurniva Support</p>
         ";
-        $sent = sendEmail($email, $subject, $body);
+        $sent = sendmail($email, $subject, $body);
 
         if ($sent) {
             echo json_encode(["status" => "success", "message" => "New verification code sent to $email"]);

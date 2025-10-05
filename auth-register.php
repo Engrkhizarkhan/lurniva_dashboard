@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Your verification code is: <b>$verification_code</b><br>
             This code expires in 5 minutes.<br><br>Regards,<br>Lurniva Support";
 
-            if (sendEmail($admin_email, $subject, $body)) {
+            if (sendMail($admin_email, $subject, $body)) {
                 $_SESSION['pending_email'] = $admin_email;
                 $_SESSION['user_type'] = 'school';
                 header("Location: verify.php");
@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $subject = "Student Account Verification";
             $body = "Hello $full_name,<br><br>Your verification code is: <b>$verification_code</b><br>This code expires in 5 minutes.";
 
-            if (sendEmail($email, $subject, $body)) {
+            if (sendMail($email, $subject, $body)) {
                 $_SESSION['pending_email'] = $email;
                 $_SESSION['user_type'] = 'student';
                 header("Location: verify.php");
@@ -255,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $subject = "Parent Account Verification";
             $body = "Hello $full_name,<br><br>Your verification code is: <b>$verification_code</b><br>This code expires in 5 minutes.";
 
-            if (sendEmail($email, $subject, $body)) {
+            if (sendMail($email, $subject, $body)) {
                 $_SESSION['pending_email'] = $email;
                 $_SESSION['user_type'] = 'parent';
                 header("Location: verify.php");

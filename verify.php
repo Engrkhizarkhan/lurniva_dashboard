@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>Best regards,<br><b>Lurniva Support Team</b></p>
         ";
 
-        if (sendEmail($email, $subject, $body)) {
+        if (sendMail($email, $subject, $body)) {
             $success = "✅ A new verification code has been sent to <b>$email</b>.";
         } else {
             $error = "❌ Failed to send email. Please try again.";
