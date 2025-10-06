@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // --- ✅ Check App Admin ---
-    $stmt = $conn->prepare("SELECT id, full_name, email, password FROM app_admin WHERE email = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, full_name, email,message_email, password FROM app_admin WHERE email = ? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $subject = "App Admin OTP Verification";
             $msg = "Hello {$admin['full_name']},<br><br>Your OTP is: <b>$otp</b><br><br>This code expires in 5 minutes.";
 
-            if (sendMail($admin['email'], $subject, $msg, $admin['full_name'])) {
+            if (sendMail($admin['message_email'], $subject, $msg, $admin['full_name'])) {
                 $_SESSION['pending_email'] = $email;
                 $_SESSION['pending_admin_id'] = $admin['id'];
                 $_SESSION['user_type'] = 'app_admin';
