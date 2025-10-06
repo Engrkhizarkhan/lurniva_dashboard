@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
-require_once 'admin/sass/db_config.php'; // adjust path if needed
+require_once '../admin/sass/db_config.php'; // adjust path if needed
 
 try {
     // Fixed test data
