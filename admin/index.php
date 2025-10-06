@@ -201,7 +201,7 @@
                 margin: 0;
                 padding: 0;
                 list-style: none;
-                animation: scrollUp 50s linear infinite;
+                animation: scrollUp 120s linear infinite;
             }
 
             .news-bar li {
