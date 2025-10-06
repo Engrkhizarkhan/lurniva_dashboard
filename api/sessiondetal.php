@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-require_once 'admin/sass/db_config.php'; // adjust path if needed
+require_once '../admin/sass/db_config.php'; // adjust path if needed
 
 try {
     // ✅ Fetch all schools
