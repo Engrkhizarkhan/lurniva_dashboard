@@ -189,12 +189,11 @@ function isEnabled($settings, $module) {
                     <ul class="sidebar-menu">
                         <!-- Dashboard -->
                         <li class="dropdown">
-                            <a href="index.php" class="nav-link"><i
+                            <a href="index.php" id="dashboard" class="nav-link"><i
                                     data-feather="monitor"></i><span>Dashboard</span></a>
                         </li>
 
                         <!-- Apps -->
-                        <?php if (isEnabled($settings, 'chat_enabled') || isEnabled($settings, 'meeting_enabled') || isEnabled($settings, 'notice_board_enabled') || isEnabled($settings, 'assign_task_enabled')): ?>
                         <li id="apps" class="dropdown">
                             <a href="#" class="menu-toggle nav-link has-dropdown"><i
                                     data-feather="command"></i><span>Apps</span></a>
@@ -203,41 +202,59 @@ function isEnabled($settings, $module) {
                                 <li><a class="nav-link" href="chat.php">Chat</a></li>
                                 <?php endif; ?>
                                 <?php if (isEnabled($settings, 'meeting_enabled')): ?>
-                                <li><a class="nav-link" href="meeting_form.php">Meeting Scheduler</a></li>
-                                <li><a class="nav-link" href="meeting_requests.php">Meeting Requested</a></li>
+                                <li><a id="meeting" class="nav-link" href="meeting_form.php">Meeting Scheduler</a></li>
+                                <li><a id="meeting_requests" class="nav-link" href="meeting_requests.php">Meeting
+                                        Requested</a></li>
                                 <?php endif; ?>
                                 <?php if (isEnabled($settings, 'notice_board_enabled')): ?>
-                                <li><a class="nav-link" href="noticeboard.php">Digital Notice Board</a></li>
+                                <li><a id="notice_board" class="nav-link" href="noticeboard.php">Digital Notice
+                                        Board</a></li>
                                 <?php endif; ?>
+                                <li><a id="student_list" class="nav-link" href="students_list.php">Student</a></li>
                                 <?php if (isEnabled($settings, 'assign_task_enabled')): ?>
-                                <li><a class="nav-link" href="assign_task.php">Assign Task</a></li>
+                                <li><a id="assign_task" class="nav-link" href="assign_task.php">Assign Task</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
-                        <?php endif; ?>
-
+                        <li id="qrGenerator" class="dropdown">
+                            <a href="qr_generator.php" class="nav-link"
+                                style="background-color: transparent; box-shadow: none; color: black;">
+                                <i data-feather="grid" style="color: rgb(78, 77, 77);"></i>
+                                <span style="color: rgb(78, 77, 77);">QR Code Generator</span>
+                            </a>
+                        </li>
                         <!-- Attendance -->
                         <?php if (isEnabled($settings, 'attendance_enabled')): ?>
-                        <li><a href="Attendance.php" class="nav-link"><i data-feather="edit"></i> Faculty Attendance</a>
+                        <li class="dropdown active">
+                            <a id="attendanceData" href="Attendance.php" class="nav-link"
+                                style="background-color: transparent ; box-shadow: none ; color: black ;">
+                                <i data-feather="edit" style="color: rgb(78, 77, 77) ;"></i>
+                                <span style="color: rgb(78, 77, 77) ;">Faculty Attendance</span>
+                            </a>
                         </li>
-                        <li><a href="faculty_attendance.php" class="nav-link"><i data-feather="edit"></i> Show Faculty
-                                Attendance</a></li>
+                        <li class="dropdown active">
+                            <a id="faculty_attendance" href="faculty_attendance.php" class="nav-link"
+                                style="background-color: transparent ; box-shadow: none ; color: black ;">
+                                <i data-feather="edit" style="color: rgb(78, 77, 77) ;"></i>
+                                <span style="color: rgb(78, 77, 77) ;">Show Faculty Attendance</span>
+                            </a>
+                        </li>
                         <?php endif; ?>
 
                         <!-- Time Table & Exams -->
                         <?php if (isEnabled($settings, 'timetable_enabled') || isEnabled($settings, 'exam_enabled')): ?>
-                        <li class="dropdown">
-                            <a href="#" class="menu-toggle nav-link has-dropdown"><i
-                                    data-feather="layout"></i><span>Time Table & Exams</span></a>
+                        <li id="timetable" class="dropdown">
+                            <a id="timetable" href="#" class="menu-toggle nav-link has-dropdown"><i
+                                    data-feather="layout"></i><span>Time Table</span></a>
                             <ul class="dropdown-menu">
                                 <?php if (isEnabled($settings, 'timetable_enabled')): ?>
-                                <li><a class="nav-link" href="timetable.php">Create Time Table</a></li>
-                                <li><a class="nav-link" href="view_all_timetable.php">See Time Table</a></li>
+                                <li><a id="createTT" class="nav-link" href="timetable.php">Create Time Table</a></li>
+                                <li><a id="seeTT" class="nav-link" href="view_all_timetable.php">See Time Table</a></li>
                                 <?php endif; ?>
                                 <?php if (isEnabled($settings, 'exam_enabled')): ?>
-                                <li><a class="nav-link" href="create_exam.php">Create Exam</a></li>
-                                <li><a class="nav-link" href="add_exam.php">Add Subject</a></li>
-                                <li><a class="nav-link" href="date_sheet_view.php">See Date-Sheet</a></li>
+                                <li><a id="createCE" class="nav-link" href="create_exam.php"> Create Exam</a></li>
+                                <li><a id="createAE" class="nav-link" href="add_exam.php"> Add Subject</a></li>
+                                <li><a id="seeDSV" class="nav-link" href="date_sheet_view.php"> See Date-Sheet</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
@@ -245,45 +262,73 @@ function isEnabled($settings, $module) {
 
                         <!-- Fee -->
                         <?php if (isEnabled($settings, 'fee_enabled')): ?>
-                        <li class="dropdown">
+                        <li id="fee_type" class="dropdown">
                             <a href="#" class="menu-toggle nav-link has-dropdown"><i
                                     data-feather="dollar-sign"></i><span>Fee</span></a>
                             <ul class="dropdown-menu">
-                                <li><a class="nav-link" href="fee_slip.php">Fee Slip</a></li>
-                                <li><a class="nav-link" href="submit_student_fee.php">Submit Student Fee</a></li>
-                                <li><a class="nav-link" href="installments.php">Installments</a></li>
-                                <li><a class="nav-link" href="installment_slips.php">Installment Slips</a></li>
-                                <li><a class="nav-link" href="fee_period_form.php">Fee Period</a></li>
-                                <li><a class="nav-link" href="fee_strutter.php">Add Class Fee Plan</a></li>
-                                <li><a class="nav-link" href="show_fee_structures.php">View Class Fee Plan</a></li>
-                                <li><a class="nav-link" href="enroll_student_fee_plan.php">Student Fee Plan</a></li>
-                                <li><a class="nav-link" href="fee_structure_view.php">All Students Fee Structure</a>
+                                <li><a id="FeeSlip" class="nav-link" href="fee_slip.php">Fee Slip</a></li>
+                                <li><a id="submit_student_fee" class="nav-link" href="submit_student_fee.php">Submit
+                                        Student Fee</a></li>
+                                <li><a id="Installments" class="nav-link" href="installments.php">Installments</a>
+                                <li><a id="installment_slips" class="nav-link" href="installment_slips.php">Installment
+                                        Slips</a>
                                 </li>
-                                <li><a class="nav-link" href="fee_type.php">Fee Type</a></li>
-                                <li><a class="nav-link" href="enroll_scholarship.php">Scholarship Form</a></li>
-                                <li><a class="nav-link" href="load_scholarships.php">Scholarship</a></li>
-                                <li><a class="nav-link" href="get_submitted_fees.php">Submitted Fee</a></li>
+                                <li><a id="feePeriodForm" class="nav-link" href="fee_period_form.php">Fee Period</a>
+                                </li>
+                                <li><a id="fee_Strutter" class="nav-link" href="fee_strutter.php">Add Class Fee Plan</a>
+                                </li>
+                                <li><a id="show_fee_structures" class="nav-link" href="show_fee_structures.php">View
+                                        Class Fee Plan</a></li>
+                                <li><a id="enroll_student_fee_plan" class="nav-link"
+                                        href="enroll_student_fee_plan.php">Student Fee
+                                        Plan</a></li>
+                                <li><a id="fee_structure_view" class="nav-link" href="fee_structure_view.php">All
+                                        Students Fee
+                                        Structure</a></li>
+                                <li><a id="fee_type_data" class="nav-link" href="fee_type.php">Fee Type</a></li>
+                                <li><a id="enroll_scholarship" class="nav-link"
+                                        href="enroll_scholarship.php">Scholarship Form</a>
+                                </li>
+                                <li><a id="load_scholarships" class="nav-link"
+                                        href="load_scholarships.php">Scholarship</a></li>
+                                <li><a id="load_scholarships" class="nav-link"
+                                        href="load_scholarships.php">Scholarship</a></li>
+                                <li><a id="get_submitted_fees" class="nav-link" href="get_submitted_fees.php">Submitted
+                                        Fee
+                                    </a></li>
                             </ul>
                         </li>
                         <?php endif; ?>
+                        <li class="dropdown">
+                            <a id="facultyForm" href="faculty_registration.php" id="Managements" class="nav-link"><i
+                                    data-feather="grid"></i><span>Faculty
+                                    Registration</span></a>
 
+                        </li>
+                        <li class="dropdown">
+                            <a href="leaved.php" id="Managements" class="nav-link"><i
+                                    data-feather="grid"></i><span>Leave
+                                    Managements</span></a>
+
+                        </li>
                         <!-- Library -->
                         <?php if (isEnabled($settings, 'library_enabled')): ?>
-                        <li class="dropdown">
-                            <a href="#" class="menu-toggle nav-link has-dropdown"><i
-                                    data-feather="book"></i><span>Library</span></a>
+                        <li id="library" class="dropdown">
+                            <a id="timetable" href="#" class="menu-toggle nav-link has-dropdown"><i
+                                    data-feather="book"></i><span>library</span></a>
                             <ul class="dropdown-menu">
-                                <li><a class="nav-link" href="library_books.php">Manage Books</a></li>
-                                <li><a class="nav-link" href="Issue_book.php">Assign Book</a></li>
+                                <li><a id="Manage" class="nav-link" href="library_books.php"> Manage Books</a></li>
+                                <li><a id="assign" class="nav-link" href="Issue_book.php"> Assign Book</a></li>
                             </ul>
                         </li>
                         <?php endif; ?>
 
                         <!-- Transport -->
                         <?php if (isEnabled($settings, 'transport_enabled')): ?>
-                        <li class="dropdown">
-                            <a href="#" class="menu-toggle nav-link has-dropdown"><i
-                                    data-feather="truck"></i><span>Transport</span></a>
+                        <li id="transport" class="dropdown">
+                            <a href="#" class="menu-toggle nav-link has-dropdown">
+                                <i data-feather="truck"></i><span>Transport</span>
+                            </a>
                             <ul class="dropdown-menu">
                                 <li><a class="nav-link" href="transport_dashboard.php">Transport Dashboard</a></li>
                                 <li><a class="nav-link" href="buses.php">Manage Buses</a></li>
@@ -293,7 +338,16 @@ function isEnabled($settings, $module) {
                             </ul>
                         </li>
                         <?php endif; ?>
-                    </ul>
 
+                    </ul>
+                    <!-- Add space above the bottom logo -->
+                    <div class="sidebar-brand" style="margin-top: 10px;">
+                        <a href="index.php" style="display: flex; align-items: center;">
+                            <img alt="image" src="assets/img/Final Logo (1).jpg" class="header-logo"
+                                style="height: 80px; width: auto;" />
+                            <span class="logo-name"
+                                style="font-size: 25px; font-weight: bold; margin-left: 10px; margin-top: 8px;">Lurniva</span>
+                        </a>
+                    </div>
                 </aside>
             </div>
