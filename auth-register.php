@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$stmt) die("Prepare failed: " . $conn->error);
 
         $stmt->bind_param(
-            "issssssssssssssssisi",
+            "isssssssssssssssssisi",
             $school_id,
             $parent_name,
             $parent_cnic,
