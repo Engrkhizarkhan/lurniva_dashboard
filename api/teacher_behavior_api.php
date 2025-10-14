@@ -175,4 +175,12 @@ if ($action === 'delete') {
     if ($stmt->execute()) {
         echo json_encode(["status" => "success", "message" => "Behavior deleted successfully"]);
     } else {
-        echo json_encode(["status" => "error", "]()_
+        echo json_encode(["status" => "error", "message" => "Delete failed"]);
+    }
+    exit;
+}
+
+// --- Default case ---
+echo json_encode(["status" => "error", "message" => "Invalid action"]);
+exit;
+?>
