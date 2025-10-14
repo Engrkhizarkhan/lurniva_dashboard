@@ -1,4 +1,3 @@
-
 <?php require_once 'assets/php/header.php'; ?>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -15,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <div id="behaviorFormContainer">
             <h2>Student Behavior Report</h2>
             <form id="behaviorForm" enctype="multipart/form-data">
-                
+
                 <!-- Class -->
                 <div class="mb-3">
                     <label>Class</label>
@@ -103,20 +102,41 @@ document.addEventListener("DOMContentLoaded", function() {
 <script>
 $(document).ready(function() {
 
-    // Load Classes
+    // ✅ Load Classes into class dropdown
     function loadClasses(selectedClass = '') {
         $.post('ajax/teacher_classes.php', {}, function(data) {
             $('#class_id').html('<option value="">Select Class</option>' + data);
-            if (selectedClass) $('#class_id').val(selectedClass).trigger('change');
+            if (selectedClass) {
+                $('#class_id').val(selectedClass).trigger('change');
+            }
+        }).fail(function(xhr) {
+            console.error("Error loading classes:", xhr.responseText);
         });
     }
     loadClasses();
 
-    // Load Students when class changes
+    // ✅ Event listener — when class changes, load students
+    $('#class_id').on('change', function() {
+        let class_id = $(this).val();
+        console.log("Selected class_id:", class_id);
+        // alert(class_id); // ✅ Now it will work
+        loadClassStudents(class_id);
+    });
+
+    // ✅ Load Students of selected class
     function loadClassStudents(class_id, selectedStudents = []) {
         if (!class_id) return;
-        $.post('ajax/class_students.php', { class_id: class_id }, function(data) {
-            let students = JSON.parse(data);
+        $.post('ajax/class_students.php', {
+            class_id: class_id
+        }, function(data) {
+            let students = [];
+            try {
+                students = JSON.parse(data);
+            } catch (e) {
+                console.error("Invalid JSON from class_students.php:", data);
+                return;
+            }
+
             let options = '<option value="">Select Student</option>';
             students.forEach(function(s) {
                 options += `<option value="${s.id}" data-name="${s.full_name}" data-roll="${s.roll_number}">
@@ -125,7 +145,7 @@ $(document).ready(function() {
             });
             $('#student_select').html(options);
 
-            // ✅ Pre-select students if updating
+            // ✅ Preselect students if editing
             selectedStudents.forEach(function(sid) {
                 let student = $('#student_select option[value="' + sid + '"]');
                 if (student.length) {
@@ -133,11 +153,13 @@ $(document).ready(function() {
                     $('#student_select').trigger('change');
                 }
             });
+        }).fail(function(xhr) {
+            console.error("Error loading students:", xhr.responseText);
         });
     }
 
-    // Add student to table
-    $('#student_select').change(function() {
+    // ✅ Add selected student to table
+    $('#student_select').on('change', function() {
         let selected = $(this).find(':selected');
         let id = selected.val();
         let name = selected.data('name');
@@ -153,30 +175,36 @@ $(document).ready(function() {
         $('#studentTable tbody').append(row);
     });
 
-    // Remove student
+    // ✅ Remove student row
     $(document).on('click', '.removeStudent', function() {
         $(this).closest('tr').remove();
     });
 
-    // Load all behavior reports
+    // ✅ Load all behavior reports
     function loadAllBehavior() {
-        $.post('ajax/behavior_crud.php', { action: 'getAll' }, function(data) {
+        $.post('ajax/behavior_crud.php', {
+            action: 'getAll'
+        }, function(data) {
             $('#allBehavior').html(data);
+        }).fail(function(xhr) {
+            console.error("Error loading behaviors:", xhr.responseText);
         });
     }
     loadAllBehavior();
 
-    // Submit form (insert / update)
+    // ✅ Submit form (Insert or Update)
     $('#behaviorForm').submit(function(e) {
         e.preventDefault();
         let formData = new FormData(this);
 
+        // Collect selected students
         let students = [];
         $('#studentTable tbody tr').each(function() {
             students.push($(this).data('id'));
         });
         formData.append('students', JSON.stringify(students));
 
+        // Determine if we are updating
         let updateId = $('button[type=submit]').data('update-id');
         formData.append('action', updateId ? 'update' : 'insert');
         if (updateId) formData.append('id', updateId);
@@ -191,8 +219,13 @@ $(document).ready(function() {
                 alert(resp);
                 $('#behaviorForm')[0].reset();
                 $('#studentTable tbody').empty();
-                $('button[type=submit]').text('Submit Behavior Report').removeData('update-id');
+                $('button[type=submit]')
+                    .text('Submit Behavior Report')
+                    .removeData('update-id');
                 loadAllBehavior();
+            },
+            error: function(xhr) {
+                alert("Error: " + xhr.responseText);
             }
         });
     });
@@ -200,37 +233,50 @@ $(document).ready(function() {
     // ✅ Edit Behavior
     $(document).on('click', '.editBehavior', function() {
         let id = $(this).data('id');
-        $.post('ajax/behavior_crud.php', { action: 'getOne', id: id }, function(res) {
-            let d = JSON.parse(res);
+        $.post('ajax/behavior_crud.php', {
+            action: 'getOne',
+            id: id
+        }, function(res) {
+            let d;
+            try {
+                d = JSON.parse(res);
+            } catch (e) {
+                alert("Invalid response: " + res);
+                return;
+            }
 
             // Fill form fields
-            loadClasses(d.class_id); 
+            loadClasses(d.class_id);
             $('input[name=topic]').val(d.topic);
             $('textarea[name=description]').val(d.description);
             $('input[name=deadline]').val(d.deadline);
             $('select[name=parent_approval]').val(d.parent_approval);
 
-            // ✅ Load students for this class & select this student
+            // Load class students and preselect
             setTimeout(() => {
-                loadClassStudents(d.class_id, [d.student_id]);
+                loadClassStudents(d.class_id, d.students || []);
             }, 300);
 
-            // Change form to update mode
-            $('button[type=submit]').text('Update Behavior Report').data('update-id', d.id);
+            // Update mode
+            $('button[type=submit]')
+                .text('Update Behavior Report')
+                .data('update-id', d.id);
         });
     });
 
     // ✅ Delete Behavior
     $(document).on('click', '.deleteBehavior', function() {
-        if (!confirm("Are you sure?")) return;
+        if (!confirm("Are you sure you want to delete this record?")) return;
         let id = $(this).data('id');
-        $.post('ajax/behavior_crud.php', { action: 'delete', id: id }, function(resp) {
+        $.post('ajax/behavior_crud.php', {
+            action: 'delete',
+            id: id
+        }, function(resp) {
             alert(resp);
             loadAllBehavior();
         });
     });
 
 });
-
 </script>
 <?php require_once 'assets/php/footer.php'; ?>
