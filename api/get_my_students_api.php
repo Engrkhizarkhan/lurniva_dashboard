@@ -1,7 +1,8 @@
 <?php
 // get_my_students_api.php
 session_start();
-require_once '../sass/db_config.php';
+require_once '../admin/sass/db_config.php';
+
 
 // --- CORS CONFIGURATION (for Flutter/Postman) ---
 header("Content-Type: application/json");
