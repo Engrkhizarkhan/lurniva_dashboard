@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once '../sass/db_config.php';
+header('Content-Type: application/json');
+require '../sass/db_config.php';
 
 $user_id = $_SESSION['admin_id'];
 $school_id = $_SESSION['admin_id'];
