@@ -36,7 +36,7 @@ $stmt = $conn->prepare("
     UPDATE students 
     SET parent_name=?, full_name=?, gender=?, dob=?, cnic_formb=?, 
         class_grade=?, section=?, roll_number=?, address=?, email=?, 
-        parent_email=?, phone=? 
+        parent_cnic=?, phone=? 
     WHERE id=?
 ");
 

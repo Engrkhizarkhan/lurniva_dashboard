@@ -72,15 +72,18 @@
                                             <input type="hidden" id="studentId" name="student_id">
                                             <div class="form-group">
                                                 <label>Full Name</label>
-                                                <input type="text" id="full_name" name="full_name" class="form-control" required>
+                                                <input type="text" id="full_name" name="full_name" class="form-control"
+                                                    required>
                                             </div>
                                             <div class="form-group">
                                                 <label>Parent Name</label>
-                                                <input type="text" id="parent_name" name="parent_name" class="form-control">
+                                                <input type="text" id="parent_name" name="parent_name"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label>Parent Email</label>
-                                                <input type="email" id="parent_email" name="parent_email" class="form-control">
+                                                <input type="number" id="parent_email" name="parent_email"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label>Gender</label>
@@ -92,11 +95,13 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>CNIC/Form-B</label>
-                                                <input type="text" id="cnic_formb" name="cnic_formb" class="form-control">
+                                                <input type="text" id="cnic_formb" name="cnic_formb"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label>Class</label>
-                                                <input type="text" id="class_grade" name="class_grade" class="form-control">
+                                                <input type="text" id="class_grade" name="class_grade"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label>Section</label>
@@ -104,11 +109,13 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Roll Number</label>
-                                                <input type="text" id="roll_number" name="roll_number" class="form-control">
+                                                <input type="text" id="roll_number" name="roll_number"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label>Email</label>
-                                                <input type="email" id="email" name="email" class="form-control" required>
+                                                <input type="email" id="email" name="email" class="form-control"
+                                                    required>
                                             </div>
                                             <div class="form-group">
                                                 <label>Phone</label>
@@ -134,15 +141,18 @@
                                         <div class="card-body">
                                             <div class="form-group">
                                                 <label>Current Password</label>
-                                                <input type="password" id="current_password" name="current_password" class="form-control" required>
+                                                <input type="password" id="current_password" name="current_password"
+                                                    class="form-control" required>
                                             </div>
                                             <div class="form-group">
                                                 <label>New Password</label>
-                                                <input type="password" id="new_password" name="new_password" class="form-control" required>
+                                                <input type="password" id="new_password" name="new_password"
+                                                    class="form-control" required>
                                             </div>
                                             <div class="form-group">
                                                 <label>Confirm Password</label>
-                                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                                                <input type="password" id="confirm_password" name="confirm_password"
+                                                    class="form-control" required>
                                             </div>
                                         </div>
                                         <div class="card-footer text-right">
@@ -156,11 +166,13 @@
                                     <form id="imageForm" enctype="multipart/form-data">
                                         <div class="form-group">
                                             <label>Profile Photo</label>
-                                            <input type="file" id="student_photo" name="student_photo" accept="image/*" class="form-control-file">
+                                            <input type="file" id="student_photo" name="student_photo" accept="image/*"
+                                                class="form-control-file">
                                             <img id="photoPreview" src="assets/img/users/user-1.png"
                                                 style="margin-top:10px; max-height:100px;">
                                         </div>
-                                        <button type="button" id="uploadPhotoBtn" class="btn btn-primary">Upload</button>
+                                        <button type="button" id="uploadPhotoBtn"
+                                            class="btn btn-primary">Upload</button>
                                     </form>
                                 </div>
                             </div>
@@ -182,14 +194,16 @@ $(document).ready(function() {
         $.get('ajax/get_school_profile.php', function(res) {
             if (res.status === 'success') {
                 let d = res.data;
-                $('#studentPhoto').attr('src', d.profile_photo ? 'uploads/profile/' + d.profile_photo : 'assets/img/users/user-1.png');
-                $('#photoPreview').attr('src', d.profile_photo ? 'uploads/profile/' + d.profile_photo : 'assets/img/users/user-1.png');
+                $('#studentPhoto').attr('src', d.profile_photo ? 'uploads/profile/' + d.profile_photo :
+                    'assets/img/users/user-1.png');
+                $('#photoPreview').attr('src', d.profile_photo ? 'uploads/profile/' + d.profile_photo :
+                    'assets/img/users/user-1.png');
                 $('#studentName').text(d.full_name);
                 $('#studentClass').text('Class: ' + d.class_grade + ' - Section: ' + d.section);
                 $('#studentEmail').text(d.email);
                 $('#studentPhone').text(d.phone);
                 $('#parentName').text(d.parent_name);
-                $('#parentEmail').text(d.parent_email);
+                $('#parentEmail').text(d.parent_cnic);
                 $('#studentGender').text(d.gender);
                 $('#studentDob').text(d.dob);
                 $('#studentCnic').text(d.cnic_formb);
@@ -198,13 +212,15 @@ $(document).ready(function() {
                 $('#studentRoll').text(d.roll_number);
                 $('#studentAddress').text(d.address);
 
-                $('#studentOverview').text(`Student ${d.full_name} (${d.gender}), studying in class ${d.class_grade}, section ${d.section}.`);
- 
+                $('#studentOverview').text(
+                    `Student ${d.full_name} (${d.gender}), studying in class ${d.class_grade}, section ${d.section}.`
+                    );
+
                 // Fill form
                 $('#studentId').val(d.id);
                 $('#full_name').val(d.full_name);
                 $('#parent_name').val(d.parent_name);
-                $('#parent_email').val(d.parent_email);
+                $('#parent_email').val(d.parent_cnic);
                 $('#gender').val(d.gender);
                 $('#dob').val(d.dob);
                 $('#cnic_formb').val(d.cnic_formb);
@@ -246,16 +262,18 @@ $(document).ready(function() {
             return;
         }
 
-        $.post('ajax/update_password.php',
-         {current_password: current, new_password: newPass},
-         function(res) {
-            if (res.status === 'success') {
-                alert('Password updated');
-                $('#passwordForm')[0].reset();
-            } else {
-                alert(res.message);
-            }
-        }, 'json');
+        $.post('ajax/update_password.php', {
+                current_password: current,
+                new_password: newPass
+            },
+            function(res) {
+                if (res.status === 'success') {
+                    alert('Password updated');
+                    $('#passwordForm')[0].reset();
+                } else {
+                    alert(res.message);
+                }
+            }, 'json');
     });
 
     // Upload photo
@@ -278,8 +296,10 @@ $(document).ready(function() {
             success: function(res) {
                 if (res.status === 'success') {
                     alert('Photo uploaded');
-                    $('#studentPhoto').attr('src', res.photo_path + '?t=' + new Date().getTime());
-                    $('#photoPreview').attr('src', res.photo_path + '?t=' + new Date().getTime());
+                    $('#studentPhoto').attr('src', res.photo_path + '?t=' + new Date()
+                        .getTime());
+                    $('#photoPreview').attr('src', res.photo_path + '?t=' + new Date()
+                        .getTime());
                 } else {
                     alert(res.message);
                 }

@@ -34,6 +34,7 @@ $student_data = $res_student->fetch_assoc();
 $class_grade = $student_data['class_grade'];
 $section     = $student_data['section'];
 
+
 // Now find all teachers assigned to this class/section
 $sql = "
 SELECT DISTINCT
@@ -47,7 +48,7 @@ JOIN faculty AS f
       ON f.id = ctd.teacher_id
 WHERE ctm.class_name = ?
   AND ctm.section    = ?
-  AND f.status = 'active'
+  AND f.status = 'Approved'
 ORDER BY f.full_name ASC
 ";
 

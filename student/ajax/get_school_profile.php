@@ -13,7 +13,7 @@ if (!isset($_SESSION['student_id'])) {
 $student_id = $_SESSION['student_id'];
 
 // ✅ Fetch student profile
-$stmt = $conn->prepare("SELECT id, school_id, parent_name, full_name, gender, dob, cnic_formb, class_grade, section, roll_number, address, email, parent_email, phone, profile_photo, status, subscription_start, subscription_end 
+$stmt = $conn->prepare("SELECT id, school_id, parent_name, full_name, gender, dob, cnic_formb, class_grade, section, roll_number, address, email, parent_cnic, phone, profile_photo, status, subscription_start, subscription_end 
                         FROM students 
                         WHERE id = ?");
 $stmt->bind_param('i', $student_id);
