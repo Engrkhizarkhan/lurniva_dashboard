@@ -2,13 +2,13 @@
 session_start();
 require '../sass/db_config.php';
 
-if (!isset($_SESSION['faculty_id'])) {
+if (!isset($_SESSION['admin_id'])) {
     http_response_code(401);
     exit;
 }
 
-$facultyId = $_SESSION['faculty_id'];
-$schoolId  = $_SESSION['school_id'];
+$facultyId = $_SESSION['admin_id'];
+$schoolId  = $_SESSION['campus_id'];
 
 $stmt = $conn->prepare("UPDATE notifications SET is_read = 1 
                         WHERE user_id = ? AND user_type='faculty' AND school_id=?");
