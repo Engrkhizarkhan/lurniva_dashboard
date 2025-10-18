@@ -12,15 +12,15 @@ function sendMail($to, $subject, $body, $toName = '') {
     try {
         // SMTP Configuration
         $mail->isSMTP();
-        $mail->Host       = 'smtp.zoho.com';
+        $mail->Host       = 'smtp.zeptomail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'info@lurniva.com';    // Your Zoho email
-        $mail->Password   = 'Lurniva1290';         // Your Zoho app password
-        $mail->SMTPSecure = 'ssl';                 // Use SSL for port 465
-        $mail->Port       = 465;
+        $mail->Username   = 'emailapikey';    // Your Zoho email
+        $mail->Password   = 'wSsVR60k80H2DqsunDf+celrzQhTD1n3Exh+3VT0uHOvHfrLpsdtwxLOAAH2GPFJQjZtHTEVor8hykgCgWYOjIwoy1lSWSiF9mqRe1U4J3x17qnvhDzKXWpUkBGILI8KwgpvkmlnEs4r+g==';         // Your Zoho app password
+        $mail->SMTPSecure = 'TLS';                 // Use SSL for port 465
+        $mail->Port       = 587;
 
         // Sender Info
-        $mail->setFrom('info@lurniva.com', 'Lurniva Support');
+        $mail->setFrom('varification@lurniva.com', 'Lurniva Support');
 
         // Recipient
         $mail->addAddress($to, $toName);
