@@ -20,7 +20,7 @@ function sendMail($to, $subject, $body, $toName = '') {
         $mail->Port       = 587;
 
         // Sender Info
-        $mail->setFrom('varification@lurniva.com', 'Lurniva Support');
+        $mail->setFrom('verify@lurniva.com', 'Lurniva Support');
 
         // Recipient
         $mail->addAddress($to, $toName);
