@@ -1,10 +1,4 @@
-<?php 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php_error.log');
-require_once 'assets/php/header.php';
+<?php require_once 'assets/php/header.php';
 include_once('sass/db_config.php');
 
 if (!isset($_SESSION['admin_id'])) {
@@ -103,7 +97,7 @@ function loadTimetables() {
                     <td>${classBlock.max_periods}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" onclick="showTimetableDetails(${index})">Detail</button>
-                        <button class="btn btn-danger btn-sm ms-1" onclick="deleteTimetable(${classBlock.timing_table_id})">Delete</button>
+                        <button class="btn btn-danger btn-sm ms-1" onclick="deleteTimetable(${classBlock.id})">Delete</button>
                     </td>
                 </tr>`;
             });
@@ -161,14 +155,21 @@ function deleteTimetable(timetableId) {
             data: {
                 timing_table_id: timetableId
             },
+            dataType: 'json',
             success: function(response) {
-                alert(response);
-                loadTimetables(); // Reload after delete
+                if (response.status === "success") {
+                    alert(response.message);
+                    loadTimetables();
+                } else {
+                    alert(response.message);
+                }
             },
-            error: function() {
-                alert("Error deleting timetable.");
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                alert("Error deleting timetable: " + error);
             }
         });
+
     }
 }
 </script>

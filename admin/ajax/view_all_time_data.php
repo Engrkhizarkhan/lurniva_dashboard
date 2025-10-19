@@ -81,6 +81,7 @@ if ($res_classes && $res_classes->num_rows > 0) {
         }
 
         $output[] = [
+            'id' => $class['id'],
             'class_name' => $class['class_name'],
             'section' => $class['section'],
             'max_periods' => $max_p,

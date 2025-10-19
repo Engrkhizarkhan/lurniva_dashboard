@@ -1,24 +1,50 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php_error.log');
-require_once '../sass/db_config.php';
 session_start();
+require_once '../sass/db_config.php';
+header('Content-Type: application/json');
 
-if (!isset($_POST['timing_table_id'])) {
-    http_response_code(400);
-    echo "Timetable ID is missing.";
+// ✅ Check if admin is logged in
+if (!isset($_SESSION['admin_id'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Unauthorized access']);
     exit;
 }
 
-$timing_table_id = intval($_POST['timing_table_id']);
+$admin_id = $_SESSION['admin_id'];
+$class_id = $_POST['timing_table_id'] ?? null;
 
-// Optionally delete dependent records first
-$conn->query("DELETE FROM class_timetable_details WHERE timing_meta_id IN (SELECT id FROM class_timetable_meta WHERE timing_table_id = $timing_table_id)");
-$conn->query("DELETE FROM class_timetable_weekdays WHERE timetable_id IN (SELECT id FROM class_timetable_meta WHERE timing_table_id = $timing_table_id)");
-$conn->query("DELETE FROM class_timetable_meta WHERE timing_table_id = $timing_table_id");
-$conn->query("DELETE FROM school_timings WHERE id = $timing_table_id");
+if (!$class_id) {
+    echo json_encode(['status' => 'error', 'message' => 'Missing class ID']);
+    exit;
+}
 
-echo "✅ Timetable deleted successfully.";
+$conn->begin_transaction();
+
+try {
+    // 1️⃣ Delete periods for this class
+    $stmt = $conn->prepare("DELETE FROM class_timetable_details WHERE timing_meta_id = ?");
+    $stmt->bind_param("i", $class_id);
+    $stmt->execute();
+    $stmt->close();
+
+
+    // 3️⃣ Delete the class itself
+    $stmt = $conn->prepare("DELETE FROM class_timetable_meta WHERE id = ? AND school_id = ?");
+    $stmt->bind_param("ii", $class_id, $admin_id);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $conn->commit();
+        echo json_encode(['status' => 'success', 'message' => 'Class timetable deleted successfully']);
+    } else {
+        $conn->rollback();
+        echo json_encode(['status' => 'error', 'message' => 'Class not found or unauthorized']);
+    }
+
+    $stmt->close();
+} catch (Exception $e) {
+    $conn->rollback();
+    echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
+}
+
+$conn->close();
+?>
