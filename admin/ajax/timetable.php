@@ -136,7 +136,7 @@ if (!empty($classes)) {
                     $period_type = $p['period_type'];
 
                     $stmt_period->bind_param(
-                        "iisssiiisi",
+                        "iissssii si",
                         $class_meta_id,
                         $period_num,
                         $period_name,
