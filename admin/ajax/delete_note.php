@@ -35,7 +35,7 @@ try {
     $admin_id = $_SESSION['admin_id'];
     
     // First check if the note exists and belongs to this admin's school
-    $check_sql = "SELECT id FROM notes_board WHERE id = ? AND school_id = ?";
+    $check_sql = "SELECT id FROM digital_notices WHERE id = ? AND school_id = ?";
     $check_stmt = $conn->prepare($check_sql);
     
     if (!$check_stmt) {
