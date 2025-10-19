@@ -21,12 +21,9 @@ $settings = $result->fetch_assoc();
 $stmt->close();
 
 // 🚨 If fee is disabled
-                       if (isEnabled($settings, 'fee_enabled')){ ?>
-
-echo "<script>
-alert('Fee module is disabled by school admin.'); //window.location.href='logout.php';
-</script>";
-exit;
+if ($settings['fee_enabled'] == 0) {
+    echo "<script>alert('Fee module is disabled by school admin.'); //window.location.href='logout.php';</script>";
+    exit;
 }
 ?>
 
