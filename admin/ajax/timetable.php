@@ -135,8 +135,7 @@ if (!empty($classes)) {
                     $is_break = $p['is_break'] ? 1 : 0;
                     $period_type = $p['period_type'];
 
-                    $stmt_period->bind_param(
-                        "iissssii si",
+                    $stmt_period->bind_param("iissssiisi",
                         $class_meta_id,
                         $period_num,
                         $period_name,
