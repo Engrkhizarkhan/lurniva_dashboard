@@ -158,7 +158,6 @@ function deleteTimetable(timetableId) {
             dataType: 'json',
             success: function(response) {
                 if (response.status === "success") {
-                    alert(response.message);
                     loadTimetables();
                 } else {
                     alert(response.message);
