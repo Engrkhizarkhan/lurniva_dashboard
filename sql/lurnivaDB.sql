@@ -817,7 +817,7 @@ UNIQUE KEY `email` (`email`)
 CREATE TABLE IF NOT EXISTS `payments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `slip_id` int(11) NOT NULL,
-  `payment_date` date NOT NULL,
+  `payment_date` date NOT NULL, 
   `amount_paid` decimal(10,2) NOT NULL,
   `method` enum('cash','card','online','bank_transfer') DEFAULT 'cash',
   `remarks` varchar(255) DEFAULT NULL,
