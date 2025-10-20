@@ -10,12 +10,6 @@ if(!$school_id || !$student_id){
   exit;
 }
 
-/*
-  Find the student's class/section,
-  then find timetable meta rows for that class+section,
-  then distinct teacher_ids from details,
-  then names from faculty.
-*/
 
 $stmt = $conn->prepare("SELECT class_grade, section 
                         FROM students 
