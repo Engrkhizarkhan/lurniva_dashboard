@@ -1,27 +1,5 @@
-<?php require_once 'assets/php/header.php'; 
-include_once('sass/db_config.php');
-
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: logout.php");
-    exit;
-}
-
-$school_id = $_SESSION['admin_id'];
-
-$sql = "SELECT exam_enabled FROM school_settings WHERE person='admin' AND person_id=? LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $school_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$settings = $result->fetch_assoc();
-$stmt->close();
-
-if (!$settings || $settings['exam_enabled'] == 0) {
-    echo "<script>alert('Exam module is disabled by school admin.'); window.location.href='logout.php';</script>";
-    exit;
-}
-?>
-
+<?php require_once 'assets/php/header.php'; ?>
+<?php include_once('sass/db_config.php'); ?>
 
 <style>
 #timetable {
@@ -33,18 +11,15 @@ if (!$settings || $settings['exam_enabled'] == 0) {
 #timetable ul {
     display: block !important;
 }
-
-#createCE {
-    color: #000;
-}
 </style>
+
 <div class="main-content">
     <section class="section">
         <div class="section-header">
             <h4>Manage Exams</h4>
         </div>
 
-        <!-- Form -->
+        <!-- Exam Form -->
         <form id="examForm">
             <input type="hidden" name="id" id="exam_id">
             <div class="form-group">
@@ -60,7 +35,7 @@ if (!$settings || $settings['exam_enabled'] == 0) {
 
         <hr>
 
-        <!-- Table -->
+        <!-- Exam List -->
         <h5>Exam List</h5>
         <table class="table table-bordered" id="examTable">
             <thead>
@@ -76,11 +51,13 @@ if (!$settings || $settings['exam_enabled'] == 0) {
     </section>
 </div>
 
+<!-- ✅ Make sure jQuery is included -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 $(document).ready(function() {
 
-    // Load exams
+    // Function to load exams
     function loadExams() {
         $.get("ajax/exams_crud.php", {
             action: "read"
@@ -90,17 +67,27 @@ $(document).ready(function() {
     }
     loadExams();
 
-    // Save exam (insert or update)
-    $("#examForm").submit(function(e) {
+    // Save exam (Insert / Update)
+    $("#examForm").on("submit", function(e) {
         e.preventDefault();
-        $.post("ajax/exams_crud.php", $(this).serialize() + "&action=save", function(res) {
-            alert(res.message);
-            if (res.status == "success") {
-                $("#examForm")[0].reset();
-                $("#exam_id").val("");
-                loadExams();
+        $.ajax({
+            url: "ajax/exams_crud.php",
+            type: "POST",
+            data: $(this).serialize() + "&action=save",
+            dataType: "json",
+            success: function(res) {
+                alert(res.message);
+                if (res.status === "success") {
+                    $("#examForm")[0].reset();
+                    $("#exam_id").val("");
+                    loadExams();
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("An error occurred while saving exam.");
             }
-        }, "json");
+        });
     });
 
     // Edit exam
@@ -110,10 +97,12 @@ $(document).ready(function() {
             action: "get",
             id: id
         }, function(res) {
-            if (res.status == "success") {
+            if (res.status === "success") {
                 $("#exam_id").val(res.data.id);
                 $("#exam_name").val(res.data.exam_name);
                 $("#total_marks").val(res.data.total_marks);
+            } else {
+                alert(res.message);
             }
         }, "json");
     });
@@ -127,7 +116,7 @@ $(document).ready(function() {
                 id: id
             }, function(res) {
                 alert(res.message);
-                if (res.status == "success") loadExams();
+                if (res.status === "success") loadExams();
             }, "json");
         }
     });

@@ -1,25 +1,6 @@
 <?php require_once 'assets/php/header.php'; 
 include_once('sass/db_config.php');
 
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: logout.php");
-    exit;
-}
-
-$school_id = $_SESSION['admin_id'];
-
-$sql = "SELECT exam_enabled FROM school_settings WHERE person='admin' AND person_id=? LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $school_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$settings = $result->fetch_assoc();
-$stmt->close();
-
-if (!$settings || $settings['exam_enabled'] == 0) {
-    echo "<script>alert('Exam module is disabled by school admin.'); window.location.href='logout.php';</script>";
-    exit;
-}
 ?>
 
 <style>
