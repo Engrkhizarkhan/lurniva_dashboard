@@ -47,7 +47,7 @@ $verification_code = rand(100000, 999999);
 $is_verified = 0;
 $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 $verification_attempts = 0;
-$status = "pending";
+$status = "Pending";
 
 // ===================================================================
 // ✅ STUDENT SIGNUP
