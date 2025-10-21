@@ -13,7 +13,7 @@ if (empty($keyword)) {
 }
 
 // Escape for LIKE
-$keyword = "%".$conn->real_escape_string($keyword)."%";
+$keyword = "%".$conn->real_escape_string($keyword)."%" ;
 
 // =====================
 // Search Students
@@ -38,7 +38,10 @@ $res_faculty = mysqli_query($conn, $sql_faculty);
 // =====================
 if ($res_students && mysqli_num_rows($res_students) > 0) {
     while ($row = mysqli_fetch_assoc($res_students)) {
-        $photo = !empty($row['profile_photo']) ? "uploads/profile/".$row['profile_photo'] : "assets/img/default-user.png";
+        $photo = !empty($row['profile_photo'])
+            ? "../student/uploads/profile/".$row['profile_photo']
+            : "assets/img/default-user.png";
+
         $output .= '
         <li class="clearfix open-chat-data"
             data-sender-id="'.$row['id'].'"
@@ -57,7 +60,10 @@ if ($res_students && mysqli_num_rows($res_students) > 0) {
 // =====================
 if ($res_faculty && mysqli_num_rows($res_faculty) > 0) {
     while ($row = mysqli_fetch_assoc($res_faculty)) {
-        $photo = !empty($row['photo']) ? "uploads/profile/".$row['photo'] : "assets/img/default-user.png";
+        $photo = !empty($row['photo'])
+            ? "../Faculty Dashboard/uploads/profile/".$row['photo']
+            : "assets/img/default-user.png";
+
         $output .= '
         <li class="clearfix open-chat-data"
             data-sender-id="'.$row['id'].'"
@@ -76,3 +82,4 @@ if (empty($output)) {
 }
 
 echo $output;
+?>
