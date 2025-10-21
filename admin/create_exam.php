@@ -45,13 +45,12 @@
 $(document).ready(function() {
 
     function loadExams() {
-        $.get("ajax/exams_crud.php", {
-            action: "read"
-        }, function(data) {
+        $.get("ajax/exams_crud.php", function(data) {
             $("#examTable tbody").html(data);
         });
     }
     loadExams();
+
 
     $("#examForm").on("submit", function(e) {
         e.preventDefault();

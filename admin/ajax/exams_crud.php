@@ -1,15 +1,17 @@
 <?php
 session_start();
-header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../sass/db_config.php';
 
 if (!isset($_SESSION['admin_id'])) {
-    echo json_encode(["status" => "error", "message" => "Unauthorized"]);
+    echo "<tr><td colspan='5' class='text-center text-danger'>Unauthorized access</td></tr>";
     exit;
 }
 
 $admin_id = $_SESSION['admin_id']; // School ID for this admin
-$action = $_REQUEST['action'] ?? '';
+$action = $_REQUEST['action'] ?? 'read'; // ✅ Default to 'read' when not provided
 
 if ($action == "save") {
     $id = $_POST['id'] ?? '';
@@ -33,34 +35,6 @@ if ($action == "save") {
         $stmt->bind_param("isi", $admin_id, $name, $marks);
         $ok = $stmt->execute();
         echo json_encode(["status" => $ok ? "success" : "error", "message" => $ok ? "Exam added successfully." : "Insert failed."]);
-    }
-    exit;
-}
-
-if ($action == "read") {
-    // ✅ Fetch only exams belonging to this school
-    $stmt = $conn->prepare("SELECT id, exam_name, total_marks, created_at FROM exams WHERE school_id = ? ORDER BY id DESC");
-    $stmt->bind_param("i", $admin_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $rows = "";
-        while ($r = $result->fetch_assoc()) {
-            $rows .= "<tr>
-                <td>{$r['id']}</td>
-                <td>{$r['exam_name']}</td>
-                <td>{$r['total_marks']}</td>
-                <td>{$r['created_at']}</td>
-                <td>
-                    <button class='btn btn-sm btn-info editBtn' data-id='{$r['id']}'>Edit</button>
-                    <button class='btn btn-sm btn-danger deleteBtn' data-id='{$r['id']}'>Delete</button>
-                </td>
-            </tr>";
-        }
-        echo $rows;
-    } else {
-        echo "<tr><td colspan='5' class='text-center'>No exams found.</td></tr>";
     }
     exit;
 }
@@ -89,5 +63,26 @@ if ($action == "delete") {
     exit;
 }
 
-echo json_encode(["status" => "error", "message" => "Invalid action."]);
+// ✅ Default action: READ
+$stmt = $conn->prepare("SELECT id, exam_name, total_marks, created_at FROM exams WHERE school_id = ? ORDER BY id DESC");
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    while ($r = $result->fetch_assoc()) {
+        echo "<tr>
+            <td>{$r['id']}</td>
+            <td>{$r['exam_name']}</td>
+            <td>{$r['total_marks']}</td>
+            <td>{$r['created_at']}</td>
+            <td>
+                <button class='btn btn-sm btn-info editBtn' data-id='{$r['id']}'>Edit</button>
+                <button class='btn btn-sm btn-danger deleteBtn' data-id='{$r['id']}'>Delete</button>
+            </td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan='5' class='text-center'>No exams found.</td></tr>";
+}
 ?>
