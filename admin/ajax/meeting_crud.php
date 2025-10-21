@@ -5,8 +5,14 @@ require_once '../sass/db_config.php';
 $action = $_POST['action'];
 
 if ($action == "insert") {
-  $stmt = $conn->prepare("INSERT INTO meeting_announcements (school_id, title, meeting_agenda, meeting_date, meeting_time, meeting_person, person_id_one, meeting_person2, person_id_two, status) VALUES (?,?,?,?,?,?,?,?,?,?)");
-  $stmt->bind_param("issssssssi",
+$stmt = $conn->prepare("
+    INSERT INTO meeting_announcements 
+    (school_id, title, meeting_agenda, meeting_date, meeting_time, meeting_person, person_id_one, meeting_person2, person_id_two)
+    VALUES (?,?,?,?,?,?,?,?,?)
+");
+
+$stmt->bind_param(
+    "issssssss",
     $_POST['school_id'],
     $_POST['title'],
     $_POST['meeting_agenda'],
@@ -15,9 +21,9 @@ if ($action == "insert") {
     $_POST['meeting_person'],
     $_POST['person_id_one'],
     $_POST['meeting_person2'],
-    $_POST['person_id_two'],
-    $_POST['status']
-  );
+    $_POST['person_id_two']
+);
+
   $stmt->execute();
   echo "Meeting Added!";
 }
@@ -66,8 +72,22 @@ if ($action == "getOne") {
 }
 
 if ($action == "update") {
-  $stmt = $conn->prepare("UPDATE meeting_announcements SET title=?, meeting_agenda=?, meeting_date=?, meeting_time=?, meeting_person=?, person_id_one=?, meeting_person2=?, person_id_two=?, status=? WHERE id=?");
-  $stmt->bind_param("ssssssssis",
+$stmt = $conn->prepare("
+    UPDATE meeting_announcements 
+    SET 
+        title = ?, 
+        meeting_agenda = ?, 
+        meeting_date = ?, 
+        meeting_time = ?, 
+        meeting_person = ?, 
+        person_id_one = ?, 
+        meeting_person2 = ?, 
+        person_id_two = ? 
+    WHERE id = ?
+");
+
+$stmt->bind_param(
+    "ssssssssi",
     $_POST['title'],
     $_POST['meeting_agenda'],
     $_POST['meeting_date'],
@@ -76,9 +96,9 @@ if ($action == "update") {
     $_POST['person_id_one'],
     $_POST['meeting_person2'],
     $_POST['person_id_two'],
-    $_POST['status'],
     $_POST['id']
-  );
+);
+
   $stmt->execute();
   echo "Meeting Updated!";
 }
