@@ -33,7 +33,7 @@ $newClass = $classData['class_name'];
 $newSection = $classData['section'];
 
 // Update student
-$stmt = $conn->prepare("UPDATE students SET class_grade = ?, section = ?, status='Pending Verification' WHERE id = ?");
+$stmt = $conn->prepare("UPDATE students SET class_grade = ?, section = ?, status='Pending' WHERE id = ?");
 $stmt->bind_param("ssi", $newClass, $newSection, $student_id);
 
 if ($stmt->execute()) {
