@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/sass/db_config.php'; // adjust path as needed
+require_once '../../admin/sass/db_config.php'; // adjust path as needed
 header('Content-Type: application/json; charset=UTF-8');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
