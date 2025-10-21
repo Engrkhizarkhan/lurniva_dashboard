@@ -49,7 +49,6 @@ if ($result->num_rows > 0) {
 $stmt->close();
 ?>
 <?php
-include_once("check_module_access.php");
 checkModule($conn, $_SESSION['admin_id'], 'chat');
 ?>
 
