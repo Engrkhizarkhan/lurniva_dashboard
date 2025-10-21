@@ -168,15 +168,21 @@ $(document).ready(function() {
     });
 
     // Handle Promote Submit
-    $.post('ajax/promote_student.php', $(this).serialize(), function(response) {
-        console.log(response); // 👈 ADD THIS LINE
-        alert(response.message || 'Unknown response');
-        $('#promoteModal').modal('hide');
-        loadStudentQRTable();
-    }, 'json').fail(function(xhr) {
-        console.log('AJAX error:', xhr.responseText); // 👈 AND THIS
-        alert('AJAX failed: ' + xhr.statusText);
+    // ✅ Correct: runs when the form is submitted
+    $('#promoteForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.post('ajax/promote_student.php', $(this).serialize(), function(response) {
+            console.log(response); // debug
+            alert(response.message || 'Unknown response');
+            $('#promoteModal').modal('hide');
+            loadStudentQRTable();
+        }, 'json').fail(function(xhr) {
+            console.log('AJAX error:', xhr.responseText);
+            alert('AJAX failed: ' + xhr.statusText);
+        });
     });
+
 
 });
 </script>
