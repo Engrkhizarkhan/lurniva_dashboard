@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/sass/db_config.php';
+require_once '../../admin/sass/db_config.php';
 
 // ✅ Get the ID from URL
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
