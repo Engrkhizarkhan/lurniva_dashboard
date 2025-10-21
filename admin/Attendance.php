@@ -130,22 +130,31 @@ if (!$settings || $settings['attendance_enabled'] == 0) {
         </div>
     </section>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-$('#attendanceForm').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: 'ajax/save_faculty_attendance.php',
-        type: 'POST',
-        data: $(this).serialize(),
-        success: function(response) {
-            $('#message').html(`<div class="alert alert-success mt-3">${response}</div>`);
-        },
-        error: function() {
-            $('#message').html(`<div class="alert alert-danger mt-3">Something went wrong.</div>`);
-        }
+$(document).ready(function() {
+
+    // Intercept form submit
+    $('#attendanceForm').on('submit', function(e) {
+        e.preventDefault(); // Stop normal form submission
+
+        $.ajax({
+            url: 'ajax/save_faculty_attendance.php',
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#message').html(
+                    `<div class="alert alert-success mt-3">${response}</div>`);
+            },
+            error: function() {
+                $('#message').html(
+                    `<div class="alert alert-danger mt-3">Something went wrong.</div>`);
+            }
+        });
     });
+
 });
 </script>
+
 
 <?php require_once 'assets/php/footer.php'; ?>
