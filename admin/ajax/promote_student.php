@@ -37,7 +37,14 @@ $stmt = $conn->prepare("UPDATE students SET class_grade = ?, section = ?, status
 $stmt->bind_param("ssi", $newClass, $newSection, $student_id);
 
 if ($stmt->execute()) {
-    echo json_encode(['status' => 'success', 'message' => 'Student promoted to ' . $newClass . ' - ' . $newSection]);
+    echo json_encode([
+        'status' => 'success',
+        'message' => "Student promoted to {$newClass} - {$newSection}"
+    ]);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Promotion failed']);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Promotion failed: ' . $stmt->error
+    ]);
 }
+exit;
