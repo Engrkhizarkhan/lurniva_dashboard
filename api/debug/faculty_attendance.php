@@ -12,7 +12,7 @@ require_once '../../admin/sass/db_config.php';
 // ----------------------------
 // Fetch faculty attendance
 // ----------------------------
-$sql = "SELECT `id`, `school_id`, `exam_name`, `total_marks`, `created_at` FROM `exams` WHERE 1";
+$sql = "SELECT `id`, `school_id`, `exam_name`, `total_marks`, `created_at` FROM `exams` ";
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
