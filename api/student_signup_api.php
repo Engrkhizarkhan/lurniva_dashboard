@@ -96,7 +96,7 @@ if ($form_type === 'student') {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     $stmt->bind_param(
-        "issssssssssssssisisi",
+        "isssssssssssssssisisi",
         $school_id, $parent_name, $parent_cnic, $full_name, $gender, $dob, $cnic_formb,
         $class_grade, $section, $roll_number, $address, $email, $phone, $profile_name,
         $password, $status, $verification_code, $is_verified, $code_expires_at, $verification_attempts
