@@ -160,13 +160,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result && $result->num_rows === 1) {
         $student = $result->fetch_assoc();
 
-        if (empty($student['subscription_end']) || strtotime($student['subscription_end']) < strtotime($current_date)) {
+        if (empty($student['subscription_end']) || $student['subscription_end'] < $current_date) {
     $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
-    echo "<script>alert('Your student subscription has expired ";
-    echo strtotime($student['subscription_end'];
-    echo". Please renew to continue.'); window.location.href='login.php';</script>";
+    echo "<script>
+        alert('Your student subscription has expired on {$student['subscription_end']}. Please renew to continue.');
+        window.location.href='login.php';
+    </script>";
     exit;
 }
+
 
 
         if (password_verify($password, $student['password'])) {
