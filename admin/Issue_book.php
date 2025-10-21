@@ -1,27 +1,6 @@
 <?php require_once 'assets/php/header.php'; 
 include_once('sass/db_config.php');
 
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: logout.php");
-    exit;
-}
-
-$admin_id = $_SESSION['admin_id']; // admin ID
-
-// Fetch admin settings
-$sql = "SELECT library_enabled FROM school_settings WHERE person='admin' AND person_id=? LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $admin_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$settings = $result->fetch_assoc();
-$stmt->close();
-
-// 🚨 If Library module is disabled
-if (!$settings || $settings['library_enabled'] == 0) {
-    echo "<script>alert('Library module is disabled by admin settings.'); window.location.href='logout.php';</script>";
-    exit;
-}
 ?>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -311,7 +290,7 @@ $(document).ready(function() {
                 } else {
                     $('#transactionTable').html(
                         `<tr><td colspan="9" class="text-center">No transactions found</td></tr>`
-                        );
+                    );
                 }
             }
         });
@@ -355,7 +334,7 @@ $(document).ready(function() {
                 $('#fineAmount').val(''); // clear previous input
                 $('#fineMessage').text(
                     `Book is late by ${res.days_late} day(s). Please enter the fine amount.`
-                    );
+                );
                 var fineModal = new bootstrap.Modal(document.getElementById('fineModal'));
                 fineModal.show();
             } else if (res.status === 'success') {

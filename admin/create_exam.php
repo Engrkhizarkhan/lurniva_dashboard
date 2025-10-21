@@ -1,6 +1,20 @@
 <?php require_once 'assets/php/header.php'; ?>
 <?php include_once('sass/db_config.php'); ?>
+<style>
+#timetable {
+    padding-left: 20px;
+    color: #6777ef !important;
+    background-color: #f0f3ff;
+}
 
+#timetable ul {
+    display: block !important;
+}
+
+#createAE {
+    color: #000;
+}
+</style>
 <div class="main-content">
     <section class="section">
         <div class="section-header">
