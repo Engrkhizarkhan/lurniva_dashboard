@@ -6,12 +6,8 @@ require_once '../mail_library.php'; // ✅ include PHPMailer helper
 // ✅ CORS CONFIGURATION
 // --------------------
 $allowedOrigins = [
-    'http://localhost:8080',
-    'http://localhost:8081',
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://localhost:60706', // Flutter web
-    'https://dashboard.lurniva.com',
+    'http://localhost:8080', 'http://localhost:8081', 'http://localhost:3000',
+    'http://localhost:5173', 'http://localhost:60706', 'https://dashboard.lurniva.com',
     'https://www.dashboard.lurniva.com'
 ];
 
@@ -49,6 +45,32 @@ $code_expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 $verification_attempts = 0;
 $status = "Pending";
 
+// --------------------
+// ✅ HELPER: CHECK GLOBAL UNIQUENESS
+// --------------------
+function checkUnique($conn, $email, $cnic, $tables) {
+    foreach ($tables as $table) {
+        $query = "";
+        if ($table === 'students') $query = "SELECT id FROM students WHERE email=? OR cnic_formb=?";
+        elseif ($table === 'parents') $query = "SELECT id FROM parents WHERE email=? OR parent_cnic=?";
+        elseif ($table === 'faculty') $query = "SELECT id FROM faculty WHERE email=? OR cnic=?";
+        elseif ($table === 'schools') $query = "SELECT id FROM schools WHERE school_email=?";
+
+        if ($query) {
+            $stmt = $conn->prepare($query);
+            if ($table === 'schools') $stmt->bind_param("s", $email);
+            else $stmt->bind_param("ss", $email, $cnic);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows > 0) {
+                return $table;
+            }
+            $stmt->close();
+        }
+    }
+    return false;
+}
+
 // ===================================================================
 // ✅ STUDENT SIGNUP
 // ===================================================================
@@ -63,6 +85,13 @@ if ($form_type === 'student') {
             echo json_encode(["status" => "error", "message" => "Missing field: $field"]);
             exit;
         }
+    }
+
+    // ✅ GLOBAL CHECK
+    $existing = checkUnique($conn, $data['email'], $data['cnic_formb'], ['students','parents','faculty','schools']);
+    if ($existing) {
+        echo json_encode(["status"=>"error","message"=>"Email or CNIC already exists in $existing table"]);
+        exit;
     }
 
     $school_id   = intval($data['school_id']);
@@ -95,7 +124,6 @@ if ($form_type === 'student') {
          password, status, verification_code, is_verified, code_expires_at, verification_attempts)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    // ✅ Correct type string for 20 variables:
     $stmt->bind_param(
         "isssssssssssssssissi",
         $school_id, $parent_name, $parent_cnic, $full_name, $gender, $dob, $cnic_formb,
@@ -104,25 +132,17 @@ if ($form_type === 'student') {
     );
 
     if ($stmt->execute()) {
-        // ✅ Send email using PHPMailer
         $subject = "Student Account Verification - Lurniva";
-        $body = "
-            <p>Hello <b>$full_name</b>,</p>
-            <p>Your verification code is:</p>
-            <h2 style='color:#007bff;'>$verification_code</h2>
-            <p>This code expires in <b>5 minutes</b>.</p>
-            <br><p>Best regards,<br><b>Lurniva Support Team</b></p>
-        ";
+        $body = "<p>Hello <b>$full_name</b>,</p><p>Your verification code is:</p>
+                 <h2 style='color:#007bff;'>$verification_code</h2>
+                 <p>This code expires in <b>5 minutes</b>.</p>
+                 <br><p>Best regards,<br><b>Lurniva Support Team</b></p>";
 
         sendMail($email, $subject, $body);
 
-        echo json_encode([
-            "status" => "success",
-            "message" => "Student registered. Please verify email.",
-            "student_id" => $conn->insert_id
-        ]);
+        echo json_encode(["status"=>"success","message"=>"Student registered. Please verify email.","student_id"=>$conn->insert_id]);
     } else {
-        echo json_encode(["status" => "error", "message" => $stmt->error]);
+        echo json_encode(["status"=>"error","message"=>$stmt->error]);
     }
     $stmt->close();
 }
@@ -137,6 +157,13 @@ elseif ($form_type === 'parent') {
             echo json_encode(["status" => "error", "message" => "Missing field: $field"]);
             exit;
         }
+    }
+
+    // ✅ GLOBAL CHECK
+    $existing = checkUnique($conn, $data['email'], $data['parent_cnic'], ['students','parents','faculty','schools']);
+    if ($existing) {
+        echo json_encode(["status"=>"error","message"=>"Email or CNIC already exists in $existing table"]);
+        exit;
     }
 
     $full_name   = $data['full_name'];
@@ -165,25 +192,17 @@ elseif ($form_type === 'parent') {
     );
 
     if ($stmt->execute()) {
-        // ✅ Send email using PHPMailer
         $subject = "Parent Account Verification - Lurniva";
-        $body = "
-            <p>Hello <b>$full_name</b>,</p>
-            <p>Your verification code is:</p>
-            <h2 style='color:#007bff;'>$verification_code</h2>
-            <p>This code expires in <b>5 minutes</b>.</p>
-            <br><p>Best regards,<br><b>Lurniva Support Team</b></p>
-        ";
+        $body = "<p>Hello <b>$full_name</b>,</p><p>Your verification code is:</p>
+                 <h2 style='color:#007bff;'>$verification_code</h2>
+                 <p>This code expires in <b>5 minutes</b>.</p>
+                 <br><p>Best regards,<br><b>Lurniva Support Team</b></p>";
 
         sendMail($email, $subject, $body);
 
-        echo json_encode([
-            "status" => "success",
-            "message" => "Parent registered. Please verify email.",
-            "parent_id" => $conn->insert_id
-        ]);
+        echo json_encode(["status"=>"success","message"=>"Parent registered. Please verify email.","parent_id"=>$conn->insert_id]);
     } else {
-        echo json_encode(["status" => "error", "message" => $stmt->error]);
+        echo json_encode(["status"=>"error","message"=>$stmt->error]);
     }
     $stmt->close();
 }
