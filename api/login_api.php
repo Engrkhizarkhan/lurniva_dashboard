@@ -124,12 +124,11 @@ $result = $stmt->get_result();
 if ($result && $result->num_rows === 1) {
     $student = $result->fetch_assoc();
 
-    if (empty($student['subscription_end']) || strtotime($student['subscription_end']) < strtotime($current_date)) {
-    $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
-    echo "<script>alert('Your student subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
-    exit;
-}
-
+    if (empty($student['subscription_end']) || $student['subscription_end'] < $current_date) {
+        $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
+        echo json_encode(["status" => "error", "message" => "Student subscription expired. Please renew."]);
+        exit;
+    }
 
     if (!password_verify($password, $student['password'])) {
         echo json_encode(["status" => "error", "message" => "Invalid password"]);
@@ -188,12 +187,11 @@ $result = $stmt->get_result();
 if ($result && $result->num_rows === 1) {
     $parent = $result->fetch_assoc();
 
-    if (empty($student['subscription_end']) || strtotime($student['subscription_end']) < strtotime($current_date)) {
-    $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
-    echo "<script>alert('Your student subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
-    exit;
-}
-
+    if (empty($parent['subscription_end']) || $parent['subscription_end'] < $current_date) {
+        $conn->query("UPDATE parents SET status='Pending' WHERE id=" . $parent['id']);
+        echo json_encode(["status" => "error", "message" => "Parent subscription expired. Please renew."]);
+        exit;
+    }
 
     if (!password_verify($password, $parent['password'])) {
         echo json_encode(["status" => "error", "message" => "Invalid password"]);
