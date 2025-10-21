@@ -1,18 +1,6 @@
 <?php require_once 'assets/php/header.php'; ?>
 <?php include_once('sass/db_config.php'); ?>
 
-<style>
-#timetable {
-    padding-left: 20px;
-    color: #6777ef !important;
-    background-color: #f0f3ff;
-}
-
-#timetable ul {
-    display: block !important;
-}
-</style>
-
 <div class="main-content">
     <section class="section">
         <div class="section-header">
@@ -43,6 +31,7 @@
                     <th>ID</th>
                     <th>Exam Name</th>
                     <th>Total Marks</th>
+                    <th>Created At</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -51,13 +40,10 @@
     </section>
 </div>
 
-<!-- ✅ Make sure jQuery is included -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
 $(document).ready(function() {
 
-    // Function to load exams
     function loadExams() {
         $.get("ajax/exams_crud.php", {
             action: "read"
@@ -67,7 +53,6 @@ $(document).ready(function() {
     }
     loadExams();
 
-    // Save exam (Insert / Update)
     $("#examForm").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
@@ -90,7 +75,6 @@ $(document).ready(function() {
         });
     });
 
-    // Edit exam
     $(document).on("click", ".editBtn", function() {
         let id = $(this).data("id");
         $.get("ajax/exams_crud.php", {
@@ -107,7 +91,6 @@ $(document).ready(function() {
         }, "json");
     });
 
-    // Delete exam
     $(document).on("click", ".deleteBtn", function() {
         if (confirm("Delete this exam?")) {
             let id = $(this).data("id");
@@ -123,5 +106,4 @@ $(document).ready(function() {
 
 });
 </script>
-
 <?php require_once 'assets/php/footer.php'; ?>
