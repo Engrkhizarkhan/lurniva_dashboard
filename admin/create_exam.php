@@ -18,7 +18,7 @@
                 <label>Total Marks</label>
                 <input type="number" name="total_marks" id="total_marks" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Save It</button>
         </form>
 
         <hr>
