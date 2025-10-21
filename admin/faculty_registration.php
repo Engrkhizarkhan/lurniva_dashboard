@@ -91,21 +91,27 @@
 $(document).ready(function() {
 
     loadFaculty();
+
     $(document).on('submit', '#facultyForm', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        const action = $('button[type=submit]').data('action') || 'insert';
-        const id = $('button[type=submit]').data('id') || '';
+        const $btn = $('button[type=submit]');
+        let action = $btn.data('action') || 'insert';
+        let id = $btn.data('id') || '';
 
-        // Append extra fields
+        // Append action and id
         formData.append('action', action);
-        if (id) {
-            formData.append('id', id);
+        if (id) formData.append('id', id);
+
+        // Basic validation
+        if (!formData.get('full_name') || !formData.get('email')) {
+            alert('Please fill in required fields: Name and Email.');
+            return;
         }
 
-        // (Optional) Basic empty validation
-        if (!formData.get('full_name') || !formData.get('email') || !formData.get('password')) {
-            alert('Please fill in required fields: Name, Email, and Password.');
+        // Only require password on insert
+        if (action === 'insert' && !formData.get('password')) {
+            alert('Password is required for new faculty.');
             return;
         }
 
@@ -116,19 +122,15 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: function(response) {
-
-                // You can decide the success condition
-                if (response.trim() === 'success') {
-                    // Reset the form
-                    loadFaculty();
+                if (response.trim() === 'success' || response.includes(
+                        'Updated successfully')) {
                     $('#facultyForm')[0].reset();
+                    $btn.text('Register Faculty').removeData('action').removeData('id');
 
-                    // Reset the submit button text and remove data attributes (if used for edit/update)
-                    $('button[type=submit]')
-                        .removeData('action')
-                        .removeData('id')
-                        .text('Register Faculty');
+                    // Remove existing_photo hidden input
+                    $('[name=existing_photo]').remove();
 
+                    loadFaculty();
                 } else {
                     alert('Server Response: ' + response);
                 }
@@ -138,7 +140,6 @@ $(document).ready(function() {
             }
         });
     });
-
 
     function loadFaculty() {
         $.post("ajax/faculty_crud.php", {
@@ -167,15 +168,25 @@ $(document).ready(function() {
             action: "getOne"
         }, function(res) {
             const data = JSON.parse(res);
+
+            // Populate form
             for (const key in data) {
                 if ($(`[name=${key}]`).length) {
                     $(`[name=${key}]`).val(data[key]);
                 }
             }
-            $("button[type=submit]").text("Update Faculty").data("action", "update").data("id",
-                id);
-            $("#facultyForm").append(
-                `<input type="hidden" name="existing_photo" value="${data.photo}">`);
+
+            const $btn = $('button[type=submit]');
+            $btn.text("Update Faculty").data("action", "update").data("id", id);
+
+            // Add or update hidden existing_photo input
+            if ($('[name=existing_photo]').length) {
+                $('[name=existing_photo]').val(data.photo);
+            } else {
+                $("#facultyForm").append(
+                    `<input type="hidden" name="existing_photo" value="${data.photo}">`
+                );
+            }
         });
     });
 });
