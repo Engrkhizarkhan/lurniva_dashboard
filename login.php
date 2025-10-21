@@ -1,258 +1,126 @@
 <?php
 session_start();
 require_once 'admin/sass/db_config.php';
-require_once 'mail_library.php'; // include PHPMailer library
+require_once 'mail_library.php'; // PHPMailer
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $current_date = date("Y-m-d");
+// --- ✅ Set timezone ---
+date_default_timezone_set('Asia/Karachi');
+$current_date = date("Y-m-d");
 
-    if (empty($email) || empty($password)) {
-        echo "<script>alert('Email and password are required.'); window.location.href='login.php';</script>";
-        exit;
-    }
-
-    // --- ✅ Check App Admin ---
-    $stmt = $conn->prepare("SELECT id, full_name, email,message_email, password FROM app_admin WHERE email = ? LIMIT 1");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows === 1) {
-        $admin = $result->fetch_assoc();
-        if (password_verify($password, $admin['password'])) {
-            $otp = rand(100000, 999999);
-            $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-
-            $conn->query("UPDATE app_admin SET verification_code='$otp', code_expires_at='$expiry' WHERE id=" . $admin['id']);
-
-            $subject = "App Admin OTP Verification";
-            $msg = "Hello {$admin['full_name']},<br><br>Your OTP is: <b>$otp</b><br><br>This code expires in 5 minutes.";
-
-            if (sendMail($admin['message_email'], $subject, $msg, $admin['full_name'])) {
-                $_SESSION['pending_email'] = $email;
-                $_SESSION['pending_admin_id'] = $admin['id'];
-                $_SESSION['user_type'] = 'app_admin';
-                header("Location: otp.php");
-                exit;
-            } else {
-                echo "<script>alert('Failed to send OTP email.'); window.location.href='login.php';</script>";
-                exit;
-            }
-        } else {
-            echo "<script>alert('Invalid password.'); window.location.href='login.php';</script>";
-            exit;
-        }
-    }
-
-    // --- ✅ Check Schools ---
-    $stmt = $conn->prepare("
-        SELECT id, school_name, admin_contact_person, password, is_verified, status, subscription_end, school_email 
-        FROM schools 
-        WHERE school_email = ?
-    ");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows === 1) {
-        $user = $result->fetch_assoc();
-
-        if (empty($user['subscription_end']) || $user['subscription_end'] < $current_date) {
-            $conn->query("UPDATE schools SET status='Pending' WHERE id=" . $user['id']);
-            echo "<script>alert('Your school subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
-            exit;
-        }
-
-        if (password_verify($password, $user['password'])) {
-            if ($user['is_verified'] == 1) {
-                $_SESSION['admin_id'] = $user['id'];
-                $_SESSION['admin_name'] = $user['admin_contact_person'];
-                $_SESSION['school_name'] = $user['school_name'];
-                header("Location: admin/index.php");
-                exit;
-            } else {
-                $verification_code = rand(100000, 999999);
-                $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-                $conn->query("UPDATE schools SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$user['id']);
-
-                $subject = "School Account Verification";
-                $msg = "Hello {$user['admin_contact_person']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
-
-                if (sendMail($email, $subject, $msg, $user['admin_contact_person'])) {
-                    $_SESSION['pending_email'] = $email;
-                    $_SESSION['user_type'] = 'school';
-                    header("Location: verify.php");
-                    exit;
-                } else {
-                    echo "<script>alert('Failed to send verification email.'); window.location.href='login.php';</script>";
-                    exit;
-                }
-            }
-        } else {
-            echo "<script>alert('Invalid password.'); window.location.href='login.php';</script>";
-            exit;
-        }
-    }
-
-    // --- ✅ Check Faculty ---
-    $stmt = $conn->prepare("
-        SELECT id, campus_id, full_name, email, password, photo, is_verified, status, subscription_end 
-        FROM faculty 
-        WHERE email = ?
-    ");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows === 1) {
-        $faculty = $result->fetch_assoc();
-
-        if (empty($faculty['subscription_end']) || $faculty['subscription_end'] < $current_date) {
-            $conn->query("UPDATE faculty SET status='Pending' WHERE id=" . $faculty['id']);
-            echo "<script>alert('Your faculty subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
-            exit;
-        }
-
-        if (password_verify($password, $faculty['password'])) {
-            if ($faculty['is_verified'] == 1) {
-                $_SESSION['admin_id'] = $faculty['id'];
-                $_SESSION['admin_name'] = $faculty['full_name'];
-                $_SESSION['campus_id'] = $faculty['campus_id'];
-                $_SESSION['faculty_photo'] = $faculty['photo'];
-                header("Location: Faculty Dashboard/index.php");
-                exit;
-            } else {
-                $verification_code = rand(100000, 999999);
-                $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-                $conn->query("UPDATE faculty SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$faculty['id']);
-
-                $subject = "Faculty Account Verification";
-                $msg = "Hello {$faculty['full_name']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
-
-                if (sendMail($email, $subject, $msg, $faculty['full_name'])) {
-                    $_SESSION['pending_email'] = $email;
-                    $_SESSION['user_type'] = 'faculty';
-                    header("Location: verify.php");
-                    exit;
-                } else {
-                    echo "<script>alert('Failed to send verification email.'); window.location.href='login.php';</script>";
-                    exit;
-                }
-            }
-        } else {
-            echo "<script>alert('Invalid password.'); window.location.href='login.php';</script>";
-            exit;
-        }
-    }
-
-    // --- ✅ Check Students ---
-    $stmt = $conn->prepare("
-        SELECT id, school_id, full_name, email, password, profile_photo, is_verified, status, subscription_end 
-        FROM students
-        WHERE email = ?
-    ");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result && $result->num_rows === 1) {
-        $student = $result->fetch_assoc();
-
-        if (empty($student['subscription_end']) || strtotime($student['subscription_end']) < strtotime($current_date)) {
-    $conn->query("UPDATE students SET status='Pending' WHERE id=" . $student['id']);
-    echo "<script>alert('Your student subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
+// --- ✅ Only handle POST ---
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: login.php");
     exit;
 }
 
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
 
-        if (password_verify($password, $student['password'])) {
-            if ($student['is_verified'] == 1) {
-                $_SESSION['student_id'] = $student['id'];
-                $_SESSION['student_name'] = $student['full_name'];
-                $_SESSION['school_id'] = $student['school_id'];
-                $_SESSION['student_photo'] = $student['profile_photo'];
-                header("Location: student/index.php");
-                exit;
-            } else {
-                $verification_code = rand(100000, 999999);
-                $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-                $conn->query("UPDATE students SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$student['id']);
+if (empty($email) || empty($password)) {
+    echo "<script>alert('Email and password are required.'); window.location.href='login.php';</script>";
+    exit;
+}
 
-                $subject = "Student Account Verification";
-                $msg = "Hello {$student['full_name']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
+// --- Helper function: check subscription ---
+function isSubscriptionValid($subscription_end) {
+    if (empty($subscription_end)) return false;
+    return strtotime($subscription_end) >= strtotime(date("Y-m-d"));
+}
 
-                if (sendMail($email, $subject, $msg, $student['full_name'])) {
-                    $_SESSION['pending_email'] = $email;
-                    $_SESSION['user_type'] = 'student';
-                    header("Location: verify.php");
-                    exit;
-                } else {
-                    echo "<script>alert('Failed to send verification email.'); window.location.href='login.php';</script>";
-                    exit;
-                }
-            }
-        } else {
-            echo "<script>alert('Invalid password.'); window.location.href='login.php';</script>";
-            exit;
-        }
+// --- Helper function: send verification code ---
+function sendVerification($conn, $table, $id, $email, $name, $type='student') {
+    $code = rand(100000, 999999);
+    $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
+    $conn->query("UPDATE $table SET verification_code='$code', code_expires_at='$expiry' WHERE id=$id");
+
+    $subject = ucfirst($type) . " Account Verification";
+    $msg = "Hello $name,<br><br>Your verification code is: <b>$code</b><br>This code expires in 5 minutes.";
+
+    if (sendMail($email, $subject, $msg, $name)) {
+        $_SESSION['pending_email'] = $email;
+        $_SESSION['user_type'] = $type;
+        header("Location: verify.php");
+        exit;
+    } else {
+        echo "<script>alert('Failed to send verification email.'); window.location.href='login.php';</script>";
+        exit;
     }
+}
 
-    // --- ✅ Check Parents ---
-    $stmt = $conn->prepare("
-        SELECT id, full_name, parent_cnic, email, phone, profile_photo, password, status, is_verified, subscription_end 
-        FROM parents 
-        WHERE email = ?
-    ");
+// --- Login Check Flow ---
+$users = [
+    ['table'=>'app_admin', 'redirect'=>'otp.php', 'fields'=>['id','full_name','email','message_email','password'], 'type'=>'app_admin'],
+    ['table'=>'schools', 'redirect'=>'admin/index.php', 'fields'=>['id','school_name','admin_contact_person','password','is_verified','status','subscription_end','school_email'], 'type'=>'school'],
+    ['table'=>'faculty', 'redirect'=>'Faculty Dashboard/index.php', 'fields'=>['id','campus_id','full_name','email','password','photo','is_verified','status','subscription_end'], 'type'=>'faculty'],
+    ['table'=>'students', 'redirect'=>'student/index.php', 'fields'=>['id','school_id','full_name','email','password','profile_photo','is_verified','status','subscription_end'], 'type'=>'student'],
+    ['table'=>'parents', 'redirect'=>'parent/index.php', 'fields'=>['id','full_name','parent_cnic','email','phone','profile_photo','password','status','is_verified','subscription_end'], 'type'=>'parent'],
+];
+
+$found = false;
+foreach($users as $userType){
+    $fields = implode(',', $userType['fields']);
+    $stmt = $conn->prepare("SELECT $fields FROM {$userType['table']} WHERE email = ? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result && $result->num_rows === 1) {
-        $parent = $result->fetch_assoc();
+        $account = $result->fetch_assoc();
+        $found = true;
 
-        if (empty($parent['subscription_end']) || $parent['subscription_end'] < $current_date) {
-            $conn->query("UPDATE parents SET status='Pending' WHERE id=" . $parent['id']);
-            echo "<script>alert('Your parent subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
+        // --- Check subscription ---
+        if (!isSubscriptionValid($account['subscription_end'])) {
+            $conn->query("UPDATE {$userType['table']} SET status='Pending' WHERE id={$account['id']}");
+            echo "<script>alert('Your {$userType['type']} subscription has expired. Please renew to continue.'); window.location.href='login.php';</script>";
             exit;
         }
 
-        if (password_verify($password, $parent['password'])) {
-            if ($parent['is_verified'] == 1) {
-                $_SESSION['parent_id']    = $parent['id'];
-                $_SESSION['parent_name']  = $parent['full_name'];
-                $_SESSION['parent_cnic']  = $parent['parent_cnic'];
-                $_SESSION['parent_phone'] = $parent['phone'];
-                $_SESSION['parent_photo'] = $parent['profile_photo'];
-
-                header("Location: parent/index.php");
-                exit;
-            } else {
-                $verification_code = rand(100000, 999999);
-                $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
-                $conn->query("UPDATE parents SET verification_code='$verification_code', code_expires_at='$expiry' WHERE id=".$parent['id']);
-
-                $subject = "Parent Account Verification";
-                $msg = "Hello {$parent['full_name']},<br><br>Your verification code is: <b>$verification_code</b><br><br>This code expires in 5 minutes.";
-
-                if (sendMail($email, $subject, $msg, $parent['full_name'])) {
-                    $_SESSION['pending_email'] = $email;
-                    $_SESSION['user_type']     = 'parent';
-                    header("Location: verify.php");
-                    exit;
-                } else {
-                    echo "<script>alert('Failed to send verification email.'); window.location.href='login.php';</script>";
-                    exit;
-                }
-            }
-        } else {
+        // --- Check password ---
+        if (!password_verify($password, $account['password'])) {
             echo "<script>alert('Invalid password.'); window.location.href='login.php';</script>";
             exit;
         }
-    }
 
-    // --- 🚨 No account found ---
+        // --- Check verification ---
+        if (!empty($account['is_verified']) && $account['is_verified'] == 1) {
+            // set session
+            switch($userType['type']){
+                case 'app_admin':
+                    $_SESSION['pending_admin_id'] = $account['id'];
+                    $_SESSION['pending_email'] = $account['email'];
+                    header("Location: otp.php"); exit;
+                case 'school':
+                    $_SESSION['admin_id'] = $account['id'];
+                    $_SESSION['admin_name'] = $account['admin_contact_person'];
+                    $_SESSION['school_name'] = $account['school_name'];
+                    header("Location: admin/index.php"); exit;
+                case 'faculty':
+                    $_SESSION['admin_id'] = $account['id'];
+                    $_SESSION['admin_name'] = $account['full_name'];
+                    $_SESSION['campus_id'] = $account['campus_id'];
+                    $_SESSION['faculty_photo'] = $account['photo'];
+                    header("Location: Faculty Dashboard/index.php"); exit;
+                case 'student':
+                    $_SESSION['student_id'] = $account['id'];
+                    $_SESSION['student_name'] = $account['full_name'];
+                    $_SESSION['school_id'] = $account['school_id'];
+                    $_SESSION['student_photo'] = $account['profile_photo'];
+                    header("Location: student/index.php"); exit;
+                case 'parent':
+                    $_SESSION['parent_id'] = $account['id'];
+                    $_SESSION['parent_name'] = $account['full_name'];
+                    $_SESSION['parent_cnic'] = $account['parent_cnic'];
+                    $_SESSION['parent_phone'] = $account['phone'];
+                    $_SESSION['parent_photo'] = $account['profile_photo'];
+                    header("Location: parent/index.php"); exit;
+            }
+        } else {
+            sendVerification($conn, $userType['table'], $account['id'], $account['email'], $account['full_name'] ?? $account['admin_contact_person'], $userType['type']);
+        }
+    }
+}
+
+if (!$found) {
     echo "
     <script>
         if (confirm('No account found with this email. Do you want to sign up?')) {
@@ -260,11 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             window.location.href = 'login.php';
         }
-    </script>
-    ";
+    </script>";
     exit;
 }
 ?>
+
 
 
 <!DOCTYPE html>
