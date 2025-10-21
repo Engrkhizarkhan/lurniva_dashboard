@@ -48,7 +48,7 @@ try {
     foreach ($assignments as $a) {
         $assign_to_type = $a['assign_to_type'];
         $person_id = (int)$a['person_id'];
-        $status = $a['status'];
+        $status = 'Active';
         $created_at = $a['created_at'];
 
         mysqli_stmt_bind_param($stmt_assign, "iisiis", $task_id, $school_id, $assign_to_type, $person_id, $status, $created_at);
