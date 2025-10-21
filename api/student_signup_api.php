@@ -95,8 +95,9 @@ if ($form_type === 'student') {
          password, status, verification_code, is_verified, code_expires_at, verification_attempts)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
+    // ✅ Correct type string for 20 variables:
     $stmt->bind_param(
-        "isssssssssssssssisisi",
+        "isssssssssssssssissi",
         $school_id, $parent_name, $parent_cnic, $full_name, $gender, $dob, $cnic_formb,
         $class_grade, $section, $roll_number, $address, $email, $phone, $profile_name,
         $password, $status, $verification_code, $is_verified, $code_expires_at, $verification_attempts
