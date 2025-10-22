@@ -31,12 +31,13 @@ if ($action === "insert") {
     $total_days = calculateTotalDays($start_date, $end_date);
 
     if ($leave_type && $start_date && $end_date && $reason) {
-        $stmt = $conn->prepare("
-            INSERT INTO faculty_leaves 
-                (school_id, faculty_id, leave_type, start_date, end_date, total_days, reason, status, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
-        ");
-        $stmt->bind_param("iisssis", $school_id, $teacher_id, $leave_type, $start_date, $end_date, $total_days, $reason);
+       $stmt = $conn->prepare("
+    INSERT INTO faculty_leaves 
+        (school_id, faculty_id, leave_type, start_date, end_date, total_days, reason, status, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
+");
+$stmt->bind_param("iisssis", $school_id, $teacher_id, $leave_type, $start_date, $end_date, $total_days, $reason);
+
 
         if ($stmt->execute()) {
             echo "<div class='alert alert-success'>Leave request submitted successfully.</div>";
@@ -117,11 +118,12 @@ elseif ($action === "update") {
 
     if ($id && $leave_type && $start_date && $end_date && $reason) {
         $stmt = $conn->prepare("
-            UPDATE faculty_leaves
-            SET faculty_id = ?, leave_type = ?, start_date = ?, end_date = ?, total_days = ?, reason = ?, updated_at = NOW()
-            WHERE id = ? AND school_id = ?
-        ");
-        $stmt->bind_param("isssisii", $teacher_id, $leave_type, $start_date, $end_date, $total_days, $reason, $id, $school_id);
+    UPDATE faculty_leaves
+    SET faculty_id = ?, leave_type = ?, start_date = ?, end_date = ?, reason = ?, updated_at = NOW()
+    WHERE id = ? AND school_id = ?
+");
+$stmt->bind_param("issssii", $teacher_id, $leave_type, $start_date, $end_date, $reason, $id, $school_id);
+
 
         if ($stmt->execute()) {
             echo "<div class='alert alert-success'>Leave updated successfully.</div>";
