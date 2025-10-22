@@ -62,7 +62,7 @@
                     <input type="date" name="end_date" id="end_date" class="form-control" required>
                 </div>
 
-                <button type="button" id="submit" class="btn btn-primary">Save</button>
+                <button type="button" id="submit" class="btn btn-primary">Save Fee Period</button>
                 <div id="response" class="mt-3"></div>
             </form>
 
@@ -87,7 +87,7 @@
             const period_type = $('#period_type').val();
             const start_date = $('#start_date').val();
             const end_date = $('#end_date').val();
-            const status = 'active'; // or read from a select if you add one
+            const status = 1; // or read from a select if you add one
 
             // quick front-end validation
             if (!school_id || !period_name || !period_type || !start_date || !end_date) {
