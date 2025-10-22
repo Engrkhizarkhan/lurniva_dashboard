@@ -1,5 +1,6 @@
 <?php
-require_once '../sass/db_config.php';
+require_once '../admin/sass/db_config.php';
+
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
