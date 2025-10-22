@@ -1,31 +1,36 @@
 <?php
 require_once '../admin/sass/db_config.php';
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=UTF-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
-// ✅ Session Check
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['campus_id'])) {
-    echo json_encode(["status" => "error", "message" => "Unauthorized"]);
+// ✅ Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit;
 }
 
-$school_id = $_SESSION['campus_id'];
-$sender_id = $_SESSION['admin_id'];
-$sender_designation = 'teacher';
+// ✅ Accept JSON or FormData
+$data = json_decode(file_get_contents("php://input"), true);
+$isJson = is_array($data);
 
-// ✅ Inputs
-$receiver_id = intval($_POST['receiver_id'] ?? 0);
-$receiver_designation = $_POST['receiver_designation'] ?? '';
-$message = trim($_POST['message'] ?? '');
-$sent_at = date('Y-m-d H:i:s');
-$status = 'unread';
+$school_id           = intval($data['school_id'] ?? $_POST['school_id'] ?? 0);
+$sender_id           = intval($data['sender_id'] ?? $_POST['sender_id'] ?? 0);
+$sender_designation  = trim($data['sender_designation'] ?? $_POST['sender_designation'] ?? '');
+$receiver_id         = intval($data['receiver_id'] ?? $_POST['receiver_id'] ?? 0);
+$receiver_designation= trim($data['receiver_designation'] ?? $_POST['receiver_designation'] ?? '');
+$message             = trim($data['message'] ?? $_POST['message'] ?? '');
+$sent_at             = date('Y-m-d H:i:s');
+$status              = 'unread';
 
 $voice_note_filename = null;
-$file_attachment = null;
+$file_attachment     = null;
 
 // ✅ Validation
-if (!$receiver_id || empty($receiver_designation)) {
-    echo json_encode(["status" => "error", "message" => "Missing receiver info"]);
+if (!$school_id || !$sender_id || !$sender_designation || !$receiver_id || !$receiver_designation) {
+    echo json_encode(["status" => "error", "message" => "Missing required parameters"]);
     exit;
 }
 
@@ -45,7 +50,7 @@ if (!empty($_FILES['voice_note']['name'])) {
     }
 
     if (!$ext) {
-        echo json_encode(["status" => "error", "message" => "Invalid voice note file"]);
+        echo json_encode(["status" => "error", "message" => "Invalid voice note format"]);
         exit;
     }
 
@@ -84,13 +89,12 @@ if (empty($message) && !$voice_note_filename && !$file_attachment) {
     exit;
 }
 
-// ✅ Insert into DB
+// ✅ Insert into Database
 $stmt = $conn->prepare("
     INSERT INTO messages 
     (school_id, sender_designation, sender_id, receiver_designation, receiver_id, message, file_attachment, voice_note, sent_at, status) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
-
 $stmt->bind_param(
     "isisssssss",
     $school_id,
@@ -110,6 +114,9 @@ if ($stmt->execute()) {
         "status" => "success",
         "message" => "Message sent successfully",
         "data" => [
+            "school_id" => $school_id,
+            "sender_id" => $sender_id,
+            "sender_designation" => $sender_designation,
             "receiver_id" => $receiver_id,
             "receiver_designation" => $receiver_designation,
             "text" => $message,
@@ -121,4 +128,7 @@ if ($stmt->execute()) {
 } else {
     echo json_encode(["status" => "error", "message" => "Database error", "error" => $stmt->error]);
 }
+
+$stmt->close();
+$conn->close();
 ?>
