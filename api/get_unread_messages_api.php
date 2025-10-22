@@ -1,14 +1,14 @@
 <?php
-session_start();
 require_once '../admin/sass/db_config.php'; // ✅ Adjust path if needed
 
 header('Content-Type: application/json; charset=UTF-8');
 
-// ✅ Check session
-$student_id = intval($_SESSION['student_id'] ?? 0);
+// ✅ Get student_id from POST or JSON
+$data = json_decode(file_get_contents("php://input"), true);
+$student_id = intval($data['student_id'] ?? $_POST['student_id'] ?? 0);
 
 if ($student_id <= 0) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+    echo json_encode(['status' => 'error', 'message' => 'Missing or invalid student_id']);
     exit;
 }
 
@@ -32,3 +32,7 @@ echo json_encode([
     'status' => 'success',
     'unread_count' => $unread_count
 ]);
+
+$stmt->close();
+$conn->close();
+?>

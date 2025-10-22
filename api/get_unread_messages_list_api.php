@@ -1,13 +1,14 @@
 <?php
-session_start();
 require_once '../admin/sass/db_config.php'; // adjust path if needed
 
 header('Content-Type: application/json; charset=UTF-8');
 
-// ✅ Ensure student session exists
-$student_id = intval($_SESSION['student_id'] ?? 0);
+// ✅ Get student_id from POST/JSON
+$data = json_decode(file_get_contents("php://input"), true);
+$student_id = intval($data['student_id'] ?? $_POST['student_id'] ?? 0);
+
 if ($student_id <= 0) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+    echo json_encode(['status' => 'error', 'message' => 'Missing or invalid student_id']);
     exit;
 }
 
@@ -52,14 +53,14 @@ while ($row = $result->fetch_assoc()) {
     // ✅ Build image path based on sender type
     switch ($row['sender_designation']) {
         case 'admin':
-            $imagePath = 'uploads/logos/' . ($row['sender_image'] ?: 'default-avatar.png');
+            $imagePath = '../admin/uploads/logos/' . ($row['sender_image'] ?: 'default-avatar.png');
             break;
         case 'faculty':
         case 'teacher':
-            $imagePath = 'uploads/faculty/' . ($row['sender_image'] ?: 'default-avatar.png');
+            $imagePath = '../Faculty Dashboard/uploads/profile/' . ($row['sender_image'] ?: 'default-avatar.png');
             break;
         case 'student':
-            $imagePath = 'uploads/profile/' . ($row['sender_image'] ?: 'default-avatar.png');
+            $imagePath = '../student/uploads/profile/' . ($row['sender_image'] ?: 'default-avatar.png');
             break;
         default:
             $imagePath = 'assets/img/default-avatar.png';
@@ -83,6 +84,9 @@ echo json_encode([
     'data' => $messages
 ]);
 
+$stmt->close();
+$conn->close();
+
 // ✅ Helper function
 function timeAgo($datetime) {
     $timestamp = strtotime($datetime);
@@ -92,3 +96,4 @@ function timeAgo($datetime) {
     elseif ($diff < 86400) return floor($diff / 3600) . " hours ago";
     else return floor($diff / 86400) . " days ago";
 }
+?>
