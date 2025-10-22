@@ -219,51 +219,12 @@
 </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 let mediaRecorder;
 let audioChunks = [];
 let currentSenderId = null;
 let currentSenderDesignation = null;
-// =====================
-// Unread Message Count
-// =====================
-function loadUnreadMessageCount() {
-
-    $.ajax({
-        url: "ajax/get_unread_count.php",
-        method: "GET",
-        success: function(data) {
-            $('.headerBadge1').text(data);
-        },
-        error: function() {
-            $('.headerBadge1').text('0');
-        }
-    });
-}
-
-// =====================
-// Load Messages Dropdown
-// =====================
-$(document).ready(function() {
-    function loadMessages() {
-
-        $.ajax({
-            url: 'ajax/fetch_messages.php',
-            method: 'GET',
-            success: function(response) {
-                $('.dropdown-list-content.dropdown-list-message').html(response);
-            }
-        });
-    }
-
-    $('.message-toggle').on('click', function() {
-
-        loadMessages();
-    });
-});
-setInterval(loadUnreadMessageCount, 6);
-loadUnreadMessageCount();
-
 
 // =====================
 // Open Chat Box
@@ -352,6 +313,7 @@ $('#chatForm').on('submit', function(e) {
                 $('#chatInput').val('');
                 $('#fileUpload').val('');
                 loadChat(currentSenderId, currentSenderDesignation);
+                loadChatMessages(sender_id, sender_designation);
             } else {
                 alert('Error: ' + response);
             }
@@ -421,6 +383,7 @@ function sendVoiceNote(blob) {
         processData: false,
         success: function(response) {
             if (response.trim() === 'success') {
+                loadChatMessages(sender_id, sender_designation);
                 loadChat(currentSenderId, currentSenderDesignation);
             } else {
                 alert("Failed to send voice note: " + response);
@@ -438,8 +401,44 @@ function sendVoiceNote(blob) {
 $('#closeChatBox').on('click', function() {
     $('#floatingChatBox').hide();
 });
-</script>
 
+// =====================
+// Unread Message Count
+// =====================
+function loadUnreadMessageCount() {
+    $.ajax({
+        url: "ajax/get_unread_count.php",
+        method: "GET",
+        success: function(data) {
+            $('.headerBadge1').text(data);
+        },
+        error: function() {
+            $('.headerBadge1').text('0');
+        }
+    });
+}
+setInterval(loadUnreadMessageCount, 60000);
+loadUnreadMessageCount();
+
+// =====================
+// Load Messages Dropdown
+// =====================
+$(document).ready(function() {
+    function loadMessages() {
+        $.ajax({
+            url: 'ajax/fetch_messages.php',
+            method: 'GET',
+            success: function(response) {
+                $('.dropdown-list-content.dropdown-list-message').html(response);
+            }
+        });
+    }
+
+    $('.message-toggle').on('click', function() {
+        loadMessages();
+    });
+});
+</script>
 
 <script src="assets/bundles/cleave-js/dist/cleave.min.js"></script>
 <script src="assets/bundles/cleave-js/dist/addons/cleave-phone.us.js"></script>
