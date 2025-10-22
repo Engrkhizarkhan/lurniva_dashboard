@@ -8,22 +8,34 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
+
 // ✅ Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+http_response_code(200);
+exit;
 }
 
-// ✅ Check login session
-if (!isset($_SESSION['admin_id'])) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Unauthorized: session expired or invalid.'
-    ]);
-    exit;
+
+// ✅ Read input (supports both JSON & FormData)
+$input = json_decode(file_get_contents("php://input"), true);
+if (empty($input) && !empty($_POST)) {
+$input = $_POST;
 }
 
-$faculty_id = intval($_SESSION['admin_id']) ?? $data['admin_id'];
+
+// ✅ Get faculty_id from session or POST/JSON
+session_start();
+$faculty_id = intval($_SESSION['admin_id'] ?? ($input['faculty_id'] ?? 0));
+
+
+if (!$faculty_id) {
+echo json_encode([
+'status' => 'error',
+'message' => 'Unauthorized: faculty_id missing or session expired.'
+]);
+exit;
+}
+
 
 // ✅ Fetch faculty profile
 $stmt = $conn->prepare("
