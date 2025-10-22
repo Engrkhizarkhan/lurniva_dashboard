@@ -54,33 +54,18 @@ $stmtInsert = $conn->prepare("
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'scheduled', NOW())
 ");
 
-// ✅ CORRECT BIND TYPES: i s s s s s i s i
-// (INT, STR, STR, STR, STR, STR, INT, STR, INT)
+// ✅ CORRECT BIND TYPES (must match exactly 9 variables)
 $stmtInsert->bind_param(
-    "isssssis i",
-    $school_id,
-    $title,
-    $agenda,
-    $meeting_date,
-    $meeting_time,
-    $meeting_person,
-    $person_one,
-    $meeting_person2,
-    $person_two
-);
-
-// ✅ Fix PHP syntax: remove space in type string
-$stmtInsert->bind_param(
-    "isssssisi",
-    $school_id,
-    $title,
-    $agenda,
-    $meeting_date,
-    $meeting_time,
-    $meeting_person,
-    $person_one,
-    $meeting_person2,
-    $person_two
+    "issssisis",
+    $school_id,      // i
+    $title,          // s
+    $agenda,         // s
+    $meeting_date,   // s
+    $meeting_time,   // s
+    $meeting_person, // s
+    $person_one,     // i
+    $meeting_person2,// s
+    $person_two      // i
 );
 
 // ✅ Execute and update original request

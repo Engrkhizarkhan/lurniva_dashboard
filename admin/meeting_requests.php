@@ -63,7 +63,7 @@ $result = mysqli_query($conn, $sql);
                                             <?php if($row['status'] == 'pending'): ?>
                                             <div class="badge badge-warning">Pending</div>
                                             <?php elseif($row['status'] == 'approved'): ?>
-                                            <div class="badge badge-success">Accepted this</div>
+                                            <div class="badge badge-success">Accepted</div>
                                             <?php else: ?>
                                             <div class="badge badge-danger">Rejected</div>
                                             <?php endif; ?>
@@ -76,7 +76,7 @@ $result = mysqli_query($conn, $sql);
                                                 data-agenda="<?= htmlspecialchars($row['agenda']); ?>"
                                                 data-requested="<?= $row['requester_id']; ?>"
                                                 data-with="<?= $row['id_meeter']; ?>">
-                                                Accept
+                                                Accept this
                                             </button>
                                             <button class="btn btn-danger btn-sm reject-btn"
                                                 data-id="<?= $row['id']; ?>">Reject</button>
