@@ -48,7 +48,7 @@ if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
 }
 
 // ✅ Save only filename in DB (safer & consistent)
-$stmt = $conn->prepare("UPDATE student SET photo = ? WHERE id = ?");
+$stmt = $conn->prepare("UPDATE faculty SET photo = ? WHERE id = ?");
 $stmt->bind_param('si', $newFileName, $faculty_id);
 
 if ($stmt->execute()) {

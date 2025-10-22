@@ -69,7 +69,8 @@
                                             <input type="hidden" id="facultyId" name="faculty_id">
                                             <div class="form-group">
                                                 <label>Full Name</label>
-                                                <input type="text" id="full_name" name="full_name" class="form-control" required>
+                                                <input type="text" id="full_name" name="full_name" class="form-control"
+                                                    required>
                                             </div>
                                             <div class="form-group">
                                                 <label>CNIC</label>
@@ -77,7 +78,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Qualification</label>
-                                                <input type="text" id="qualification" name="qualification" class="form-control">
+                                                <input type="text" id="qualification" name="qualification"
+                                                    class="form-control">
                                             </div>
                                             <div class="form-group">
                                                 <label>Subjects</label>
@@ -85,7 +87,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Email</label>
-                                                <input type="email" id="email" name="email" class="form-control" required>
+                                                <input type="email" id="email" name="email" class="form-control"
+                                                    required>
                                             </div>
                                             <div class="form-group">
                                                 <label>Phone</label>
@@ -95,7 +98,7 @@
                                                 <label>Address</label>
                                                 <textarea id="address" name="address" class="form-control"></textarea>
                                             </div>
-                                            
+
                                         </div>
                                         <div class="card-footer text-right">
                                             <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -112,15 +115,18 @@
                                         <div class="card-body">
                                             <div class="form-group">
                                                 <label>Current Password</label>
-                                                <input type="password" id="current_password" name="current_password" class="form-control" required>
+                                                <input type="password" id="current_password" name="current_password"
+                                                    class="form-control" required>
                                             </div>
                                             <div class="form-group">
                                                 <label>New Password</label>
-                                                <input type="password" id="new_password" name="new_password" class="form-control" required>
+                                                <input type="password" id="new_password" name="new_password"
+                                                    class="form-control" required>
                                             </div>
                                             <div class="form-group">
                                                 <label>Confirm Password</label>
-                                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                                                <input type="password" id="confirm_password" name="confirm_password"
+                                                    class="form-control" required>
                                             </div>
                                         </div>
                                         <div class="card-footer text-right">
@@ -134,11 +140,13 @@
                                     <form id="imageForm" enctype="multipart/form-data">
                                         <div class="form-group">
                                             <label>Profile Photo</label>
-                                            <input type="file" id="faculty_photo" name="faculty_photo" accept="image/*" class="form-control-file">
+                                            <input type="file" id="faculty_photo" name="faculty_photo" accept="image/*"
+                                                class="form-control-file">
                                             <img id="photoPreview" src="assets/img/users/user-1.png"
                                                 style="margin-top:10px; max-height:100px;">
                                         </div>
-                                        <button type="button" id="uploadPhotoBtn" class="btn btn-primary">Upload</button>
+                                        <button type="button" id="uploadPhotoBtn"
+                                            class="btn btn-primary">Upload</button>
                                     </form>
                                 </div>
                             </div>
@@ -160,8 +168,10 @@ $(document).ready(function() {
         $.get('ajax/get_school_profile.php', function(res) {
             if (res.status === 'success') {
                 let d = res.data;
-                $('#facultyPhoto').attr('src', d.photo ? 'uploads/profile/' + d.photo : 'assets/img/users/user-1.png');
-                $('#photoPreview').attr('src', d.photo ? 'uploads/profile/' + d.photo : 'assets/img/users/user-1.png');
+                $('#facultyPhoto').attr('src', d.photo ? 'uploads/profile/' + d.photo :
+                    'assets/img/users/user-1.png');
+                $('#photoPreview').attr('src', d.photo ? 'uploads/profile/' + d.photo :
+                    'assets/img/users/user-1.png');
                 $('#facultyName').text(d.full_name);
                 $('#facultyQualification').text(d.qualification);
                 $('#facultyEmail').text(d.email);
@@ -173,7 +183,8 @@ $(document).ready(function() {
                 $('#facultySchedule').text(d.schedule_preference);
                 $('#facultyAddress').text(d.address);
 
-                $('#facultyOverview').text(`Faculty ${d.full_name} (${d.qualification}), teaching ${d.subjects}.`);
+                $('#facultyOverview').text(
+                    `Faculty ${d.full_name} (${d.qualification}), teaching ${d.subjects}.`);
 
                 // Fill form
                 $('#facultyId').val(d.id);
@@ -219,7 +230,10 @@ $(document).ready(function() {
             return;
         }
 
-        $.post('ajax/update_password.php', {current_password: current, new_password: newPass}, function(res) {
+        $.post('ajax/update_password.php', {
+            current_password: current,
+            new_password: newPass
+        }, function(res) {
             if (res.status === 'success') {
                 alert('Password updated');
                 $('#passwordForm')[0].reset();
@@ -249,8 +263,10 @@ $(document).ready(function() {
             success: function(res) {
                 if (res.status === 'success') {
                     alert('Photo uploaded');
-                    $('#facultyPhoto').attr('src', res.photo_path + '?t=' + new Date().getTime());
-                    $('#photoPreview').attr('src', res.photo_path + '?t=' + new Date().getTime());
+                    $('#facultyPhoto').attr('src', res.photo_path + '?t=' + new Date()
+                        .getTime());
+                    $('#photoPreview').attr('src', res.photo_path + '?t=' + new Date()
+                        .getTime());
                 } else {
                     alert(res.message);
                 }
