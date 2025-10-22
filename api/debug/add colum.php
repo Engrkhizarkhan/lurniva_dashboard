@@ -2,21 +2,19 @@
 require_once '../../admin/sass/db_config.php'; // adjust path if needed
 
 try {
-    // ✅ Check if 'approve_parent' column exists
-    $check = $conn->query("SHOW COLUMNS FROM `diary_students` LIKE 'approve_parent'");
-
+    // ✅ Check if 'school_id' column exists
+    $check = $conn->query("SHOW COLUMNS FROM `student_behavior` LIKE 'school_id'");
     if ($check && $check->num_rows > 0) {
-        // ✅ Column exists — delete it
-        $sql = "ALTER TABLE `diary_students` DROP COLUMN `approve_parent`";
-        if ($conn->query($sql)) {
-            echo "🎉 Successfully deleted 'approve_parent' column from diary_students table.";
-        } else {
-            echo "❌ Error deleting column 'approve_parent': " . $conn->error;
-        }
+        echo "✅ Column 'school_id' already exists in student_behavior table.";
     } else {
-        echo "✅ Column 'approve_parent' does not exist in diary_students table. Nothing to delete.";
+        // ✅ Add the missing column
+        $sql = "ALTER TABLE `student_behavior` ADD COLUMN `school_id` INT(11) NOT NULL AFTER `id`";
+        if ($conn->query($sql)) {
+            echo "🎉 Successfully added 'school_id' column to student_behavior table.";
+        } else {
+            echo "❌ Error adding column 'school_id': " . $conn->error;
+        }
     }
-
 } catch (Exception $e) {
     echo "⚠️ Exception: " . $e->getMessage();
 }

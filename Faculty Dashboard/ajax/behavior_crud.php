@@ -6,14 +6,15 @@ $action = $_POST['action'] ?? '';
 
 if ($action == 'insert') {
     $class_id     = intval($_POST['class_id'] ?? 0);
-    $teacher_id   = $_SESSION['admin_id'] ?? 0; // teacher logged in
+    $teacher_id   = $_SESSION['admin_id'] ?? 0;    // logged-in teacher
+    $school_id    = $_SESSION['campus_id'] ?? 0;   // logged-in campus
     $topic        = trim($_POST['topic'] ?? '');
     $description  = trim($_POST['description'] ?? '');
     $deadline     = $_POST['deadline'] ?? '';
     $parent_req   = $_POST['parent_approval'] ?? 'no';
     $students     = isset($_POST['students']) ? json_decode($_POST['students'], true) : [];
 
-    // ✅ Handle attachment
+    // Handle attachment
     $attachment = null;
     if (!empty($_FILES['file']['name'])) {
         $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
@@ -26,13 +27,13 @@ if ($action == 'insert') {
         }
     }
 
-    if ($class_id > 0 && $teacher_id > 0 && !empty($topic) && !empty($description) && !empty($deadline) && !empty($students)) {
+    if ($class_id > 0 && $teacher_id > 0 && $school_id > 0 && !empty($topic) && !empty($description) && !empty($deadline) && !empty($students)) {
         $stmt = $conn->prepare("INSERT INTO student_behavior 
-            (class_id, teacher_id, student_id, topic, description, attachment, deadline, parent_approval) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            (school_id, class_id, teacher_id, student_id, topic, description, attachment, deadline, parent_approval) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         foreach ($students as $sid) {
-            $stmt->bind_param("iiisssss", $class_id, $teacher_id, $sid, $topic, $description, $attachment, $deadline, $parent_req);
+            $stmt->bind_param("iiiisssss", $school_id, $class_id, $teacher_id, $sid, $topic, $description, $attachment, $deadline, $parent_req);
             $stmt->execute();
         }
         echo "Behavior record(s) added successfully!";
@@ -41,6 +42,7 @@ if ($action == 'insert') {
     }
     exit;
 }
+
 
 if ($action == 'getAll') {
     $result = $conn->query("SELECT b.*, s.full_name AS student_name, s.roll_number, c.class_name, f.full_name AS teacher_name
