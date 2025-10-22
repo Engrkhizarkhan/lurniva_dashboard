@@ -63,7 +63,7 @@ $result = mysqli_query($conn, $sql);
                                             <?php if($row['status'] == 'pending'): ?>
                                             <div class="badge badge-warning">Pending</div>
                                             <?php elseif($row['status'] == 'approved'): ?>
-                                            <div class="badge badge-success">Accepted</div>
+                                            <div class="badge badge-success">Accepted this</div>
                                             <?php else: ?>
                                             <div class="badge badge-danger">Rejected</div>
                                             <?php endif; ?>
@@ -153,9 +153,9 @@ $(document).ready(function() {
         const personOne = $(this).data('requested');
         const personTwo = $(this).data('with');
         const requestedBy = $(this).closest('tr').find('td:nth-child(3)').text().split(' ')[
-        0]; // extracts requested_by text
+            0]; // extracts requested_by text
         const withMeeting = $(this).closest('tr').find('td:nth-child(4)').text().split(' ')[
-        0]; // extracts with_meeting text
+            0]; // extracts with_meeting text
 
         // Auto-assign roles
         $('#meetingPerson').val(requestedBy.toLowerCase());
