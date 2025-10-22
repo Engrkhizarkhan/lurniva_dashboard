@@ -1,11 +1,9 @@
 <?php
-session_start();
 require_once '../admin/sass/db_config.php';
-
 
 // --- CORS CONFIGURATION ---
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *"); // 🔥 in production, restrict this
+header("Access-Control-Allow-Origin: *"); // 🔥 In production, restrict to your domain
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
@@ -15,24 +13,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$teacher_id = $_SESSION['admin_id'] ?? null;
-$school_id  = $_SESSION['campus_id'] ?? null;
+// --- Read JSON or POST input ---
+$input = json_decode(file_get_contents("php://input"), true);
+if (empty($input) && !empty($_POST)) $input = $_POST;
+
+// --- Get teacher_id and school_id from POST ---
+$teacher_id = isset($input['teacher_id']) ? intval($input['teacher_id']) : 0;
+$school_id  = isset($input['school_id']) ? intval($input['school_id']) : 0;
+$action     = $input['action'] ?? '';
 
 if (!$teacher_id || !$school_id) {
-    echo json_encode(["status" => "error", "message" => "Unauthorized"]);
+    echo json_encode(["status" => "error", "message" => "Unauthorized - teacher_id and school_id required"]);
     exit;
 }
-
-$action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 $response = ["status" => "error", "message" => "Invalid action"];
 
 // ---------------------- INSERT ----------------------
 if ($action === 'insert') {
-    $with_meeting = $_POST['with_meeting'] ?? '';
-    $id_meeter    = $_POST['id_meeter'] ?? '';
-    $title        = $_POST['title'] ?? '';
-    $agenda       = $_POST['agenda'] ?? '';
+    $with_meeting = $input['with_meeting'] ?? '';
+    $id_meeter    = $input['id_meeter'] ?? '';
+    $title        = $input['title'] ?? '';
+    $agenda       = $input['agenda'] ?? '';
 
     $stmt = $conn->prepare("
         INSERT INTO meeting_requests 
@@ -51,11 +53,11 @@ if ($action === 'insert') {
 
 // ---------------------- UPDATE ----------------------
 elseif ($action === 'update') {
-    $id           = intval($_POST['id']);
-    $with_meeting = $_POST['with_meeting'] ?? '';
-    $id_meeter    = $_POST['id_meeter'] ?? '';
-    $title        = $_POST['title'] ?? '';
-    $agenda       = $_POST['agenda'] ?? '';
+    $id           = intval($input['id']);
+    $with_meeting = $input['with_meeting'] ?? '';
+    $id_meeter    = $input['id_meeter'] ?? '';
+    $title        = $input['title'] ?? '';
+    $agenda       = $input['agenda'] ?? '';
 
     $stmt = $conn->prepare("
         UPDATE meeting_requests 
@@ -74,7 +76,7 @@ elseif ($action === 'update') {
 
 // ---------------------- DELETE ----------------------
 elseif ($action === 'delete') {
-    $id = intval($_POST['id']);
+    $id = intval($input['id']);
     $stmt = $conn->prepare("DELETE FROM meeting_requests WHERE id=? AND school_id=?");
     $stmt->bind_param("ii", $id, $school_id);
 
@@ -113,7 +115,7 @@ elseif ($action === 'fetch') {
 
 // ---------------------- GET SINGLE ----------------------
 elseif ($action === 'get') {
-    $id = intval($_GET['id'] ?? 0);
+    $id = intval($input['id'] ?? 0);
     $stmt = $conn->prepare("SELECT * FROM meeting_requests WHERE id=? AND school_id=?");
     $stmt->bind_param("ii", $id, $school_id);
     $stmt->execute();
@@ -130,3 +132,4 @@ elseif ($action === 'get') {
 
 $conn->close();
 echo json_encode($response);
+?>
