@@ -1,16 +1,4 @@
 <?php require_once 'assets/php/header.php'; ?>
-<?php
-session_start();
-include_once('sass/db_config.php');
-
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: logout.php");
-    exit;
-}
-
-$school_id = $_SESSION['admin_id']; // adjust if using campus_id or student_id
-
-?>
 
 <style>
 #fee_type {

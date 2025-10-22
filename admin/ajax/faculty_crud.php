@@ -48,6 +48,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($stmt->execute()) {
+            $faculty_id = $conn->insert_id; // ✅ Get the new faculty ID
+
+            // ✅ Insert default settings for the faculty
+            $sql_settings = "INSERT INTO school_settings 
+                (person, person_id, layout, sidebar_color, color_theme, mini_sidebar, sticky_header, created_at, updated_at,
+                attendance_enabled, behavior_enabled, chat_enabled, dairy_enabled, exam_enabled, fee_enabled, library_enabled,
+                meeting_enabled, notice_board_enabled, assign_task_enabled, tests_assignments_enabled, timetable_enabled, transport_enabled)
+                VALUES ('faculty', ?, '1', '1', 'white', '0', '0', NOW(), NOW(), 
+                        '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1')";
+            
+            $stmt2 = $conn->prepare($sql_settings);
+            $stmt2->bind_param("i", $faculty_id);
+            $stmt2->execute();
+
             echo "success";
         } else {
             echo "Error: " . $stmt->error;
@@ -148,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action == 'delete') {
         $id = $_POST['id'];
         $conn->query("DELETE FROM faculty WHERE id = $id");
+        $conn->query("DELETE FROM school_settings WHERE person='faculty' AND person_id = $id");
         echo "Deleted successfully.";
     }
 }

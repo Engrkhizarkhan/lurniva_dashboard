@@ -291,8 +291,6 @@ function isEnabled($settings, $module) {
                                 </li>
                                 <li><a id="load_scholarships" class="nav-link"
                                         href="load_scholarships.php">Scholarship</a></li>
-                                <li><a id="load_scholarships" class="nav-link"
-                                        href="load_scholarships.php">Scholarship</a></li>
                                 <li><a id="get_submitted_fees" class="nav-link" href="get_submitted_fees.php">Submitted
                                         Fee
                                     </a></li>
