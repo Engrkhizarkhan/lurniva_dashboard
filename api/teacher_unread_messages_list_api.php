@@ -1,7 +1,5 @@
 <?php
-session_start();
 require_once '../admin/sass/db_config.php';
-
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -14,14 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// ✅ Check session
-if (!isset($_SESSION['admin_id'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+// ✅ Get teacher_id from POST or JSON
+$data = json_decode(file_get_contents("php://input"), true);
+$teacher_id = intval($data['teacher_id'] ?? $_POST['teacher_id'] ?? 0);
+
+if ($teacher_id <= 0) {
+    echo json_encode(['status' => 'error', 'message' => 'Missing or invalid teacher_id']);
     exit;
 }
 
-$teacher_id = intval($_SESSION['admin_id']);
-
+// ✅ Fetch unread messages with sender info
 $stmt = $conn->prepare("
     SELECT 
         m.id,
@@ -39,7 +39,7 @@ $stmt = $conn->prepare("
             WHEN m.sender_designation = 'student' THEN s.profile_photo
             WHEN m.sender_designation IN ('faculty', 'teacher') THEN f.photo
             WHEN m.sender_designation = 'admin' THEN sch.logo
-            ELSE 'assets/img/default-avatar.png'
+            ELSE 'default-avatar.png'
         END AS sender_image
     FROM messages m
     LEFT JOIN students s 
@@ -60,10 +60,10 @@ $result = $stmt->get_result();
 
 $messages = [];
 while ($row = $result->fetch_assoc()) {
-    $sender_name = $row['sender_name'] ?? 'Unknown';
-    $sender_image = $row['sender_image'] ?? 'assets/img/default-avatar.png';
-    $image_path = '';
-
+    $sender_name  = $row['sender_name'] ?? 'Unknown';
+    $sender_image = $row['sender_image'] ?? 'default-avatar.png';
+    
+    // Build image path based on sender type
     switch ($row['sender_designation']) {
         case 'admin':
             $image_path = '../admin/uploads/logos/' . $sender_image;
@@ -84,14 +84,14 @@ while ($row = $result->fetch_assoc()) {
     }
 
     $messages[] = [
-        'id'                => (int)$row['id'],
-        'sender_id'         => (int)$row['sender_id'],
-        'sender_designation'=> $row['sender_designation'],
-        'sender_name'       => $sender_name,
-        'sender_image'      => $image_path,
-        'message'           => $row['message'],
-        'sent_at'           => $row['sent_at'],
-        'time_ago'          => timeAgo($row['sent_at'])
+        'id'                 => (int)$row['id'],
+        'sender_id'          => (int)$row['sender_id'],
+        'sender_designation' => $row['sender_designation'],
+        'sender_name'        => $sender_name,
+        'sender_image'       => $image_path,
+        'message'            => $row['message'],
+        'sent_at'            => $row['sent_at'],
+        'time_ago'           => timeAgo($row['sent_at'])
     ];
 }
 
@@ -100,6 +100,9 @@ echo json_encode([
     'count'  => count($messages),
     'data'   => $messages
 ]);
+
+$stmt->close();
+$conn->close();
 
 // Helper function
 function timeAgo($datetime) {
