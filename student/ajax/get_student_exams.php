@@ -30,8 +30,7 @@ $section     = $student['section'];
 $q = "SELECT DISTINCT e.id AS exam_id, e.exam_name
       FROM exam_schedule es
       INNER JOIN exams e ON es.exam_name = e.id
-      WHERE es.class_name=? AND es.school_id=?
-      ORDER BY e.created_at DESC";
+      WHERE es.class_name=? AND es.school_id=?";
 $stmt = $conn->prepare($q);
 $stmt->bind_param("si", $class_grade, $school_id);
 $stmt->execute();

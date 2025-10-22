@@ -1,6 +1,5 @@
 <?php
 require_once '../admin/sass/db_config.php';
-session_start();
 
 // ✅ JSON & CORS headers
 header('Content-Type: application/json');
@@ -8,22 +7,22 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
-// ✅ Handle OPTIONS preflight (for Flutter)
+// ✅ Handle OPTIONS preflight (for Flutter/Postman)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// ✅ Check login session
-if (!isset($_SESSION['admin_id'])) {
+// ✅ Get teacher_id from POST
+$teacher_id = intval($_POST['teacher_id'] ?? 0);
+
+if (!$teacher_id) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Unauthorized'
+        'message' => 'Teacher ID is required'
     ]);
     exit;
 }
-
-$teacher_id = intval($_SESSION['admin_id']);
 
 // ✅ Query unread message count for teacher
 $stmt = $conn->prepare("
