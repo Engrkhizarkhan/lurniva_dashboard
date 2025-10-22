@@ -1,20 +1,35 @@
 <?php
 require_once '../sass/db_config.php';
 
-// ✅ Collect and validate input
-$request_id = intval($_POST['request_id'] ?? 0);
-$title = trim($_POST['title'] ?? '');
-$agenda = trim($_POST['agenda'] ?? '');
-$meeting_date = $_POST['meeting_date'] ?? '';
-$meeting_time = $_POST['meeting_time'] ?? '';
-$person_one = intval($_POST['person_one'] ?? 0);
-$person_two = intval($_POST['person_two'] ?? 0);
-$meeting_person = $_POST['meeting_person'] ?? '';
-$meeting_person2 = $_POST['meeting_person2'] ?? '';
+// ✅ Collect and validate input safely
+$request_id     = intval($_POST['request_id'] ?? 0);
+$title          = trim($_POST['title'] ?? '');
+$agenda         = trim($_POST['agenda'] ?? '');
+$meeting_date   = $_POST['meeting_date'] ?? '';
+$meeting_time   = $_POST['meeting_time'] ?? '';
+$person_one     = intval($_POST['person_one'] ?? 0);
+$person_two     = intval($_POST['person_two'] ?? 0);
+$meeting_person = trim($_POST['meeting_person'] ?? '');
+$meeting_person2= trim($_POST['meeting_person2'] ?? '');
 
 // ✅ Validation
-if (!$request_id || !$title || !$agenda || !$meeting_date || !$meeting_time || !$meeting_person || !$meeting_person2) {
+if (
+    !$request_id ||
+    !$title ||
+    !$agenda ||
+    !$meeting_date ||
+    !$meeting_time ||
+    !$meeting_person ||
+    !$meeting_person2
+) {
     echo "Missing required fields.";
+    exit;
+}
+
+// ✅ Validate ENUM values (to prevent invalid strings)
+$valid_roles = ['admin', 'teacher', 'parent'];
+if (!in_array($meeting_person, $valid_roles) || !in_array($meeting_person2, $valid_roles)) {
+    echo "Invalid meeting person role(s).";
     exit;
 }
 
@@ -30,6 +45,7 @@ if ($res->num_rows === 0) {
 }
 
 $school_id = $res->fetch_assoc()['school_id'];
+$stmt->close();
 
 // ✅ Insert into meeting_announcements
 $stmtInsert = $conn->prepare("
@@ -38,8 +54,10 @@ $stmtInsert = $conn->prepare("
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'scheduled', NOW())
 ");
 
+// ✅ CORRECT BIND TYPES: i s s s s s i s i
+// (INT, STR, STR, STR, STR, STR, INT, STR, INT)
 $stmtInsert->bind_param(
-    "issssssii",
+    "isssssis i",
     $school_id,
     $title,
     $agenda,
@@ -51,18 +69,32 @@ $stmtInsert->bind_param(
     $person_two
 );
 
+// ✅ Fix PHP syntax: remove space in type string
+$stmtInsert->bind_param(
+    "isssssisi",
+    $school_id,
+    $title,
+    $agenda,
+    $meeting_date,
+    $meeting_time,
+    $meeting_person,
+    $person_one,
+    $meeting_person2,
+    $person_two
+);
+
+// ✅ Execute and update original request
 if ($stmtInsert->execute()) {
-    // ✅ Update original request
     $stmtUpdate = $conn->prepare("UPDATE meeting_requests SET status='approved' WHERE id=?");
     $stmtUpdate->bind_param("i", $request_id);
     $stmtUpdate->execute();
+    $stmtUpdate->close();
 
     echo "Meeting Scheduled Successfully!";
 } else {
     echo "Database Error: " . $stmtInsert->error;
 }
 
-// ✅ Cleanup
 $stmtInsert->close();
 $conn->close();
 ?>
