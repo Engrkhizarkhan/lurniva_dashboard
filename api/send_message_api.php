@@ -1,18 +1,18 @@
 <?php
-session_start();
 require_once '../admin/sass/db_config.php'; // adjust path if needed
 
 header('Content-Type: application/json; charset=UTF-8');
 
-// ✅ Check authentication
-if (!isset($_SESSION['student_id'], $_SESSION['school_id'])) {
+// ✅ Get authentication data from POST instead of session
+$school_id = intval($_POST['school_id'] ?? 0);
+$sender_id = intval($_POST['student_id'] ?? 0);
+$sender_designation = 'student';
+
+// ✅ Validate authentication
+if ($school_id <= 0 || $sender_id <= 0) {
     echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
     exit;
 }
-
-$school_id = intval($_SESSION['school_id']);
-$sender_id = intval($_SESSION['student_id']);
-$sender_designation = 'student';
 
 // ✅ Collect POST data
 $receiver_id = intval($_POST['receiver_id'] ?? 0);
@@ -54,7 +54,7 @@ if (isset($_FILES['voice_note']) && $_FILES['voice_note']['error'] === UPLOAD_ER
         exit;
     }
 
-    $uploadDir = '../uploads/voice_notes/';
+    $uploadDir = '../student/uploads/voice_notes/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
 
     $newName = uniqid('voice_', true) . '.' . $ext;
@@ -72,7 +72,7 @@ if (isset($_FILES['voice_note']) && $_FILES['voice_note']['error'] === UPLOAD_ER
 // 📎 Upload File Attachment
 // -----------------------------
 if (isset($_FILES['file_attachment']) && $_FILES['file_attachment']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../uploads/chat_files/';
+    $uploadDir = '../student/uploads/chat_files/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
 
     $originalName = basename($_FILES['file_attachment']['name']);
@@ -132,3 +132,4 @@ if ($stmt->execute()) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $stmt->error]);
 }
+?>
