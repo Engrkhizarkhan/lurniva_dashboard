@@ -31,12 +31,13 @@ if ($action === "insert") {
     $total_days = calculateTotalDays($start_date, $end_date);
 
     if ($leave_type && $start_date && $end_date && $reason) {
-       $stmt = $conn->prepare("
+      $stmt = $conn->prepare("
     INSERT INTO faculty_leaves 
-        (school_id, faculty_id, leave_type, start_date, end_date, total_days, reason, status, created_at) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
+        (school_id, faculty_id, leave_type, start_date, end_date, reason, status, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())
 ");
-$stmt->bind_param("iisssis", $school_id, $teacher_id, $leave_type, $start_date, $end_date, $total_days, $reason);
+$stmt->bind_param("iissss", $school_id, $teacher_id, $leave_type, $start_date, $end_date, $reason);
+
 
 
         if ($stmt->execute()) {
