@@ -13,8 +13,7 @@ if (!$student_id || !$school_id) {
 }
 
 // SQL: Get all diary entries visible to this student
-$sql = "
-SELECT 
+$sql = "SELECT 
     de.id AS diary_id,
     de.subject,
     de.topic,
@@ -22,8 +21,7 @@ SELECT
     de.attachment,
     de.deadline,
     de.parent_approval_required,
-    de.student_option,
-    ds.approve_parent
+    de.student_option
 FROM diary_entries AS de
 LEFT JOIN diary_students AS ds
     ON ds.diary_id = de.id
@@ -62,11 +60,8 @@ while ($row = $res->fetch_assoc()) {
     // Approval button / status
     $approval = "Not Required";
     if ($row['parent_approval_required'] === 'yes') {
-        if (empty($row['approve_parent'])) {
             $approval = "<button class='btn btn-warning btn-sm approve-btn' data-id='{$row['diary_id']}'>Approve</button>";
-        } else {
-            $approval = "<span class='badge bg-success'>Approved</span>";
-        }
+       
     }
 
     echo "<tr>
