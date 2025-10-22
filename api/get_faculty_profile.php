@@ -23,7 +23,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 
-$faculty_id = intval($_SESSION['admin_id']);
+$faculty_id = intval($_SESSION['admin_id']) ?? $data['admin_id'];
 
 // ✅ Fetch faculty profile
 $stmt = $conn->prepare("
