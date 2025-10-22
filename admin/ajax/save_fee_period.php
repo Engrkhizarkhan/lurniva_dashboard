@@ -10,7 +10,7 @@ $name      = trim($_POST['period_name'] ?? '');
 $type      = trim($_POST['period_type'] ?? '');
 $start     = $_POST['start_date'] ?? '';
 $end       = $_POST['end_date'] ?? '';
-$status    = $_POST['status'] ?? 'active'; // default
+$status    = $_POST['status'] ?? 1; // default
 
 // ✅ Validate
 if (empty($school_id) || empty($name) || empty($type) || empty($start) || empty($end)) {
