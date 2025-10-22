@@ -1,20 +1,21 @@
 <?php
-require_once '../admin/sass/db_config.php'; // adjust path if needed
+require_once '../admin/sass/db_config.php'; // Adjust path if needed
 
 header('Content-Type: application/json; charset=UTF-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
-// ✅ Get authentication data from POST instead of session
-$school_id = intval($_POST['school_id'] ?? 0);
-$sender_id = intval($_POST['student_id'] ?? 0);
-$sender_designation = 'student';
-
-// ✅ Validate authentication
-if ($school_id <= 0 || $sender_id <= 0) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+// ✅ Handle preflight (Flutter/Web)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit;
 }
 
-// ✅ Collect POST data
+// ✅ Get POST data
+$school_id = intval($_POST['school_id'] ?? 0);
+$sender_id = intval($_POST['sender_id'] ?? 0);
+$sender_designation = trim($_POST['sender_designation'] ?? 'student'); // default student
 $receiver_id = intval($_POST['receiver_id'] ?? 0);
 $receiver_designation = trim($_POST['receiver_designation'] ?? '');
 $message = trim($_POST['message'] ?? '');
@@ -24,7 +25,11 @@ $status = 'unread';
 $voice_note_filename = null;
 $file_attachment = null;
 
-// ✅ Validate minimum input
+// ✅ Validation
+if ($school_id <= 0 || $sender_id <= 0) {
+    echo json_encode(['status' => 'error', 'message' => 'Missing sender or school ID']);
+    exit;
+}
 if ($receiver_id <= 0 || empty($receiver_designation)) {
     echo json_encode(['status' => 'error', 'message' => 'Receiver details missing']);
     exit;
@@ -95,7 +100,7 @@ if (isset($_FILES['file_attachment']) && $_FILES['file_attachment']['error'] ===
 }
 
 // -----------------------------
-// 💾 Save Message
+// 💾 Save Message to DB
 // -----------------------------
 $stmt = $conn->prepare("
     INSERT INTO messages 
@@ -121,15 +126,21 @@ if ($stmt->execute()) {
         'status' => 'success',
         'message' => 'Message sent successfully',
         'data' => [
+            'school_id' => $school_id,
+            'sender_id' => $sender_id,
+            'sender_designation' => $sender_designation,
             'receiver_id' => $receiver_id,
             'receiver_designation' => $receiver_designation,
             'text' => $message,
-            'file' => $file_attachment,
-            'voice' => $voice_note_filename,
+            'file_attachment' => $file_attachment ? "../student/uploads/chat_files/$file_attachment" : null,
+            'voice_note' => $voice_note_filename ? "../student/uploads/voice_notes/$voice_note_filename" : null,
             'sent_at' => $sent_at
         ]
     ]);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $stmt->error]);
+    echo json_encode(['status' => 'error', 'message' => 'Database error', 'error' => $stmt->error]);
 }
+
+$stmt->close();
+$conn->close();
 ?>
