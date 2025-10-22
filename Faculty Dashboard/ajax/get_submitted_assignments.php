@@ -11,7 +11,6 @@ $sql = "
     FROM teacher_assignments ta
     INNER JOIN student_results sr ON sr.assignment_id = ta.id
     WHERE ta.school_id = ? AND ta.teacher_id = ?
-    ORDER BY ta.created_at DESC
 ";
 
 $stmt = $conn->prepare($sql);
