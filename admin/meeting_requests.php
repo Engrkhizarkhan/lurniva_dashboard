@@ -110,6 +110,10 @@ $result = mysqli_query($conn, $sql);
                     <input type="hidden" name="person_one" id="personOne">
                     <input type="hidden" name="person_two" id="personTwo">
 
+                    <!-- Hidden preselected meeting roles -->
+                    <input type="hidden" name="meeting_person" id="meetingPerson">
+                    <input type="hidden" name="meeting_person2" id="meetingPerson2">
+
                     <div class="form-group">
                         <label>Meeting Title</label>
                         <input type="text" class="form-control" name="title" id="meetingTitle" readonly>
@@ -142,15 +146,31 @@ $result = mysqli_query($conn, $sql);
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Open Modal with Data
     $('.accept-btn').on('click', function() {
-        $('#requestId').val($(this).data('id'));
-        $('#meetingTitle').val($(this).data('title'));
-        $('#meetingAgenda').val($(this).data('agenda'));
-        $('#personOne').val($(this).data('requested'));
-        $('#personTwo').val($(this).data('with'));
+        const requestId = $(this).data('id');
+        const title = $(this).data('title');
+        const agenda = $(this).data('agenda');
+        const personOne = $(this).data('requested');
+        const personTwo = $(this).data('with');
+        const requestedBy = $(this).closest('tr').find('td:nth-child(3)').text().split(' ')[
+        0]; // extracts requested_by text
+        const withMeeting = $(this).closest('tr').find('td:nth-child(4)').text().split(' ')[
+        0]; // extracts with_meeting text
+
+        // Auto-assign roles
+        $('#meetingPerson').val(requestedBy.toLowerCase());
+        $('#meetingPerson2').val(withMeeting.toLowerCase());
+
+        // Fill form
+        $('#requestId').val(requestId);
+        $('#meetingTitle').val(title);
+        $('#meetingAgenda').val(agenda);
+        $('#personOne').val(personOne);
+        $('#personTwo').val(personTwo);
+
         $('#meetingModal').modal('show');
     });
+
 
     // Reject Meeting
     $('.reject-btn').on('click', function() {
