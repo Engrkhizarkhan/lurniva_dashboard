@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         required></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit Leave</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
 
             <div id="result" class="mt-3"></div>
