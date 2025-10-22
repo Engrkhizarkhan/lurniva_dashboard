@@ -25,7 +25,6 @@ SELECT
     de.deadline,
     de.parent_approval_required,
     de.student_option,
-    ds.approve_parent
 FROM diary_entries AS de
 LEFT JOIN diary_students AS ds
        ON ds.diary_id = de.id
@@ -64,8 +63,7 @@ while ($row = $res->fetch_assoc()) {
         "description"=> $row['description'],
         "deadline"   => $row['deadline'],
         "attachment" => $attachmentUrl ?: null,
-        "approval_required" => ($row['parent_approval_required'] === 'yes'),
-        "approved_by_parent" => !empty($row['approve_parent'])
+        "approval_required" => ($row['parent_approval_required'] === 'yes')
     ];
 }
 
