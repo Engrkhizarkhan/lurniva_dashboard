@@ -24,7 +24,7 @@ SELECT
     de.attachment,
     de.deadline,
     de.parent_approval_required,
-    de.student_option,
+    de.student_option
 FROM diary_entries AS de
 LEFT JOIN diary_students AS ds
        ON ds.diary_id = de.id
