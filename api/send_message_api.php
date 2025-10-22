@@ -132,8 +132,8 @@ if ($stmt->execute()) {
             'receiver_id' => $receiver_id,
             'receiver_designation' => $receiver_designation,
             'text' => $message,
-            'file_attachment' => $file_attachment ? "../student/uploads/chat_files/$file_attachment" : null,
-            'voice_note' => $voice_note_filename ? "../student/uploads/voice_notes/$voice_note_filename" : null,
+            'file_attachment' => $file_attachment,
+            'voice_note' => $voice_note_filename,
             'sent_at' => $sent_at
         ]
     ]);
