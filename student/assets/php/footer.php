@@ -261,7 +261,7 @@ $(document).ready(function() {
         loadMessages();
     });
 });
-setInterval(loadUnreadMessageCount, 6);
+setInterval(loadUnreadMessageCount, 6000);
 loadUnreadMessageCount();
 
 

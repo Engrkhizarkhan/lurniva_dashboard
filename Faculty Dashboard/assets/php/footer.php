@@ -417,7 +417,7 @@ function loadUnreadMessageCount() {
         }
     });
 }
-setInterval(loadUnreadMessageCount, 60000);
+setInterval(loadUnreadMessageCount, 6000);
 loadUnreadMessageCount();
 
 // =====================
