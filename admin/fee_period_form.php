@@ -62,7 +62,7 @@
                     <input type="date" name="end_date" id="end_date" class="form-control" required>
                 </div>
 
-                <button type="button" id="submit" class="btn btn-primary">Save Fee Period</button>
+                <button type="button" id="submit" class="btn btn-primary">Save</button>
                 <div id="response" class="mt-3"></div>
             </form>
 
