@@ -15,7 +15,6 @@ $query = "
     JOIN exam_schedule es ON er.exam_schedule_id = es.id
     JOIN exams e ON es.exam_name = e.id
     WHERE er.school_id = ?
-    ORDER BY es.exam_date DESC
 ";
 
 $stmt = $conn->prepare($query);
