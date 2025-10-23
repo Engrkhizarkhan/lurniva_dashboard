@@ -9,7 +9,7 @@ INSERT INTO `app_admin`
 VALUES (
     NULL,
     'Usman',
-    'admin@lurniva.com',
+    'admindasboard@lurniva.com',
     '$2y$10$0S2Wn/mEzR6GE6ZnHcCjrumfvGcuUs5Gc.waxXiIJfynJ6eQkRR56',
     'Usman Jawad',
     '03339299096',
