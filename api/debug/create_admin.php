@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/sass/db_config.php';
+require_once '../../admin/sass/db_config.php';
 header('Content-Type: application/json; charset=UTF-8');
 
 // ✅ Static insert query
