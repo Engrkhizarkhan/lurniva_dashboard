@@ -19,7 +19,7 @@ if (!$studentId || !$status) {
 
 $schoolId = $_SESSION['admin_id'];
 
-// Get school's subscription dates and num_students
+// Get school's subscription and student count
 $stmt = $conn->prepare("SELECT subscription_start, subscription_end, num_students FROM schools WHERE id = ?");
 $stmt->bind_param("i", $schoolId);
 $stmt->execute();
@@ -31,63 +31,67 @@ if (!$school) {
     exit;
 }
 
-// Block if subscription expired
 $currentDate = date("Y-m-d");
 if ($school['subscription_end'] < $currentDate) {
     echo json_encode(["success" => false, "message" => "School subscription expired"]);
     exit;
 }
 
-// Get current student status
-$stmt = $conn->prepare("SELECT status FROM students WHERE id = ? AND school_id = ?");
+// Get student and linked parent info
+$stmt = $conn->prepare("SELECT id, parent_cnic, status FROM students WHERE id = ? AND school_id = ?");
 $stmt->bind_param("ii", $studentId, $schoolId);
 $stmt->execute();
-$currentStudent = $stmt->get_result()->fetch_assoc();
+$student = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
-if (!$currentStudent) {
+if (!$student) {
     echo json_encode(["success" => false, "message" => "Student not found"]);
     exit;
 }
 
-// Calculate num_students change
 $numChange = 0;
 
-if ($currentStudent['status'] !== 'Approved' && $status === 'Approved') {
-    // Pending/Inactive -> Approved
+if ($student['status'] !== 'Approved' && $status === 'Approved') {
     if ($school['num_students'] <= 0) {
         echo json_encode(["success" => false, "message" => "Student quota exceeded. Cannot approve student."]);
         exit;
     }
     $numChange = -1;
-} elseif ($currentStudent['status'] === 'Approved' && ($status === 'Pending' || $status === 'Inactive')) {
-    // Approved -> Pending/Inactive
+} elseif ($student['status'] === 'Approved' && ($status === 'Pending' || $status === 'Inactive')) {
     $numChange = 1;
 }
 
 // Update student
-$stmt = $conn->prepare("
-    UPDATE students
+$stmt = $conn->prepare("UPDATE students
     SET status = ?, subscription_start = ?, subscription_end = ?
-    WHERE id = ? AND school_id = ?
-");
+    WHERE id = ? AND school_id = ? ");
 $stmt->bind_param("sssii", $status, $school['subscription_start'], $school['subscription_end'], $studentId, $schoolId);
+$studentUpdated = $stmt->execute();
+$stmt->close();
 
-if ($stmt->execute()) {
-    // Update school's num_students if needed
-    if ($numChange !== 0) {
-        $stmt2 = $conn->prepare("UPDATE schools SET num_students = num_students + ? WHERE id = ?");
-        $stmt2->bind_param("ii", $numChange, $schoolId);
-        $stmt2->execute();
-        
-        $stmt2->close();
-    }
+// Update parent's record if student was updated successfully
+if ($studentUpdated && !empty($student['parent_cnic'])) {
+    $stmt2 = $conn->prepare(" UPDATE parents 
+        SET status = ?, subscription_start = ?, subscription_end = ?
+        WHERE parent_cnic = ? ");
+    $stmt2->bind_param("ssss", $status, $school['subscription_start'], $school['subscription_end'], $student['parent_cnic']);
+    $stmt2->execute();
+    $stmt2->close();
+}
 
-    echo json_encode(["success" => true, "message" => "Student updated"]);
+// Update school's remaining student quota
+if ($studentUpdated && $numChange !== 0) {
+    $stmt3 = $conn->prepare("UPDATE schools SET num_students = num_students + ? WHERE id = ?");
+    $stmt3->bind_param("ii", $numChange, $schoolId);
+    $stmt3->execute();
+    $stmt3->close();
+}
+
+if ($studentUpdated) {
+    echo json_encode(["success" => true, "message" => "Student and parent updated successfully"]);
 } else {
     echo json_encode(["success" => false, "message" => "Update failed"]);
 }
 
-$stmt->close();
 $conn->close();
 ?>
