@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require '../sass/db_config.php';
+require_once '../../admin/sass/db_config.php';
+
 
 // Fetch all parents
 $query = "
